@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
@@ -18,6 +16,7 @@ export async function POST(req: Request) {
     await prisma.verificationToken.deleteMany({ where: { identifier } });
     await prisma.verificationToken.create({ data: { identifier, token: code, expires } });
 
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { error } = await resend.emails.send({
       from: process.env.EMAIL_FROM ?? 'fitMetrics <onboarding@resend.dev>',
       to: email,

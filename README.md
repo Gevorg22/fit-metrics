@@ -1,5 +1,7 @@
 # fitMetrics
 
+**[→ Открыть приложение](https://fit-metrics-xi.vercel.app)**
+
 Минималистичный дневник тренировок. Логинишься по одноразовому коду на почту, выбираешь упражнение, записываешь подходы с весом и повторениями — всё сохраняется в базу. История тренировок и динамика веса под рукой.
 
 ## Возможности
@@ -31,8 +33,8 @@
 ### 1. Клонируй репозиторий
 
 ```bash
-git clone https://github.com/Gevorg22/fitMetrics.git
-cd fitMetrics
+git clone https://github.com/Gevorg22/fit-metrics.git
+cd fit-metrics
 ```
 
 ### 2. Установи зависимости

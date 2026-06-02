@@ -34,13 +34,21 @@
 }
 
 .itemHeader {
-  width: 100%;
+  display: flex;
+  align-items: stretch;
+  background: var(--color-surface-2);
+  transition: background 0.15s;
+}
+
+.itemToggle {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 12px 16px;
-  background: var(--color-surface-2);
+  background: transparent;
   border: none;
   cursor: pointer;
   text-align: left;
@@ -52,6 +60,31 @@
 
   @media (max-width: 480px) {
     padding: 12px;
+  }
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  background: transparent;
+  border: none;
+  border-left: 1px solid var(--color-border);
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.06);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 }
 

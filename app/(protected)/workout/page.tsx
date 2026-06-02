@@ -83,6 +83,11 @@ export default function WorkoutPage() {
 
   const handleFinish = async () => {
     if (!workoutId) return;
+    const hasSets = activeExercises.some((ex) => ex.sets.length > 0);
+    if (!hasSets) {
+      messageApi.warning('Добавь хотя бы один подход перед завершением');
+      return;
+    }
     setFinishing(true);
     try {
       await fetch(`/api/workout/${workoutId}`, {

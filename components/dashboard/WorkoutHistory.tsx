@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Popconfirm, message } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import styles from './WorkoutHistory.module.scss';
 
 interface SetEntry {
@@ -43,8 +46,27 @@ function formatSets(sets: SetEntry[]): string {
   return sets.map((s) => `${s.weight}кг×${s.reps}`).join(', ');
 }
 
-export function WorkoutHistory({ workouts, exerciseNames }: Props) {
+export function WorkoutHistory({ workouts: initial, exerciseNames }: Props) {
+  const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [workouts, setWorkouts] = useState(initial);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  const handleDelete = async (id: string) => {
+    setDeleting(id);
+    try {
+      const res = await fetch(`/api/workout/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      setWorkouts((prev) => prev.filter((w) => w.id !== id));
+      if (expanded === id) setExpanded(null);
+      router.refresh();
+    } catch {
+      messageApi.error('Не удалось удалить тренировку');
+    } finally {
+      setDeleting(null);
+    }
+  };
 
   if (workouts.length === 0) {
     return (
@@ -57,6 +79,7 @@ export function WorkoutHistory({ workouts, exerciseNames }: Props) {
 
   return (
     <div className={styles.list}>
+      {contextHolder}
       {workouts.map((w) => {
         const isOpen = expanded === w.id;
         const grouped = groupSetsByExercise(w.sets);
@@ -67,36 +90,55 @@ export function WorkoutHistory({ workouts, exerciseNames }: Props) {
 
         return (
           <div key={w.id} className={styles.item}>
-            <button
-              className={styles.itemHeader}
-              onClick={() => setExpanded(isOpen ? null : w.id)}
-            >
-              <div className={styles.itemLeft}>
-                <span className={styles.dateDay}>
-                  {date.toLocaleDateString('ru', { weekday: 'short' }).toUpperCase()}
-                </span>
-                <div className={styles.dateFull}>
-                  <span className={styles.dateMain}>
-                    {date.toLocaleDateString('ru', { day: 'numeric', month: 'long' })}
+            <div className={styles.itemHeader}>
+              <button
+                className={styles.itemToggle}
+                onClick={() => setExpanded(isOpen ? null : w.id)}
+              >
+                <div className={styles.itemLeft}>
+                  <span className={styles.dateDay}>
+                    {date.toLocaleDateString('ru', { weekday: 'short' }).toUpperCase()}
                   </span>
-                  <span className={styles.dateSub}>
-                    {date.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}
-                    {duration && ` · ${duration}`}
+                  <div className={styles.dateFull}>
+                    <span className={styles.dateMain}>
+                      {date.toLocaleDateString('ru', { day: 'numeric', month: 'long' })}
+                    </span>
+                    <span className={styles.dateSub}>
+                      {date.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}
+                      {duration && ` · ${duration}`}
+                    </span>
+                  </div>
+                </div>
+                <div className={styles.itemMeta}>
+                  {exerciseCount > 0 && (
+                    <span className={styles.metaBadge}>{exerciseCount} упр.</span>
+                  )}
+                  {totalSets > 0 && (
+                    <span className={styles.metaBadge}>{totalSets} подх.</span>
+                  )}
+                  <span className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}>
+                    ›
                   </span>
                 </div>
-              </div>
-              <div className={styles.itemMeta}>
-                {exerciseCount > 0 && (
-                  <span className={styles.metaBadge}>{exerciseCount} упр.</span>
-                )}
-                {totalSets > 0 && (
-                  <span className={styles.metaBadge}>{totalSets} подх.</span>
-                )}
-                <span className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}>
-                  ›
-                </span>
-              </div>
-            </button>
+              </button>
+
+              <Popconfirm
+                title="Удалить тренировку?"
+                description="Все подходы этой тренировки будут удалены."
+                onConfirm={() => handleDelete(w.id)}
+                okText="Удалить"
+                cancelText="Отмена"
+                okButtonProps={{ danger: true }}
+              >
+                <button
+                  className={styles.deleteBtn}
+                  disabled={deleting === w.id}
+                  aria-label="Удалить тренировку"
+                >
+                  <DeleteOutlined />
+                </button>
+              </Popconfirm>
+            </div>
 
             {isOpen && (
               <div className={styles.itemBody}>

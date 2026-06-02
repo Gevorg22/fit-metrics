@@ -19,6 +19,7 @@ export default async function DashboardPage() {
         lastWorkoutDate={null}
         recentWorkouts={[]}
         exerciseNames={{}}
+        weightHistory={[]}
         isGuest
       />
     );
@@ -28,7 +29,7 @@ export default async function DashboardPage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [weightLog, totalWorkouts, lastWorkout, recentWorkouts] = await Promise.all([
+  const [weightLog, totalWorkouts, lastWorkout, recentWorkouts, weightHistory] = await Promise.all([
     prisma.weightLog.findUnique({
       where: { userId_date: { userId, date: today } },
     }),
@@ -47,6 +48,11 @@ export default async function DashboardPage() {
           orderBy: [{ exerciseId: 'asc' }, { setNumber: 'asc' }],
         },
       },
+    }),
+    prisma.weightLog.findMany({
+      where: { userId },
+      orderBy: { date: 'desc' },
+      select: { id: true, weight: true, date: true },
     }),
   ]);
 
@@ -69,6 +75,11 @@ export default async function DashboardPage() {
       totalWorkouts={totalWorkouts}
       lastWorkoutDate={lastWorkout?.startedAt.toISOString() ?? null}
       exerciseNames={exerciseNames}
+      weightHistory={weightHistory.map((w) => ({
+        id: w.id,
+        weight: w.weight,
+        date: w.date.toISOString(),
+      }))}
       recentWorkouts={recentWorkouts.map((w) => ({
         id: w.id,
         startedAt: w.startedAt.toISOString(),

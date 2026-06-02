@@ -5,6 +5,7 @@ import { Button } from 'antd';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { WeightInput } from './WeightInput';
 import { WeightChart } from './WeightChart';
+import { WeightHistory } from './WeightHistory';
 import { WorkoutHistory } from './WorkoutHistory';
 import styles from './DashboardView.module.scss';
 
@@ -23,16 +24,23 @@ interface WorkoutEntry {
   sets: SetEntry[];
 }
 
+interface WeightEntry {
+  id: string;
+  weight: number;
+  date: string;
+}
+
 interface Props {
   todayWeight: number | null;
   totalWorkouts: number;
   lastWorkoutDate: string | null;
   recentWorkouts: WorkoutEntry[];
   exerciseNames: Record<string, string>;
+  weightHistory: WeightEntry[];
   isGuest?: boolean;
 }
 
-export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, recentWorkouts, exerciseNames, isGuest }: Props) {
+export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, recentWorkouts, exerciseNames, weightHistory, isGuest }: Props) {
   return (
     <div className={styles.page}>
       <div className={styles.statsRow}>
@@ -75,6 +83,16 @@ export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, rec
           <div className={styles.chartSection}>
             <span className={styles.sectionTitle}>График веса</span>
             <WeightChart />
+          </div>
+
+          <div className={styles.historySection}>
+            <span className={styles.sectionTitle}>
+              История веса
+              {weightHistory.length > 0 && (
+                <span className={styles.historyCount}>{weightHistory.length}</span>
+              )}
+            </span>
+            <WeightHistory entries={weightHistory} />
           </div>
         </>
       )}

@@ -1,0 +1,94 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.empty {
+  padding: 16px 0;
+  text-align: center;
+}
+
+.emptyText {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: var(--color-border-hover);
+  }
+}
+
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.dateDay {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.08em;
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.dateMain {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.weight {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+
+  &:hover:not(:disabled) {
+    color: #ff4d4f;
+    border-color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.06);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}

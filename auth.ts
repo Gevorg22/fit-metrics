@@ -4,8 +4,6 @@ import Resend from 'next-auth/providers/resend';
 import { Resend as ResendClient } from 'resend';
 import { prisma } from '@/lib/prisma';
 
-const resend = new ResendClient(process.env.RESEND_API_KEY);
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -15,6 +13,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       name: 'Email',
       generateVerificationToken: () => String(Math.floor(100000 + Math.random() * 900000)),
       sendVerificationRequest: async ({ identifier: email, token }) => {
+        const resend = new ResendClient(process.env.RESEND_API_KEY);
         const { error } = await resend.emails.send({
           from: process.env.EMAIL_FROM ?? 'fitMetrics <onboarding@resend.dev>',
           to: email,

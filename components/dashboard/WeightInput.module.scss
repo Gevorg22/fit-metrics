@@ -1,0 +1,37 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.input {
+  flex: 1;
+}
+
+.inputNumber {
+  width: 100%;
+}
+
+.addon {
+  display: flex;
+  align-items: center;
+  padding: 0 11px;
+  background: #1d1d1d;
+  border: 1px solid #434343;
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 14px;
+  white-space: nowrap;
+}

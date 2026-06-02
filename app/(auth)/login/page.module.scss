@@ -1,0 +1,81 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  padding: 24px;
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 40px 36px;
+  box-shadow: var(--shadow-md);
+
+  @media (max-width: 480px) {
+    padding: 28px 20px;
+    border-radius: var(--radius-md);
+    border-left: none;
+    border-right: none;
+    max-width: 100%;
+  }
+}
+
+.logoWrap {
+  text-align: center;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--color-text);
+}
+
+.logoAccent {
+  color: var(--color-primary);
+}
+
+.tagline {
+  font-size: 13px;
+}
+
+.heading {
+  margin-bottom: 6px !important;
+  color: var(--color-text) !important;
+}
+
+.desc {
+  margin-bottom: 20px !important;
+  font-size: 13px;
+}
+
+.alert {
+  margin-bottom: 16px;
+}
+
+.submitBtn {
+  margin-bottom: 0;
+}
+
+.dividerText {
+  font-size: 12px;
+}
+
+.guestBtn {
+  margin-bottom: 8px;
+}
+
+.guestNote {
+  display: block;
+  text-align: center;
+  font-size: 11px;
+}

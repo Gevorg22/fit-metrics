@@ -1,0 +1,134 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.setRow {
+  display: grid;
+  grid-template-columns: 32px 1fr 1fr 36px;
+  align-items: center;
+  gap: 8px;
+}
+
+.setNum {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  text-align: center;
+  font-weight: 600;
+}
+
+.setInput {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 14px;
+  color: var(--color-text);
+  width: 100%;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus {
+    border-color: var(--color-primary);
+  }
+
+  &::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px 6px;
+    font-size: 16px;
+  }
+}
+
+.savedBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+  }
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 32px 1fr 1fr 36px;
+  gap: 8px;
+}
+
+.headerLabel {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.headerNum {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.setRowSaved {
+  opacity: 0.75;
+}
+
+.addRow {
+  display: flex;
+  justify-content: center;
+  padding-top: 4px;
+}
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  transition: color 0.15s, border-color 0.15s;
+
+  &:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+}
+
+.saveBtn {
+  margin-top: 4px;
+}

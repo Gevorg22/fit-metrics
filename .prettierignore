@@ -1,0 +1,5 @@
+node_modules
+.next
+/app/generated
+public
+*.md

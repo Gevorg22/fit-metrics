@@ -1,0 +1,113 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
+import { useState, useEffect } from 'react';
+import styles from './Nav.module.scss';
+
+const NAV_LINKS = [
+  { href: '/dashboard', label: 'Главная' },
+  { href: '/workout', label: 'Тренировка' },
+];
+
+interface Props {
+  userEmail?: string | null;
+  isGuest?: boolean;
+}
+
+export function Nav({ userEmail, isGuest }: Props) {
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen]);
+
+  const handleLogout = () => {
+    if (isGuest) {
+      document.cookie = 'fitmetrics-guest=; path=/; max-age=0';
+      window.location.href = '/login';
+    } else {
+      signOut({ callbackUrl: '/login' });
+    }
+  };
+
+  return (
+    <>
+      <nav className={styles.nav}>
+        <span className={styles.logo}>
+          <span className={styles.logoAccent}>fit</span>Metrics
+        </span>
+
+        <div className={styles.links}>
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`${styles.link} ${pathname === link.href ? styles.active : ''}`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
+        <div className={styles.right}>
+          {isGuest ? (
+            <span className={styles.guestBadge}>Гостевой режим</span>
+          ) : (
+            userEmail && <span className={styles.email}>{userEmail}</span>
+          )}
+          <button className={styles.logoutBtn} onClick={handleLogout}>
+            {isGuest ? 'Войти' : 'Выйти'}
+          </button>
+
+          <button
+            className={styles.burger}
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="Меню"
+          >
+            <span className={`${styles.burgerLine} ${menuOpen ? styles.burgerLineTop : ''}`} />
+            <span className={`${styles.burgerLine} ${menuOpen ? styles.burgerLineMid : ''}`} />
+            <span className={`${styles.burgerLine} ${menuOpen ? styles.burgerLineBot : ''}`} />
+          </button>
+        </div>
+      </nav>
+
+      {menuOpen && (
+        <div className={styles.mobileMenu}>
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`${styles.mobileLink} ${pathname === link.href ? styles.mobileLinkActive : ''}`}
+              onClick={() => setMenuOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <div className={styles.mobileDivider} />
+          {isGuest ? (
+            <span className={styles.mobileGuestBadge}>Гостевой режим</span>
+          ) : (
+            userEmail && <span className={styles.mobileEmail}>{userEmail}</span>
+          )}
+          <button className={styles.mobileLogoutBtn} onClick={handleLogout}>
+            {isGuest ? 'Войти' : 'Выйти'}
+          </button>
+        </div>
+      )}
+    </>
+  );
+}

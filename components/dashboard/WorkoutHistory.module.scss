@@ -1,0 +1,160 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 0;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 32px;
+}
+
+.emptyText {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.item {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: var(--color-border-hover);
+  }
+}
+
+.itemHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--color-surface-2);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+
+  &:hover {
+    background: var(--color-surface);
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px;
+  }
+}
+
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.dateDay {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.08em;
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.dateFull {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.dateMain {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.dateSub {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.itemMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.metaBadge {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  white-space: nowrap;
+
+  @media (max-width: 360px) {
+    display: none;
+
+    &:first-child {
+      display: block;
+    }
+  }
+}
+
+.chevron {
+  font-size: 18px;
+  color: var(--color-text-muted);
+  line-height: 1;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.chevronOpen {
+  transform: rotate(90deg);
+}
+
+.itemBody {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+
+.noSets {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.exRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.exName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.exSets {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}

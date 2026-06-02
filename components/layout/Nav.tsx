@@ -21,6 +21,7 @@ export function Nav({ userEmail, isGuest }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMenuOpen(false);
   }, [pathname]);
 

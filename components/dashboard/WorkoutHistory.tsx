@@ -1,15 +1,19 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Popconfirm, message } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import type { WorkoutHistoryEntry, WorkoutSetEntry } from '@/types';
 import styles from './WorkoutHistory.module.scss';
 
+const IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+
 interface Props {
   workouts: WorkoutHistoryEntry[];
   exerciseNames: Record<string, string>;
+  exerciseImages: Record<string, string>;
 }
 
 const PAGE_SIZE = 5;
@@ -34,7 +38,7 @@ function formatSets(sets: WorkoutSetEntry[]): string {
   return sets.map((s) => `${s.weight}кг×${s.reps}`).join(', ');
 }
 
-export function WorkoutHistory({ workouts: initial, exerciseNames }: Props) {
+export function WorkoutHistory({ workouts: initial, exerciseNames, exerciseImages }: Props) {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const [workouts, setWorkouts] = useState(initial);
@@ -143,8 +147,22 @@ export function WorkoutHistory({ workouts: initial, exerciseNames }: Props) {
                   ) : (
                     grouped.map(({ exerciseId, sets }) => (
                       <div key={exerciseId} className={styles.exRow}>
-                        <span className={styles.exName}>{exerciseNames[exerciseId] ?? exerciseId}</span>
-                        <span className={styles.exSets}>{formatSets(sets)}</span>
+                        {exerciseImages[exerciseId] && (
+                          <div className={styles.exImg}>
+                            <Image
+                              src={`${IMG_BASE}${exerciseImages[exerciseId]}`}
+                              alt={exerciseNames[exerciseId] ?? exerciseId}
+                              width={36}
+                              height={36}
+                              className={styles.exImgEl}
+                              unoptimized
+                            />
+                          </div>
+                        )}
+                        <div className={styles.exInfo}>
+                          <span className={styles.exName}>{exerciseNames[exerciseId] ?? exerciseId}</span>
+                          <span className={styles.exSets}>{formatSets(sets)}</span>
+                        </div>
                       </div>
                     ))
                   )}

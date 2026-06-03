@@ -19,6 +19,7 @@ export default async function DashboardPage() {
         lastWorkoutDate={null}
         recentWorkouts={[]}
         exerciseNames={{}}
+        exerciseImages={{}}
         weightHistory={[]}
         personalRecords={[]}
         isGuest
@@ -73,11 +74,14 @@ export default async function DashboardPage() {
   const exercises = allExerciseIds.length
     ? await prisma.exercise.findMany({
         where: { id: { in: allExerciseIds } },
-        select: { id: true, name: true, nameRu: true },
+        select: { id: true, name: true, nameRu: true, images: true },
       })
     : [];
   const exerciseNames: Record<string, string> = Object.fromEntries(
     exercises.map((e) => [e.id, e.nameRu ?? e.name])
+  );
+  const exerciseImages: Record<string, string> = Object.fromEntries(
+    exercises.filter((e) => e.images[0]).map((e) => [e.id, e.images[0]])
   );
 
   const personalRecords = prRaw
@@ -95,6 +99,7 @@ export default async function DashboardPage() {
       totalWorkouts={totalWorkouts}
       lastWorkoutDate={lastWorkout?.startedAt.toISOString() ?? null}
       exerciseNames={exerciseNames}
+      exerciseImages={exerciseImages}
       personalRecords={personalRecords}
       weightHistory={weightHistory.map((w) => ({
         id: w.id,

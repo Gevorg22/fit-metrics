@@ -17,12 +17,13 @@ interface Props {
   lastWorkoutDate: string | null;
   recentWorkouts: WorkoutHistoryEntry[];
   exerciseNames: Record<string, string>;
+  exerciseImages: Record<string, string>;
   weightHistory: WeightLogEntry[];
   personalRecords: PersonalRecord[];
   isGuest?: boolean;
 }
 
-export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, recentWorkouts, exerciseNames, weightHistory, personalRecords, isGuest }: Props) {
+export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, recentWorkouts, exerciseNames, exerciseImages, weightHistory, personalRecords, isGuest }: Props) {
   return (
     <div className={styles.page}>
       <div className={styles.statsRow}>
@@ -94,7 +95,7 @@ export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, rec
         {isGuest ? (
           <p className={styles.guestNote}>Войди в аккаунт, чтобы сохранять тренировки</p>
         ) : (
-          <WorkoutHistory workouts={recentWorkouts} exerciseNames={exerciseNames} />
+          <WorkoutHistory workouts={recentWorkouts} exerciseNames={exerciseNames} exerciseImages={exerciseImages} />
         )}
       </div>
     </div>

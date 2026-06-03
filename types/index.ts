@@ -1,11 +1,11 @@
 export interface Exercise {
   id: string;
   name: string;
-  nameRu?: string;
-  category: string;
+  nameRu?: string | null;
+  category?: string;
   primaryMuscles: string[];
-  secondaryMuscles: string[];
-  equipment: string;
+  secondaryMuscles?: string[];
+  equipment?: string | null;
   images: string[];
 }
 

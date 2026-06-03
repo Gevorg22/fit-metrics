@@ -1,14 +1,19 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Popconfirm, message } from 'antd';
+import { Button, Popconfirm, message, Spin } from 'antd';
 import { CheckOutlined, PlusOutlined, DeleteOutlined, CloseOutlined } from '@ant-design/icons';
 import { useWorkoutStore } from '@/stores/workoutStore';
-import { ExerciseSearch } from '@/components/workout/ExerciseSearch';
 import { SetForm } from '@/components/workout/SetForm';
 import type { Exercise, ActiveSet } from '@/types';
 import styles from './page.module.scss';
+
+const ExerciseSearch = dynamic(
+  () => import('@/components/workout/ExerciseSearch').then((m) => ({ default: m.ExerciseSearch })),
+  { ssr: false, loading: () => <div className={styles.searchLoading}><Spin /></div> }
+);
 
 export default function WorkoutPage() {
   const router = useRouter();

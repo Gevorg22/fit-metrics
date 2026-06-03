@@ -1,15 +1,20 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import type { WeightLogEntry, WorkoutHistoryEntry, PersonalRecord } from '@/types';
 import { WeightInput } from './WeightInput';
-import { WeightChart } from './WeightChart';
 import { WeightHistory } from './WeightHistory';
 import { WorkoutHistory } from './WorkoutHistory';
 import { PersonalRecords } from './PersonalRecords';
 import styles from './DashboardView.module.scss';
+
+const WeightChart = dynamic(
+  () => import('./WeightChart').then((m) => ({ default: m.WeightChart })),
+  { ssr: false, loading: () => <div className={styles.chartSkeleton}><Spin /></div> }
+);
 
 interface Props {
   todayWeight: number | null;

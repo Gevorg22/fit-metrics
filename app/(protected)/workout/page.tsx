@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Popconfirm, message } from 'antd';
-import { CheckOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { CheckOutlined, PlusOutlined, DeleteOutlined, CloseOutlined } from '@ant-design/icons';
 import { useWorkoutStore } from '@/stores/workoutStore';
 import { ExerciseSearch } from '@/components/workout/ExerciseSearch';
 import { SetForm } from '@/components/workout/SetForm';
@@ -15,8 +15,10 @@ export default function WorkoutPage() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const [finishing, setFinishing] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const [starting, setStarting] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [notes, setNotes] = useState('');
 
   const {
     workoutId,
@@ -63,6 +65,22 @@ export default function WorkoutPage() {
     }
   };
 
+  const handleCancel = async () => {
+    if (!workoutId) return;
+    setCancelling(true);
+    try {
+      if (!isGuest) {
+        await fetch(`/api/workout/${workoutId}`, { method: 'DELETE' });
+      }
+      finishWorkout();
+      router.push('/dashboard');
+    } catch {
+      messageApi.error('Не удалось отменить тренировку');
+    } finally {
+      setCancelling(false);
+    }
+  };
+
   const handleSelectExercise = (exercise: Exercise) => {
     const already = activeExercises.find((e) => e.exerciseId === exercise.id);
     if (already) {
@@ -93,7 +111,10 @@ export default function WorkoutPage() {
       await fetch(`/api/workout/${workoutId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ finishedAt: new Date().toISOString() }),
+        body: JSON.stringify({
+          finishedAt: new Date().toISOString(),
+          notes: notes.trim() || null,
+        }),
       });
       finishWorkout();
       messageApi.success('Тренировка завершена!');
@@ -136,17 +157,47 @@ export default function WorkoutPage() {
           <h4 className={styles.toolbarTitle}>Тренировка</h4>
           <span className={styles.duration}>{duration} мин</span>
         </div>
-        <Popconfirm
-          title="Завершить тренировку?"
-          description="Все записанные подходы уже сохранены."
-          onConfirm={handleFinish}
-          okText="Завершить"
-          cancelText="Отмена"
-        >
-          <Button type="primary" icon={<CheckOutlined />} loading={finishing}>
-            Завершить
-          </Button>
-        </Popconfirm>
+        <div className={styles.toolbarRight}>
+          <Popconfirm
+            title="Отменить тренировку?"
+            description="Все записанные подходы будут удалены без сохранения."
+            onConfirm={handleCancel}
+            okText="Отменить"
+            cancelText="Назад"
+            okButtonProps={{ danger: true }}
+          >
+            <Button
+              icon={<CloseOutlined />}
+              loading={cancelling}
+              danger
+            >
+              Отменить
+            </Button>
+          </Popconfirm>
+
+          <Popconfirm
+            title="Завершить тренировку?"
+            description="Все записанные подходы уже сохранены."
+            onConfirm={handleFinish}
+            okText="Завершить"
+            cancelText="Отмена"
+          >
+            <Button type="primary" icon={<CheckOutlined />} loading={finishing}>
+              Завершить
+            </Button>
+          </Popconfirm>
+        </div>
+      </div>
+
+      <div className={styles.notesWrap}>
+        <textarea
+          className={styles.notesInput}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Заметка к тренировке (необязательно)..."
+          rows={2}
+          maxLength={500}
+        />
       </div>
 
       <div className={styles.addExerciseRow}>

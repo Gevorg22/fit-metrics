@@ -1,14 +1,8 @@
+import type { PersonalRecord } from '@/types';
 import styles from './PersonalRecords.module.scss';
 
-interface PREntry {
-  exerciseId: string;
-  exerciseName: string;
-  maxWeight: number;
-  maxReps: number | null;
-}
-
 interface Props {
-  records: PREntry[];
+  records: PersonalRecord[];
 }
 
 const MEDALS = ['🥇', '🥈', '🥉'];

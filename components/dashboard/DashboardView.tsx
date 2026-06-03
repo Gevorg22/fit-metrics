@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Button } from 'antd';
 import { ThunderboltOutlined } from '@ant-design/icons';
+import type { WeightLogEntry, WorkoutHistoryEntry, PersonalRecord } from '@/types';
 import { WeightInput } from './WeightInput';
 import { WeightChart } from './WeightChart';
 import { WeightHistory } from './WeightHistory';
@@ -10,42 +11,14 @@ import { WorkoutHistory } from './WorkoutHistory';
 import { PersonalRecords } from './PersonalRecords';
 import styles from './DashboardView.module.scss';
 
-interface SetEntry {
-  id: string;
-  exerciseId: string;
-  setNumber: number;
-  weight: number;
-  reps: number;
-}
-
-interface WorkoutEntry {
-  id: string;
-  startedAt: string;
-  finishedAt: string | null;
-  sets: SetEntry[];
-}
-
-interface WeightEntry {
-  id: string;
-  weight: number;
-  date: string;
-}
-
-interface PREntry {
-  exerciseId: string;
-  exerciseName: string;
-  maxWeight: number;
-  maxReps: number | null;
-}
-
 interface Props {
   todayWeight: number | null;
   totalWorkouts: number;
   lastWorkoutDate: string | null;
-  recentWorkouts: WorkoutEntry[];
+  recentWorkouts: WorkoutHistoryEntry[];
   exerciseNames: Record<string, string>;
-  weightHistory: WeightEntry[];
-  personalRecords: PREntry[];
+  weightHistory: WeightLogEntry[];
+  personalRecords: PersonalRecord[];
   isGuest?: boolean;
 }
 

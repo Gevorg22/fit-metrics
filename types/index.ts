@@ -33,6 +33,29 @@ export interface WeightLogEntry {
   date: string;
 }
 
+export interface WorkoutSetEntry {
+  id: string;
+  exerciseId: string;
+  setNumber: number;
+  weight: number;
+  reps: number;
+}
+
+export interface WorkoutHistoryEntry {
+  id: string;
+  startedAt: string;
+  finishedAt: string | null;
+  notes?: string | null;
+  sets: WorkoutSetEntry[];
+}
+
+export interface PersonalRecord {
+  exerciseId: string;
+  exerciseName: string;
+  maxWeight: number;
+  maxReps: number | null;
+}
+
 export interface WorkoutDay {
   date: string;
   count: number;

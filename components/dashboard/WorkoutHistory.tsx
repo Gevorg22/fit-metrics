@@ -4,27 +4,15 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Popconfirm, message } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
+import type { WorkoutHistoryEntry, WorkoutSetEntry } from '@/types';
 import styles from './WorkoutHistory.module.scss';
 
-interface SetEntry {
-  id: string;
-  exerciseId: string;
-  setNumber: number;
-  weight: number;
-  reps: number;
-}
-
-interface WorkoutEntry {
-  id: string;
-  startedAt: string;
-  finishedAt: string | null;
-  sets: SetEntry[];
-}
-
 interface Props {
-  workouts: WorkoutEntry[];
+  workouts: WorkoutHistoryEntry[];
   exerciseNames: Record<string, string>;
 }
+
+const PAGE_SIZE = 5;
 
 function getDuration(start: string, end: string | null): string {
   if (!end) return '';
@@ -33,8 +21,8 @@ function getDuration(start: string, end: string | null): string {
   return `${Math.floor(mins / 60)}ч ${mins % 60}м`;
 }
 
-function groupSetsByExercise(sets: SetEntry[]): { exerciseId: string; sets: SetEntry[] }[] {
-  const map = new Map<string, SetEntry[]>();
+function groupSetsByExercise(sets: WorkoutSetEntry[]): { exerciseId: string; sets: WorkoutSetEntry[] }[] {
+  const map = new Map<string, WorkoutSetEntry[]>();
   for (const s of sets) {
     if (!map.has(s.exerciseId)) map.set(s.exerciseId, []);
     map.get(s.exerciseId)!.push(s);
@@ -42,7 +30,7 @@ function groupSetsByExercise(sets: SetEntry[]): { exerciseId: string; sets: SetE
   return Array.from(map.entries()).map(([exerciseId, sets]) => ({ exerciseId, sets }));
 }
 
-function formatSets(sets: SetEntry[]): string {
+function formatSets(sets: WorkoutSetEntry[]): string {
   return sets.map((s) => `${s.weight}кг×${s.reps}`).join(', ');
 }
 
@@ -52,6 +40,7 @@ export function WorkoutHistory({ workouts: initial, exerciseNames }: Props) {
   const [workouts, setWorkouts] = useState(initial);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const handleDelete = async (id: string) => {
     setDeleting(id);
@@ -77,86 +66,103 @@ export function WorkoutHistory({ workouts: initial, exerciseNames }: Props) {
     );
   }
 
-  return (
-    <div className={styles.list}>
-      {contextHolder}
-      {workouts.map((w) => {
-        const isOpen = expanded === w.id;
-        const grouped = groupSetsByExercise(w.sets);
-        const date = new Date(w.startedAt);
-        const duration = getDuration(w.startedAt, w.finishedAt);
-        const totalSets = w.sets.length;
-        const exerciseCount = grouped.length;
+  const visible = workouts.slice(0, visibleCount);
+  const hasMore = visibleCount < workouts.length;
 
-        return (
-          <div key={w.id} className={styles.item}>
-            <div className={styles.itemHeader}>
-              <button
-                className={styles.itemToggle}
-                onClick={() => setExpanded(isOpen ? null : w.id)}
-              >
-                <div className={styles.itemLeft}>
-                  <span className={styles.dateDay}>
-                    {date.toLocaleDateString('ru', { weekday: 'short' }).toUpperCase()}
-                  </span>
-                  <div className={styles.dateFull}>
-                    <span className={styles.dateMain}>
-                      {date.toLocaleDateString('ru', { day: 'numeric', month: 'long' })}
+  return (
+    <div className={styles.wrap}>
+      {contextHolder}
+      <div className={styles.list}>
+        {visible.map((w) => {
+          const isOpen = expanded === w.id;
+          const grouped = groupSetsByExercise(w.sets);
+          const date = new Date(w.startedAt);
+          const duration = getDuration(w.startedAt, w.finishedAt);
+          const totalSets = w.sets.length;
+          const exerciseCount = grouped.length;
+
+          return (
+            <div key={w.id} className={styles.item}>
+              <div className={styles.itemHeader}>
+                <button
+                  className={styles.itemToggle}
+                  onClick={() => setExpanded(isOpen ? null : w.id)}
+                >
+                  <div className={styles.itemLeft}>
+                    <span className={styles.dateDay}>
+                      {date.toLocaleDateString('ru', { weekday: 'short' }).toUpperCase()}
                     </span>
-                    <span className={styles.dateSub}>
-                      {date.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}
-                      {duration && ` · ${duration}`}
+                    <div className={styles.dateFull}>
+                      <span className={styles.dateMain}>
+                        {date.toLocaleDateString('ru', { day: 'numeric', month: 'long' })}
+                      </span>
+                      <span className={styles.dateSub}>
+                        {date.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}
+                        {duration && ` · ${duration}`}
+                      </span>
+                    </div>
+                  </div>
+                  <div className={styles.itemMeta}>
+                    {exerciseCount > 0 && (
+                      <span className={styles.metaBadge}>{exerciseCount} упр.</span>
+                    )}
+                    {totalSets > 0 && (
+                      <span className={styles.metaBadge}>{totalSets} подх.</span>
+                    )}
+                    <span className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}>
+                      ›
                     </span>
                   </div>
-                </div>
-                <div className={styles.itemMeta}>
-                  {exerciseCount > 0 && (
-                    <span className={styles.metaBadge}>{exerciseCount} упр.</span>
-                  )}
-                  {totalSets > 0 && (
-                    <span className={styles.metaBadge}>{totalSets} подх.</span>
-                  )}
-                  <span className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}>
-                    ›
-                  </span>
-                </div>
-              </button>
-
-              <Popconfirm
-                title="Удалить тренировку?"
-                description="Все подходы этой тренировки будут удалены."
-                onConfirm={() => handleDelete(w.id)}
-                okText="Удалить"
-                cancelText="Отмена"
-                okButtonProps={{ danger: true }}
-              >
-                <button
-                  className={styles.deleteBtn}
-                  disabled={deleting === w.id}
-                  aria-label="Удалить тренировку"
-                >
-                  <DeleteOutlined />
                 </button>
-              </Popconfirm>
-            </div>
 
-            {isOpen && (
-              <div className={styles.itemBody}>
-                {grouped.length === 0 ? (
-                  <p className={styles.noSets}>Подходы не записаны</p>
-                ) : (
-                  grouped.map(({ exerciseId, sets }) => (
-                    <div key={exerciseId} className={styles.exRow}>
-                      <span className={styles.exName}>{exerciseNames[exerciseId] ?? exerciseId}</span>
-                      <span className={styles.exSets}>{formatSets(sets)}</span>
-                    </div>
-                  ))
-                )}
+                <Popconfirm
+                  title="Удалить тренировку?"
+                  description="Все подходы этой тренировки будут удалены."
+                  onConfirm={() => handleDelete(w.id)}
+                  okText="Удалить"
+                  cancelText="Отмена"
+                  okButtonProps={{ danger: true }}
+                >
+                  <button
+                    className={styles.deleteBtn}
+                    disabled={deleting === w.id}
+                    aria-label="Удалить тренировку"
+                  >
+                    <DeleteOutlined />
+                  </button>
+                </Popconfirm>
               </div>
-            )}
-          </div>
-        );
-      })}
+
+              {isOpen && (
+                <div className={styles.itemBody}>
+                  {w.notes && (
+                    <p className={styles.notes}>{w.notes}</p>
+                  )}
+                  {grouped.length === 0 ? (
+                    <p className={styles.noSets}>Подходы не записаны</p>
+                  ) : (
+                    grouped.map(({ exerciseId, sets }) => (
+                      <div key={exerciseId} className={styles.exRow}>
+                        <span className={styles.exName}>{exerciseNames[exerciseId] ?? exerciseId}</span>
+                        <span className={styles.exSets}>{formatSets(sets)}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {hasMore && (
+        <button
+          className={styles.showMore}
+          onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+        >
+          Показать ещё ({workouts.length - visibleCount})
+        </button>
+      )}
     </div>
   );
 }

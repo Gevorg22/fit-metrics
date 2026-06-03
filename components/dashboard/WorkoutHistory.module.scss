@@ -1,3 +1,9 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .list {
   display: flex;
   flex-direction: column;
@@ -173,6 +179,34 @@
   font-size: 13px;
   color: var(--color-text-muted);
   margin: 0;
+}
+
+.notes {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.showMore {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
 }
 
 .exRow {

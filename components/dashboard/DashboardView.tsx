@@ -7,6 +7,7 @@ import { WeightInput } from './WeightInput';
 import { WeightChart } from './WeightChart';
 import { WeightHistory } from './WeightHistory';
 import { WorkoutHistory } from './WorkoutHistory';
+import { PersonalRecords } from './PersonalRecords';
 import styles from './DashboardView.module.scss';
 
 interface SetEntry {
@@ -30,6 +31,13 @@ interface WeightEntry {
   date: string;
 }
 
+interface PREntry {
+  exerciseId: string;
+  exerciseName: string;
+  maxWeight: number;
+  maxReps: number | null;
+}
+
 interface Props {
   todayWeight: number | null;
   totalWorkouts: number;
@@ -37,10 +45,11 @@ interface Props {
   recentWorkouts: WorkoutEntry[];
   exerciseNames: Record<string, string>;
   weightHistory: WeightEntry[];
+  personalRecords: PREntry[];
   isGuest?: boolean;
 }
 
-export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, recentWorkouts, exerciseNames, weightHistory, isGuest }: Props) {
+export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, recentWorkouts, exerciseNames, weightHistory, personalRecords, isGuest }: Props) {
   return (
     <div className={styles.page}>
       <div className={styles.statsRow}>
@@ -75,6 +84,11 @@ export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, rec
 
       {!isGuest && (
         <>
+          <div className={styles.prSection}>
+            <span className={styles.sectionTitle}>Личные рекорды</span>
+            <PersonalRecords records={personalRecords} />
+          </div>
+
           <div className={styles.weightSection}>
             <span className={styles.sectionTitle}>Вес сегодня</span>
             <WeightInput todayWeight={todayWeight} />

@@ -20,6 +20,7 @@ export default async function DashboardPage() {
         recentWorkouts={[]}
         exerciseNames={{}}
         weightHistory={[]}
+        personalRecords={[]}
         isGuest
       />
     );
@@ -29,7 +30,7 @@ export default async function DashboardPage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [weightLog, totalWorkouts, lastWorkout, recentWorkouts, weightHistory] = await Promise.all([
+  const [weightLog, totalWorkouts, lastWorkout, recentWorkouts, weightHistory, prRaw] = await Promise.all([
     prisma.weightLog.findUnique({
       where: { userId_date: { userId, date: today } },
     }),
@@ -54,14 +55,24 @@ export default async function DashboardPage() {
       orderBy: { date: 'desc' },
       select: { id: true, weight: true, date: true },
     }),
+    prisma.workoutSet.groupBy({
+      by: ['exerciseId'],
+      where: { workout: { userId } },
+      _max: { weight: true, reps: true },
+      orderBy: { _max: { weight: 'desc' } },
+      take: 6,
+    }),
   ]);
 
-  const exerciseIds = [
-    ...new Set(recentWorkouts.flatMap((w) => w.sets.map((s) => s.exerciseId))),
+  const allExerciseIds = [
+    ...new Set([
+      ...recentWorkouts.flatMap((w) => w.sets.map((s) => s.exerciseId)),
+      ...prRaw.map((r) => r.exerciseId),
+    ]),
   ];
-  const exercises = exerciseIds.length
+  const exercises = allExerciseIds.length
     ? await prisma.exercise.findMany({
-        where: { id: { in: exerciseIds } },
+        where: { id: { in: allExerciseIds } },
         select: { id: true, name: true, nameRu: true },
       })
     : [];
@@ -69,12 +80,22 @@ export default async function DashboardPage() {
     exercises.map((e) => [e.id, e.nameRu ?? e.name])
   );
 
+  const personalRecords = prRaw
+    .filter((r) => r._max.weight !== null)
+    .map((r) => ({
+      exerciseId: r.exerciseId,
+      exerciseName: exerciseNames[r.exerciseId] ?? r.exerciseId,
+      maxWeight: r._max.weight!,
+      maxReps: r._max.reps ?? null,
+    }));
+
   return (
     <DashboardView
       todayWeight={weightLog?.weight ?? null}
       totalWorkouts={totalWorkouts}
       lastWorkoutDate={lastWorkout?.startedAt.toISOString() ?? null}
       exerciseNames={exerciseNames}
+      personalRecords={personalRecords}
       weightHistory={weightHistory.map((w) => ({
         id: w.id,
         weight: w.weight,

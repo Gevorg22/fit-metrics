@@ -1,0 +1,152 @@
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.bone {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-2) 25%,
+    #2a2a2a 50%,
+    var(--color-surface-2) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: var(--radius-sm);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cardSmallLine {
+  composes: bone;
+  height: 12px;
+  width: 60%;
+}
+
+.cardBigLine {
+  composes: bone;
+  height: 32px;
+  width: 40%;
+}
+
+.ctaCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ctaText {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.ctaTitle {
+  composes: bone;
+  height: 16px;
+  width: 180px;
+  max-width: 70%;
+}
+
+.ctaSub {
+  composes: bone;
+  height: 12px;
+  width: 240px;
+  max-width: 90%;
+}
+
+.ctaBtn {
+  composes: bone;
+  height: 40px;
+  width: 160px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+}
+
+.section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sectionTitle {
+  composes: bone;
+  height: 15px;
+  width: 140px;
+}
+
+.prGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 380px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.prCard {
+  composes: bone;
+  height: 72px;
+  border-radius: var(--radius-md);
+}
+
+.weightInput {
+  composes: bone;
+  height: 44px;
+  border-radius: var(--radius-md);
+}
+
+.chart {
+  composes: bone;
+  height: 280px;
+  border-radius: var(--radius-md);
+}
+
+.historyRow {
+  composes: bone;
+  height: 48px;
+  border-radius: var(--radius-md);
+}

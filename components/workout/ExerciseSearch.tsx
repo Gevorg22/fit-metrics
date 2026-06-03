@@ -111,7 +111,7 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
             <div className={styles.imgWrap}>
               {ex.images[0] ? (
                 <Image
-                  src={ex.images[0]}
+                  src={`https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${ex.images[0]}`}
                   alt={ex.nameRu ?? ex.name}
                   width={80}
                   height={80}

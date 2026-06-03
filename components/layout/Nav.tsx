@@ -9,6 +9,7 @@ import styles from './Nav.module.scss';
 const NAV_LINKS = [
   { href: '/dashboard', label: 'Главная' },
   { href: '/workout', label: 'Тренировка' },
+  { href: '/history', label: 'История' },
 ];
 
 interface Props {

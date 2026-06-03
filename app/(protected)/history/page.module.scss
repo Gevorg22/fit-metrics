@@ -1,0 +1,27 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+  }
+}
+
+.total {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}

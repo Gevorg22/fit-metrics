@@ -1,0 +1,53 @@
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.bone {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-2) 25%,
+    #2a2a2a 50%,
+    var(--color-surface-2) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: var(--radius-sm);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titleBone {
+  composes: bone;
+  height: 28px;
+  width: 200px;
+  border-radius: var(--radius-md);
+}
+
+.countBone {
+  composes: bone;
+  height: 16px;
+  width: 80px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.itemBone {
+  composes: bone;
+  height: 54px;
+  border-radius: var(--radius-md);
+}

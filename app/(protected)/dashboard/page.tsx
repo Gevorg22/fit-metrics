@@ -44,7 +44,7 @@ export default async function DashboardPage() {
     prisma.workout.findMany({
       where: { userId },
       orderBy: { startedAt: 'desc' },
-      take: 20,
+      take: 5,
       include: {
         sets: {
           orderBy: [{ exerciseId: 'asc' }, { setNumber: 'asc' }],

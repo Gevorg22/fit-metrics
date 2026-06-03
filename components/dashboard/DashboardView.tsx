@@ -91,12 +91,14 @@ export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, rec
       )}
 
       <div className={styles.historySection}>
-        <span className={styles.sectionTitle}>
-          История тренировок
-          {recentWorkouts.length > 0 && (
-            <span className={styles.historyCount}>{recentWorkouts.length}</span>
+        <div className={styles.sectionHeader}>
+          <span className={styles.sectionTitle}>Последние тренировки</span>
+          {!isGuest && (
+            <Link href="/history" className={styles.viewAll}>
+              Вся история →
+            </Link>
           )}
-        </span>
+        </div>
         {isGuest ? (
           <p className={styles.guestNote}>Войди в аккаунт, чтобы сохранять тренировки</p>
         ) : (

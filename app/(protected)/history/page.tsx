@@ -54,8 +54,13 @@ export default async function HistoryPage({ searchParams }: Props) {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <h1 className={styles.title}>История тренировок</h1>
-        <span className={styles.total}>{total} тренировок</span>
+        <div>
+          <h1 className={styles.title}>История тренировок</h1>
+          <span className={styles.total}>{total} тренировок</span>
+        </div>
+        <a href="/api/export" className={styles.exportBtn} download>
+          ⬇ Экспорт CSV
+        </a>
       </div>
 
       <HistoryList

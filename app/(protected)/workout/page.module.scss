@@ -6,9 +6,16 @@
 
 .startScreen {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 60vh;
+  gap: 24px;
+}
+
+.startTemplates {
+  width: 100%;
+  max-width: 480px;
 }
 
 .startCard {

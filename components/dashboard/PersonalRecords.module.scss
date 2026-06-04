@@ -20,10 +20,18 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface-2);
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, transform 0.1s;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
 
   &:hover {
-    border-color: var(--color-border-hover);
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+
+    .chartHint {
+      opacity: 1;
+    }
   }
 }
 
@@ -81,6 +89,14 @@
 .reps {
   font-size: 11px;
   color: var(--color-text-muted);
+}
+
+.chartHint {
+  font-size: 10px;
+  color: var(--color-primary);
+  margin-top: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
 }
 
 .empty {

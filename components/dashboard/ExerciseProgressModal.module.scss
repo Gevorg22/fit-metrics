@@ -1,0 +1,15 @@
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 120px;
+}
+
+.empty {
+  color: var(--color-text-muted, #888);
+  font-size: 14px;
+}
+
+.chartWrap {
+  width: 100%;
+}

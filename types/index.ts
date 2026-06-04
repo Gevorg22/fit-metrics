@@ -62,3 +62,15 @@ export interface WorkoutDay {
 }
 
 export type PeriodFilter = '1m' | '3m' | '1y';
+
+export interface TemplateExercise {
+  exerciseId: string;
+  exerciseName: string;
+}
+
+export interface WorkoutTemplate {
+  id: string;
+  name: string;
+  exercises: TemplateExercise[];
+  createdAt: string;
+}

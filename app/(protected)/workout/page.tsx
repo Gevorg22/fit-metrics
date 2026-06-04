@@ -7,7 +7,8 @@ import { Button, Popconfirm, message, Spin } from 'antd';
 import { CheckOutlined, PlusOutlined, DeleteOutlined, CloseOutlined } from '@ant-design/icons';
 import { useWorkoutStore } from '@/stores/workoutStore';
 import { SetForm } from '@/components/workout/SetForm';
-import type { Exercise, ActiveSet } from '@/types';
+import { WorkoutTemplates } from '@/components/workout/WorkoutTemplates';
+import type { Exercise, ActiveSet, TemplateExercise } from '@/types';
 import styles from './page.module.scss';
 
 const ExerciseSearch = dynamic(
@@ -104,6 +105,13 @@ export default function WorkoutPage() {
     removeSet(exerciseId, setId);
   };
 
+  const handleLoadTemplate = (templateExercises: TemplateExercise[]) => {
+    for (const ex of templateExercises) {
+      addExercise(ex.exerciseId, ex.exerciseName);
+    }
+    messageApi.success('Шаблон загружен');
+  };
+
   const handleFinish = async () => {
     if (!workoutId) return;
     const hasSets = activeExercises.some((ex) => ex.sets.length > 0);
@@ -148,6 +156,16 @@ export default function WorkoutPage() {
           <Button type="primary" size="large" icon={<PlusOutlined />} onClick={handleStart} loading={starting}>
             Начать
           </Button>
+        </div>
+        <div className={styles.startTemplates}>
+          <WorkoutTemplates
+            activeExercises={[]}
+            onLoad={async (exs) => {
+              await handleStart();
+              handleLoadTemplate(exs);
+            }}
+            isGuest={isGuest}
+          />
         </div>
       </div>
     );
@@ -204,6 +222,12 @@ export default function WorkoutPage() {
           maxLength={500}
         />
       </div>
+
+      <WorkoutTemplates
+        activeExercises={activeExercises.map((e) => ({ exerciseId: e.exerciseId, exerciseName: e.exerciseName }))}
+        onLoad={handleLoadTemplate}
+        isGuest={isGuest}
+      />
 
       <div className={styles.addExerciseRow}>
         <button

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { useState, useEffect } from 'react';
+import { useAppTheme } from '@/app/providers';
 import styles from './Nav.module.scss';
 
 const NAV_LINKS = [
@@ -21,9 +22,9 @@ interface Props {
 export function Nav({ userEmail, isGuest }: Props) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { appTheme, toggleTheme } = useAppTheme();
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMenuOpen(false);
   }, [pathname]);
 
@@ -72,6 +73,16 @@ export function Nav({ userEmail, isGuest }: Props) {
           ) : (
             userEmail && <span className={styles.email}>{userEmail}</span>
           )}
+
+          <button
+            className={styles.themeBtn}
+            onClick={toggleTheme}
+            aria-label={appTheme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
+            title={appTheme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
+          >
+            {appTheme === 'dark' ? '☀️' : '🌙'}
+          </button>
+
           <button className={styles.logoutBtn} onClick={handleLogout}>
             {isGuest ? 'Войти' : 'Выйти'}
           </button>
@@ -106,6 +117,12 @@ export function Nav({ userEmail, isGuest }: Props) {
           ) : (
             userEmail && <span className={styles.mobileEmail}>{userEmail}</span>
           )}
+          <button
+            className={styles.mobileThemeBtn}
+            onClick={() => { toggleTheme(); setMenuOpen(false); }}
+          >
+            {appTheme === 'dark' ? '☀️ Светлая тема' : '🌙 Тёмная тема'}
+          </button>
           <button className={styles.mobileLogoutBtn} onClick={handleLogout}>
             {isGuest ? 'Войти' : 'Выйти'}
           </button>

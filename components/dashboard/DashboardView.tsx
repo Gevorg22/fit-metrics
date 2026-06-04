@@ -2,14 +2,14 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { Button, Spin } from 'antd';
-import { ThunderboltOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 import type { WeightLogEntry, WorkoutHistoryEntry, PersonalRecord } from '@/types';
 import { WeightInput } from './WeightInput';
 import { WeightHistory } from './WeightHistory';
 import { WorkoutHistory } from './WorkoutHistory';
 import { PersonalRecords } from './PersonalRecords';
 import { ActivityHeatmap } from './ActivityHeatmap';
+import { WorkoutCTA } from './WorkoutCTA';
 import styles from './DashboardView.module.scss';
 
 const WeightChart = dynamic(
@@ -50,17 +50,7 @@ export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, rec
         </div>
       </div>
 
-      <div className={styles.ctaCard}>
-        <div className={styles.ctaText}>
-          <span className={styles.ctaTitle}>Готов к тренировке?</span>
-          <span className={styles.ctaSub}>Выбери упражнение и фиксируй подходы</span>
-        </div>
-        <Link href="/workout">
-          <Button type="primary" size="large" icon={<ThunderboltOutlined />}>
-            Начать тренировку
-          </Button>
-        </Link>
-      </div>
+      <WorkoutCTA />
 
       {!isGuest && (
         <>

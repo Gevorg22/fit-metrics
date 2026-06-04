@@ -31,6 +31,31 @@
   --font-mono: var(--font-geist-mono), 'Courier New', monospace;
 }
 
+[data-theme="light"] {
+  --color-bg: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0f2f5;
+  --color-border: #e2e8f0;
+  --color-border-hover: #cbd5e1;
+
+  --color-primary: #16a34a;
+  --color-primary-hover: #15803d;
+  --color-primary-dim: rgba(22, 163, 74, 0.10);
+
+  --color-text: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
+
+  --color-danger: #dc2626;
+  --color-warning: #d97706;
+  --color-info: #2563eb;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+  color-scheme: light;
+}
+
 *,
 *::before,
 *::after {

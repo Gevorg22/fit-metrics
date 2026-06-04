@@ -12,27 +12,32 @@ interface Props {
 
 const CATEGORIES: { label: string; muscles: string[] | null }[] = [
   { label: 'Все', muscles: null },
-  { label: 'Грудь', muscles: ['chest'] },
-  { label: 'Спина', muscles: ['back', 'lats', 'middle back', 'lower back', 'middle_back', 'lower_back'] },
-  { label: 'Плечи', muscles: ['shoulders', 'traps', 'delts'] },
+  { label: 'Грудь', muscles: ['chest', 'pectorals'] },
+  { label: 'Спина', muscles: ['back', 'lats', 'middle back', 'lower back', 'middle_back', 'lower_back', 'upper-back', 'spine'] },
+  { label: 'Плечи', muscles: ['shoulders', 'traps', 'delts', 'levator-scapulae', 'serratus-anterior'] },
   { label: 'Бицепс', muscles: ['biceps', 'forearms'] },
   { label: 'Трицепс', muscles: ['triceps'] },
-  { label: 'Ноги', muscles: ['quadriceps', 'hamstrings', 'glutes', 'calves', 'adductors', 'abductors', 'legs'] },
+  { label: 'Ноги', muscles: ['quadriceps', 'quads', 'hamstrings', 'glutes', 'calves', 'adductors', 'abductors', 'legs'] },
   { label: 'Пресс', muscles: ['abdominals', 'abs'] },
+  { label: 'Кардио', muscles: ['cardio'] },
 ];
 
 const MUSCLE_RU: Record<string, string> = {
   chest: 'Грудь',
+  pectorals: 'Грудь',
   back: 'Спина',
   lats: 'Широчайшие',
   'middle back': 'Средняя спина',
   'lower back': 'Поясница',
+  'upper-back': 'Верхняя спина',
+  spine: 'Позвоночник',
   shoulders: 'Плечи',
   traps: 'Трапеции',
   biceps: 'Бицепс',
   forearms: 'Предплечья',
   triceps: 'Трицепс',
   quadriceps: 'Квадрицепс',
+  quads: 'Квадрицепс',
   hamstrings: 'Бицепс бедра',
   glutes: 'Ягодицы',
   calves: 'Икры',
@@ -43,6 +48,9 @@ const MUSCLE_RU: Record<string, string> = {
   delts: 'Дельты',
   legs: 'Ноги',
   neck: 'Шея',
+  cardio: 'Кардио',
+  'levator-scapulae': 'Мышца шеи',
+  'serratus-anterior': 'Зубчатая мышца',
 };
 
 function normalize(str: string) {

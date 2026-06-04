@@ -25,22 +25,22 @@ function mir(regions: Region[]): Region[] {
 }
 
 const FRONT: Region[] = mir([
-  { key: 'shoulders',  label: 'Плечи',        cx: 45,  cy: 88,  rx: 18, ry: 15, muscles: ['shoulders'] },
-  { key: 'chest',      label: 'Грудь',         cx: 83,  cy: 106, rx: 19, ry: 18, muscles: ['chest'] },
+  { key: 'shoulders',  label: 'Плечи',        cx: 45,  cy: 88,  rx: 18, ry: 15, muscles: ['shoulders', 'delts', 'levator-scapulae', 'serratus-anterior'] },
+  { key: 'chest',      label: 'Грудь',         cx: 83,  cy: 106, rx: 19, ry: 18, muscles: ['chest', 'pectorals'] },
   { key: 'biceps',     label: 'Бицепс',        cx: 44,  cy: 122, rx: 12, ry: 20, muscles: ['biceps'] },
   { key: 'forearms',   label: 'Предплечья',    cx: 37,  cy: 165, rx: 11, ry: 22, muscles: ['forearms'] },
-  { key: 'abs',        label: 'Пресс',         cx: 100, cy: 150, rx: 20, ry: 28, muscles: ['abdominals'] },
-  { key: 'quads',      label: 'Квадрицепс',    cx: 80,  cy: 255, rx: 20, ry: 38, muscles: ['quadriceps'] },
+  { key: 'abs',        label: 'Пресс',         cx: 100, cy: 150, rx: 20, ry: 28, muscles: ['abdominals', 'abs'] },
+  { key: 'quads',      label: 'Квадрицепс',    cx: 80,  cy: 255, rx: 20, ry: 38, muscles: ['quadriceps', 'quads'] },
   { key: 'calves',     label: 'Икры',          cx: 80,  cy: 320, rx: 14, ry: 24, muscles: ['calves'] },
 ]);
 
 const BACK: Region[] = mir([
   { key: 'traps',      label: 'Трапеции',          cx: 100, cy: 78,  rx: 32, ry: 14, muscles: ['traps'] },
-  { key: 'sh-b',       label: 'Плечи',             cx: 45,  cy: 90,  rx: 18, ry: 15, muscles: ['shoulders'] },
+  { key: 'sh-b',       label: 'Плечи',             cx: 45,  cy: 90,  rx: 18, ry: 15, muscles: ['shoulders', 'delts'] },
   { key: 'lats',       label: 'Широчайшие',         cx: 70,  cy: 118, rx: 20, ry: 32, muscles: ['lats'] },
   { key: 'triceps',    label: 'Трицепс',            cx: 44,  cy: 123, rx: 12, ry: 20, muscles: ['triceps'] },
-  { key: 'mid-back',   label: 'Средняя спина',      cx: 100, cy: 128, rx: 17, ry: 18, muscles: ['middle back'] },
-  { key: 'low-back',   label: 'Нижняя спина',       cx: 100, cy: 162, rx: 15, ry: 12, muscles: ['lower back'] },
+  { key: 'mid-back',   label: 'Средняя спина',      cx: 100, cy: 128, rx: 17, ry: 18, muscles: ['middle back', 'upper-back'] },
+  { key: 'low-back',   label: 'Нижняя спина',       cx: 100, cy: 162, rx: 15, ry: 12, muscles: ['lower back', 'spine'] },
   { key: 'glutes',     label: 'Ягодицы',            cx: 82,  cy: 204, rx: 22, ry: 24, muscles: ['glutes'] },
   { key: 'hamstrings', label: 'Задняя поверхность', cx: 80,  cy: 251, rx: 20, ry: 36, muscles: ['hamstrings'] },
   { key: 'calves-b',   label: 'Икры',               cx: 80,  cy: 317, rx: 14, ry: 24, muscles: ['calves'] },

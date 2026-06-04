@@ -21,7 +21,14 @@ export const viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="ru" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('fitmetrics-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}catch(e){}`,
+          }}
+        />
+      </head>
       <body>
         <AntdRegistry>
           <Providers>{children}</Providers>

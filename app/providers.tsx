@@ -43,14 +43,12 @@ const LIGHT_TOKENS = {
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [appTheme, setAppTheme] = useState<AppTheme>('dark');
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('fitmetrics-theme') as AppTheme | null;
     const initial = saved === 'light' || saved === 'dark' ? saved : 'dark';
     setAppTheme(initial);
     document.documentElement.setAttribute('data-theme', initial);
-    setMounted(true);
   }, []);
 
   const toggleTheme = () => {
@@ -91,7 +89,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             : {},
         }}
       >
-        {mounted ? children : <div style={{ visibility: 'hidden' }}>{children}</div>}
+        {children}
       </ConfigProvider>
     </ThemeContext.Provider>
   );

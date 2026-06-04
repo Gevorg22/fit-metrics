@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: '/dashboard', label: 'Главная' },
   { href: '/workout', label: 'Тренировка' },
   { href: '/history', label: 'История' },
+  { href: '/profile', label: 'Профиль' },
 ];
 
 interface Props {

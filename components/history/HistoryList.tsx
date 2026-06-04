@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Popconfirm, message } from 'antd';
-import { DeleteOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { DeleteOutlined, LeftOutlined, RightOutlined, ShareAltOutlined } from '@ant-design/icons';
 import type { WorkoutHistoryEntry, WorkoutSetEntry } from '@/types';
 import styles from './HistoryList.module.scss';
 
@@ -46,6 +46,33 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
   const [workouts, setWorkouts] = useState(initial);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+
+  const handleShare = async (w: WorkoutHistoryEntry) => {
+    const date = new Date(w.startedAt).toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' });
+    const duration = getDuration(w.startedAt, w.finishedAt);
+    const grouped = groupSets(w.sets);
+    const lines = grouped.map(({ exerciseId, sets }) => {
+      const name = exerciseNames[exerciseId] ?? exerciseId;
+      const setsStr = sets.map((s) => `${s.weight}кг×${s.reps}`).join(', ');
+      return `• ${name}: ${setsStr}`;
+    });
+    const text = [
+      `🏋️ Тренировка ${date}${duration ? ` · ${duration}` : ''}`,
+      '',
+      ...lines,
+      '',
+      '📲 fitMetrics — https://fit-metrics-xi.vercel.app',
+    ].join('\n');
+
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `Тренировка ${date}`, text });
+      } else {
+        await navigator.clipboard.writeText(text);
+        messageApi.success('Скопировано в буфер обмена');
+      }
+    } catch {}
+  };
 
   const handleDelete = async (id: string) => {
     setDeleting(id);
@@ -113,6 +140,15 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
                     )}
                     <span className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}>›</span>
                   </div>
+                </button>
+
+                <button
+                  className={styles.shareBtn}
+                  onClick={() => handleShare(w)}
+                  aria-label="Поделиться"
+                  title="Поделиться тренировкой"
+                >
+                  <ShareAltOutlined />
                 </button>
 
                 <Popconfirm

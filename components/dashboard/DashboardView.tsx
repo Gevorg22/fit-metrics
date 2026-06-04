@@ -9,6 +9,7 @@ import { WeightInput } from './WeightInput';
 import { WeightHistory } from './WeightHistory';
 import { WorkoutHistory } from './WorkoutHistory';
 import { PersonalRecords } from './PersonalRecords';
+import { ActivityHeatmap } from './ActivityHeatmap';
 import styles from './DashboardView.module.scss';
 
 const WeightChart = dynamic(
@@ -63,6 +64,11 @@ export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, rec
 
       {!isGuest && (
         <>
+          <div className={styles.prSection}>
+            <span className={styles.sectionTitle}>Активность</span>
+            <ActivityHeatmap />
+          </div>
+
           <div className={styles.prSection}>
             <span className={styles.sectionTitle}>Личные рекорды</span>
             <PersonalRecords records={personalRecords} />

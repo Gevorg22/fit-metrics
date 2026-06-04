@@ -113,8 +113,8 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
                 <Image
                   src={`https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${ex.images[0]}`}
                   alt={ex.nameRu ?? ex.name}
-                  width={80}
-                  height={80}
+                  width={120}
+                  height={120}
                   className={styles.img}
                   unoptimized
                 />

@@ -4,10 +4,12 @@ import crypto from 'crypto';
 
 export async function POST(req: Request) {
   try {
-    const { email, code } = await req.json();
-    if (!email || !code) {
+    const body = await req.json();
+    if (!body.email || !body.code) {
       return NextResponse.json({ error: 'Email and code required' }, { status: 400 });
     }
+    const email = body.email.toLowerCase().trim();
+    const code = String(body.code).trim();
 
     const identifier = `otp:${email}`;
 

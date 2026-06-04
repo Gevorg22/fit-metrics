@@ -30,9 +30,12 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
   );
   const [saving, setSaving] = useState(false);
 
+  const normalizeDecimal = (v: string) => v.replace(',', '.');
+
   const updateDraft = (idx: number, field: 'weight' | 'reps', value: string) => {
+    const normalized = field === 'weight' ? normalizeDecimal(value) : value;
     setDrafts((prev) =>
-      prev.map((d, i) => (i === idx ? { ...d, [field]: value, saved: false } : d))
+      prev.map((d, i) => (i === idx ? { ...d, [field]: normalized, saved: false } : d))
     );
   };
 
@@ -53,7 +56,7 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
     const unsaved = drafts.filter((d) => !d.saved);
     if (unsaved.length === 0) return;
 
-    const invalid = unsaved.some((d) => !d.weight || !d.reps || Number(d.weight) <= 0 || Number(d.reps) <= 0);
+    const invalid = unsaved.some((d) => !d.weight || !d.reps || isNaN(Number(d.weight)) || Number(d.weight) <= 0 || Number(d.reps) <= 0);
     if (invalid) {
       messageApi.warning('Заполни вес и количество повторений для всех подходов');
       return;
@@ -125,14 +128,12 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
         <div key={idx} className={`${styles.setRow} ${draft.saved ? styles.setRowSaved : ''}`}>
           <span className={styles.setNum}>{idx + 1}</span>
           <input
-            type="number"
+            type="text"
             inputMode="decimal"
             className={styles.setInput}
             value={draft.weight}
             onChange={(e) => updateDraft(idx, 'weight', e.target.value)}
             placeholder="0"
-            min={0}
-            step={2.5}
           />
           <input
             type="number"

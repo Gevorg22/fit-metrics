@@ -4,10 +4,11 @@ import { Resend } from 'resend';
 
 export async function POST(req: Request) {
   try {
-    const { email } = await req.json();
-    if (!email || typeof email !== 'string') {
+    const raw = await req.json();
+    if (!raw.email || typeof raw.email !== 'string') {
       return NextResponse.json({ error: 'Email required' }, { status: 400 });
     }
+    const email = raw.email.toLowerCase().trim();
 
     const code = String(Math.floor(100000 + Math.random() * 900000));
     const expires = new Date(Date.now() + 10 * 60 * 1000);

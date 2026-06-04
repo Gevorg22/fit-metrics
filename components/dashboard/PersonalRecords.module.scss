@@ -1,14 +1,11 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
 
-  @media (max-width: 600px) {
+  @media (max-width: 720px) {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 360px) {
-    grid-template-columns: 1fr;
+    gap: 10px;
   }
 }
 
@@ -74,7 +71,7 @@
 }
 
 .weight {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 700;
   color: var(--color-text);
   line-height: 1;

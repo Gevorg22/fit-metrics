@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Popconfirm, message, Spin } from 'antd';
 import { CheckOutlined, PlusOutlined, DeleteOutlined, CloseOutlined } from '@ant-design/icons';
@@ -139,9 +139,13 @@ export default function WorkoutPage() {
     }
   };
 
-  const duration = useMemo(() => {
-    if (!startedAt) return 0;
-    return Math.floor((new Date().getTime() - new Date(startedAt).getTime()) / 60000);
+  const [duration, setDuration] = useState(0);
+  useEffect(() => {
+    if (!startedAt) { setDuration(0); return; }
+    const calc = () => Math.floor((Date.now() - new Date(startedAt).getTime()) / 60000);
+    setDuration(calc());
+    const id = setInterval(() => setDuration(calc()), 10000);
+    return () => clearInterval(id);
   }, [startedAt]);
 
   if (!workoutId) {
@@ -198,30 +202,52 @@ export default function WorkoutPage() {
             </Button>
           </Popconfirm>
 
-          <Popconfirm
-            title="Завершить тренировку?"
-            description="Все записанные подходы уже сохранены."
-            onConfirm={handleFinish}
-            okText="Завершить"
-            cancelText="Отмена"
-          >
-            <Button type="primary" icon={<CheckOutlined />} loading={finishing}>
-              Завершить
+          {isGuest ? (
+            <Button
+              type="primary"
+              icon={<CheckOutlined />}
+              onClick={() => router.push('/login')}
+              title="Войди в аккаунт, чтобы сохранять тренировки"
+            >
+              Войти и сохранить
             </Button>
-          </Popconfirm>
+          ) : (
+            <Popconfirm
+              title="Завершить тренировку?"
+              description="Все записанные подходы уже сохранены."
+              onConfirm={handleFinish}
+              okText="Завершить"
+              cancelText="Отмена"
+            >
+              <Button type="primary" icon={<CheckOutlined />} loading={finishing}>
+                Завершить
+              </Button>
+            </Popconfirm>
+          )}
         </div>
       </div>
 
-      <div className={styles.notesWrap}>
-        <textarea
-          className={styles.notesInput}
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Заметка к тренировке (необязательно)..."
-          rows={2}
-          maxLength={500}
-        />
-      </div>
+      {isGuest && (
+        <div className={styles.guestBanner}>
+          Гостевой режим — тренировки не сохраняются.{' '}
+          <button className={styles.guestLoginLink} onClick={() => router.push('/login')}>
+            Войти в аккаунт
+          </button>
+        </div>
+      )}
+
+      {!isGuest && (
+        <div className={styles.notesWrap}>
+          <textarea
+            className={styles.notesInput}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Заметка к тренировке (необязательно)..."
+            rows={2}
+            maxLength={500}
+          />
+        </div>
+      )}
 
       <WorkoutTemplates
         activeExercises={activeExercises.map((e) => ({ exerciseId: e.exerciseId, exerciseName: e.exerciseName }))}

@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Popconfirm, message } from 'antd';
-import { DeleteOutlined, LeftOutlined, RightOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { Popconfirm, message, Button } from 'antd';
+import { DeleteOutlined, ShareAltOutlined, DownOutlined } from '@ant-design/icons';
 import type { WorkoutHistoryEntry, WorkoutSetEntry } from '@/types';
 import styles from './HistoryList.module.scss';
 
@@ -15,9 +14,8 @@ interface Props {
   workouts: WorkoutHistoryEntry[];
   exerciseNames: Record<string, string>;
   exerciseImages: Record<string, string>;
-  page: number;
-  totalPages: number;
-  total: number;
+  nextCursor: string | null;
+  exerciseId?: string | null;
 }
 
 function getDuration(start: string, end: string | null): string {
@@ -40,12 +38,28 @@ function formatSets(sets: WorkoutSetEntry[]): string {
   return sets.map((s) => `${s.weight}кг×${s.reps}`).join(', ');
 }
 
-export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, page, totalPages, total }: Props) {
+export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, nextCursor: initialCursor, exerciseId }: Props) {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const [workouts, setWorkouts] = useState(initial);
+  const [cursor, setCursor] = useState<string | null>(initialCursor);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  const handleLoadMore = async () => {
+    if (!cursor) return;
+    try {
+      const params = new URLSearchParams({ cursor });
+      if (exerciseId) params.set('exerciseId', exerciseId);
+      const res = await fetch(`/api/history?${params}`);
+      const data = await res.json();
+      setWorkouts((prev) => [...prev, ...data.workouts]);
+      setCursor(data.nextCursor ?? null);
+    } catch {
+      messageApi.error('Не удалось загрузить тренировки');
+    }
+  };
 
   const handleShare = async (w: WorkoutHistoryEntry) => {
     const date = new Date(w.startedAt).toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -81,7 +95,7 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
       if (!res.ok) throw new Error();
       setWorkouts((prev) => prev.filter((w) => w.id !== id));
       if (expanded === id) setExpanded(null);
-      router.refresh();
+      startTransition(() => router.refresh());
     } catch {
       messageApi.error('Не удалось удалить тренировку');
     } finally {
@@ -205,29 +219,15 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
         })}
       </div>
 
-      {totalPages > 1 && (
-        <div className={styles.pagination}>
-          <Link
-            href={`/history?page=${page - 1}`}
-            className={`${styles.pageBtn} ${page <= 1 ? styles.pageBtnDisabled : ''}`}
-            aria-disabled={page <= 1}
-            onClick={(e) => page <= 1 && e.preventDefault()}
+      {cursor && (
+        <div className={styles.loadMore}>
+          <Button
+            icon={<DownOutlined />}
+            onClick={handleLoadMore}
+            loading={isPending}
           >
-            <LeftOutlined /> Назад
-          </Link>
-
-          <span className={styles.pageInfo}>
-            {page} / {totalPages}
-          </span>
-
-          <Link
-            href={`/history?page=${page + 1}`}
-            className={`${styles.pageBtn} ${page >= totalPages ? styles.pageBtnDisabled : ''}`}
-            aria-disabled={page >= totalPages}
-            onClick={(e) => page >= totalPages && e.preventDefault()}
-          >
-            Вперёд <RightOutlined />
-          </Link>
+            Загрузить ещё
+          </Button>
         </div>
       )}
     </div>

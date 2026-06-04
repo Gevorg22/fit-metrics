@@ -20,14 +20,12 @@ export function HistoryFilter({ exercises, currentExerciseId }: Props) {
   const searchParams = useSearchParams();
 
   const handleChange = (value: string | undefined) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', '1');
+    const params = new URLSearchParams();
+    params.delete('cursor');
     if (value) {
       params.set('exerciseId', value);
-    } else {
-      params.delete('exerciseId');
     }
-    router.push(`${pathname}?${params.toString()}`);
+    router.push(`${pathname}${params.toString() ? `?${params}` : ''}`);
   };
 
   const options = exercises.map((e) => ({ value: e.id, label: e.name }));

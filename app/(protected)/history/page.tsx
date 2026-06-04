@@ -9,7 +9,7 @@ import styles from './page.module.scss';
 const PAGE_SIZE = 15;
 
 interface Props {
-  searchParams: Promise<{ page?: string; exerciseId?: string }>;
+  searchParams: Promise<{ cursor?: string; exerciseId?: string }>;
 }
 
 export default async function HistoryPage({ searchParams }: Props) {
@@ -17,21 +17,19 @@ export default async function HistoryPage({ searchParams }: Props) {
   if (!session?.user?.id) redirect('/login');
 
   const userId = session.user.id;
-  const { page: pageParam, exerciseId } = await searchParams;
-  const page = Math.max(1, parseInt(pageParam ?? '1', 10));
-  const skip = (page - 1) * PAGE_SIZE;
+  const { cursor, exerciseId } = await searchParams;
 
-  const whereWorkout = exerciseId
+  const where = exerciseId
     ? { userId, sets: { some: { exerciseId } } }
     : { userId };
 
   const [total, workouts, allUsedExercises] = await Promise.all([
-    prisma.workout.count({ where: whereWorkout }),
+    cursor ? Promise.resolve(null) : prisma.workout.count({ where: { userId } }),
     prisma.workout.findMany({
-      where: whereWorkout,
-      orderBy: { startedAt: 'desc' },
-      skip,
-      take: PAGE_SIZE,
+      where,
+      orderBy: [{ startedAt: 'desc' }, { id: 'desc' }],
+      take: PAGE_SIZE + 1,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       include: {
         sets: { orderBy: [{ exerciseId: 'asc' }, { setNumber: 'asc' }] },
       },
@@ -43,8 +41,12 @@ export default async function HistoryPage({ searchParams }: Props) {
     }),
   ]);
 
+  const hasMore = workouts.length > PAGE_SIZE;
+  const items = hasMore ? workouts.slice(0, PAGE_SIZE) : workouts;
+  const nextCursor = hasMore ? items[items.length - 1].id : null;
+
   const allExerciseIds = [...new Set([
-    ...workouts.flatMap((w) => w.sets.map((s) => s.exerciseId)),
+    ...items.flatMap((w) => w.sets.map((s) => s.exerciseId)),
     ...allUsedExercises.map((s) => s.exerciseId),
   ])];
 
@@ -67,14 +69,14 @@ export default async function HistoryPage({ searchParams }: Props) {
     .filter((e) => allUsedExercises.some((u) => u.exerciseId === e.id))
     .map((e) => ({ id: e.id, name: e.nameRu ?? e.name }));
 
-  const totalPages = Math.ceil(total / PAGE_SIZE);
-
   return (
     <div className={styles.page}>
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>История тренировок</h1>
-          <span className={styles.total}>{total} тренировок</span>
+          {total !== null && (
+            <span className={styles.total}>{total} тренировок</span>
+          )}
         </div>
         <a href="/api/export" className={styles.exportBtn} download>
           ⬇ Экспорт CSV
@@ -89,7 +91,7 @@ export default async function HistoryPage({ searchParams }: Props) {
       </Suspense>
 
       <HistoryList
-        workouts={workouts.map((w) => ({
+        workouts={items.map((w) => ({
           id: w.id,
           startedAt: w.startedAt.toISOString(),
           finishedAt: w.finishedAt?.toISOString() ?? null,
@@ -104,9 +106,8 @@ export default async function HistoryPage({ searchParams }: Props) {
         }))}
         exerciseNames={exerciseNames}
         exerciseImages={exerciseImages}
-        page={page}
-        totalPages={totalPages}
-        total={total}
+        nextCursor={nextCursor}
+        exerciseId={exerciseId ?? null}
       />
     </div>
   );

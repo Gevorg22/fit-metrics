@@ -42,6 +42,11 @@ export function PersonalRecords({ records }: Props) {
             {r.maxReps && (
               <span className={styles.reps}>× {r.maxReps} повт.</span>
             )}
+            {r.maxReps && r.maxReps > 1 && (
+              <span className={styles.orm}>
+                1RM ≈ {Math.round(r.maxWeight * (1 + r.maxReps / 30))} кг
+              </span>
+            )}
             <span className={styles.chartHint}>📈 прогресс</span>
           </button>
         ))}

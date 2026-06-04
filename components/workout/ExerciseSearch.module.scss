@@ -75,7 +75,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   max-height: 340px;
   overflow-y: auto;
@@ -90,9 +90,9 @@
     border-radius: 2px;
   }
 
-  @media (max-width: 480px) {
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    max-height: 300px;
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+    max-height: 320px;
     gap: 8px;
   }
 }

@@ -13,12 +13,12 @@ interface Props {
 const CATEGORIES: { label: string; muscles: string[] | null }[] = [
   { label: 'Все', muscles: null },
   { label: 'Грудь', muscles: ['chest'] },
-  { label: 'Спина', muscles: ['back', 'lats', 'middle back', 'lower back'] },
-  { label: 'Плечи', muscles: ['shoulders', 'traps'] },
+  { label: 'Спина', muscles: ['back', 'lats', 'middle back', 'lower back', 'middle_back', 'lower_back'] },
+  { label: 'Плечи', muscles: ['shoulders', 'traps', 'delts'] },
   { label: 'Бицепс', muscles: ['biceps', 'forearms'] },
   { label: 'Трицепс', muscles: ['triceps'] },
   { label: 'Ноги', muscles: ['quadriceps', 'hamstrings', 'glutes', 'calves', 'adductors', 'abductors', 'legs'] },
-  { label: 'Пресс', muscles: ['abdominals'] },
+  { label: 'Пресс', muscles: ['abdominals', 'abs'] },
 ];
 
 const MUSCLE_RU: Record<string, string> = {
@@ -39,6 +39,8 @@ const MUSCLE_RU: Record<string, string> = {
   adductors: 'Приводящие',
   abductors: 'Отводящие',
   abdominals: 'Пресс',
+  abs: 'Пресс',
+  delts: 'Дельты',
   legs: 'Ноги',
   neck: 'Шея',
 };
@@ -111,7 +113,7 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
             <div className={styles.imgWrap}>
               {ex.images[0] ? (
                 <Image
-                  src={`https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${ex.images[0]}`}
+                  src={ex.images[0].startsWith('http') ? ex.images[0] : `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${ex.images[0]}`}
                   alt={ex.nameRu ?? ex.name}
                   width={120}
                   height={120}

@@ -8,7 +8,10 @@ import { DeleteOutlined } from '@ant-design/icons';
 import type { WorkoutHistoryEntry, WorkoutSetEntry } from '@/types';
 import styles from './WorkoutHistory.module.scss';
 
-const IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+const OLD_IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+function exImg(path: string): string {
+  return path.startsWith('http') ? path : OLD_IMG_BASE + path;
+}
 
 interface Props {
   workouts: WorkoutHistoryEntry[];
@@ -150,7 +153,7 @@ export function WorkoutHistory({ workouts: initial, exerciseNames, exerciseImage
                         {exerciseImages[exerciseId] && (
                           <div className={styles.exImg}>
                             <Image
-                              src={`${IMG_BASE}${exerciseImages[exerciseId]}`}
+                              src={exImg(exerciseImages[exerciseId])}
                               alt={exerciseNames[exerciseId] ?? exerciseId}
                               width={36}
                               height={36}

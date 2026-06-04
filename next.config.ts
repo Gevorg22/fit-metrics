@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         hostname: 'raw.githubusercontent.com',
         pathname: '/yuhonas/free-exercise-db/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.jsdelivr.net',
+        pathname: '/gh/JahelCuadrado/ExerciseGymGifsDB/**',
+      },
     ],
   },
 };

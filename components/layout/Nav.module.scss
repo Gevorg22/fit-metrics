@@ -23,6 +23,13 @@
   letter-spacing: -0.5px;
   color: var(--color-text);
   flex-shrink: 0;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-text);
+    opacity: 0.85;
+  }
 }
 
 .logoAccent {

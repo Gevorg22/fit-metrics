@@ -51,9 +51,9 @@ export function Nav({ userEmail, isGuest }: Props) {
   return (
     <>
       <nav className={styles.nav}>
-        <span className={styles.logo}>
+        <Link href="/dashboard" className={styles.logo}>
           <span className={styles.logoAccent}>fit</span>Metrics
-        </span>
+        </Link>
 
         <div className={styles.links}>
           {NAV_LINKS.map((link) => (

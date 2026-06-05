@@ -14,6 +14,7 @@ interface WorkoutState {
   removeExercise: (exerciseId: string) => void;
   addSet: (exerciseId: string, set: ActiveSet) => void;
   removeSet: (exerciseId: string, setId: string) => void;
+  updateSet: (exerciseId: string, setId: string, data: { weight: number; reps: number }) => void;
 }
 
 export const useWorkoutStore = create<WorkoutState>()(
@@ -51,6 +52,20 @@ export const useWorkoutStore = create<WorkoutState>()(
           exercises: state.exercises.map((e) =>
             e.exerciseId === exerciseId
               ? { ...e, sets: e.sets.filter((s) => s.id !== setId) }
+              : e
+          ),
+        })),
+
+      updateSet: (exerciseId, setId, data) =>
+        set((state) => ({
+          exercises: state.exercises.map((e) =>
+            e.exerciseId === exerciseId
+              ? {
+                  ...e,
+                  sets: e.sets.map((s) =>
+                    s.id === setId ? { ...s, ...data } : s
+                  ),
+                }
               : e
           ),
         })),

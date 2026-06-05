@@ -23,6 +23,37 @@
   width: 100%;
 }
 
+.inputWrap {
+  display: flex;
+  align-items: stretch;
+}
+
+.textInput {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 40px;
+  padding: 0 11px;
+  background: #141414;
+  border: 1px solid #434343;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+  }
+
+  &:focus {
+    border-color: #177ddc;
+    box-shadow: 0 0 0 2px rgba(23, 125, 220, 0.2);
+    z-index: 1;
+  }
+}
+
 .addon {
   display: flex;
   align-items: center;

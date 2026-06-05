@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Popconfirm, message } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
@@ -21,6 +21,10 @@ export function WeightHistory({ entries: initial }: Props) {
   const [messageApi, contextHolder] = message.useMessage();
   const [entries, setEntries] = useState(initial);
   const [deleting, setDeleting] = useState<string | null>(null);
+
+  useEffect(() => {
+    setEntries(initial);
+  }, [initial]);
 
   const handleDelete = async (id: string) => {
     setDeleting(id);

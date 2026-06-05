@@ -1,30 +1,49 @@
 'use client';
 
 import { useState } from 'react';
-import { InputNumber, Button, Space, message } from 'antd';
+import { Button, message } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import styles from './WeightInput.module.scss';
 
-interface Props {
-  todayWeight?: number | null;
+interface WeightEntry {
+  id: string;
+  weight: number;
 }
 
-export function WeightInput({ todayWeight }: Props) {
-  const [value, setValue] = useState<number | null>(todayWeight ?? null);
+interface Props {
+  todayWeight?: number | null;
+  onSaved?: (entry: WeightEntry) => void;
+}
+
+export function WeightInput({ todayWeight, onSaved }: Props) {
+  const [value, setValue] = useState<string>(todayWeight != null ? String(todayWeight) : '');
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
+  const parseWeight = (raw: string): number | null => {
+    const normalized = raw.trim().replace(/,/g, '.');
+    const num = parseFloat(normalized);
+    return isNaN(num) || num <= 0 ? null : num;
+  };
+
   const handleSave = async () => {
-    if (!value || value <= 0) return;
+    const num = parseWeight(value);
+    if (num === null) {
+      messageApi.warning('Введи корректный вес');
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch('/api/weight', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ weight: value }),
+        body: JSON.stringify({ weight: num }),
       });
       if (!res.ok) throw new Error();
+      const entry: WeightEntry = await res.json();
+      setValue(String(num));
       messageApi.success('Вес сохранён!');
+      onSaved?.(entry);
     } catch {
       messageApi.error('Не удалось сохранить');
     } finally {
@@ -32,31 +51,33 @@ export function WeightInput({ todayWeight }: Props) {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') handleSave();
+  };
+
   return (
     <div className={styles.wrap}>
       {contextHolder}
       <div className={styles.row}>
-        <Space.Compact size="large" className={styles.input}>
-          <InputNumber
+        <div className={`${styles.input} ${styles.inputWrap}`}>
+          <input
+            type="text"
+            inputMode="decimal"
+            className={styles.textInput}
             value={value}
-            onChange={(v) => setValue(v)}
-            min={20}
-            max={300}
-            precision={1}
-            step={0.1}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="75.0"
-            onPressEnter={handleSave}
-            className={styles.inputNumber}
           />
           <span className={styles.addon}>кг</span>
-        </Space.Compact>
+        </div>
         <Button
           type="primary"
           icon={<SaveOutlined />}
           size="large"
           loading={loading}
           onClick={handleSave}
-          disabled={!value}
+          disabled={!value.trim()}
         >
           Сохранить
         </Button>

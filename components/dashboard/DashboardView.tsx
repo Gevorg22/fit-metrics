@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Spin } from 'antd';
 import type { WeightLogEntry, WorkoutHistoryEntry, PersonalRecord } from '@/types';
@@ -31,6 +33,16 @@ interface Props {
 }
 
 export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, recentWorkouts, exerciseNames, exerciseImages, weightHistory, personalRecords, isGuest }: Props) {
+  const router = useRouter();
+  const [currentWeight, setCurrentWeight] = useState<number | null>(todayWeight);
+  const [chartRefreshKey, setChartRefreshKey] = useState(0);
+
+  const handleWeightSaved = (entry: { id: string; weight: number }) => {
+    setCurrentWeight(entry.weight);
+    setChartRefreshKey((k) => k + 1);
+    router.refresh();
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.statsRow}>
@@ -71,13 +83,15 @@ export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, rec
           </div>
 
           <div className={styles.weightSection}>
-            <span className={styles.sectionTitle}>Вес сегодня</span>
-            <WeightInput todayWeight={todayWeight} />
+            <span className={styles.sectionTitle}>
+              Вес сегодня{currentWeight != null ? ` — ${currentWeight} кг` : ''}
+            </span>
+            <WeightInput todayWeight={currentWeight} onSaved={handleWeightSaved} />
           </div>
 
           <div className={styles.chartSection}>
             <span className={styles.sectionTitle}>График веса</span>
-            <WeightChart />
+            <WeightChart refreshKey={chartRefreshKey} />
           </div>
 
           <div className={styles.historySection}>

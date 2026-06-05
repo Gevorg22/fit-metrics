@@ -31,13 +31,18 @@ function formatDate(dateStr: string, period: PeriodFilter): string {
   return d.toLocaleDateString('ru', { day: 'numeric', month: 'short' });
 }
 
-export function WeightChart() {
+interface WeightChartProps {
+  refreshKey?: number;
+}
+
+export function WeightChart({ refreshKey }: WeightChartProps) {
   const [period, setPeriod] = useState<PeriodFilter>('1m');
   const [data, setData] = useState<DataPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
+    setLoading(true);
     fetch(`/api/analytics/weight?period=${period}`)
       .then((r) => {
         if (!r.ok) return [];
@@ -58,7 +63,7 @@ export function WeightChart() {
     return () => {
       cancelled = true;
     };
-  }, [period]);
+  }, [period, refreshKey]);
 
   const handlePeriodChange = (p: PeriodFilter) => {
     setLoading(true);

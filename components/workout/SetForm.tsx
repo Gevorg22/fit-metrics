@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button, message } from 'antd';
 import { PlusOutlined, DeleteOutlined, CheckOutlined } from '@ant-design/icons';
 import type { ActiveExercise, ActiveSet } from '@/types';
@@ -20,9 +20,10 @@ interface Props {
   isGuest?: boolean;
   onSetAdded: (set: ActiveSet) => void;
   onSetRemoved: (setId: string) => void;
+  onSetUpdated: (setId: string, data: { weight: number; reps: number }) => void;
 }
 
-export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved }: Props) {
+export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved, onSetUpdated }: Props) {
   const [messageApi, contextHolder] = message.useMessage();
   const [drafts, setDrafts] = useState<DraftSet[]>(() =>
     exercise.sets.length > 0
@@ -31,13 +32,27 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
   );
   const [saving, setSaving] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
+  const prevSetIds = useRef<string[]>(exercise.sets.map((s) => s.id ?? ''));
 
-  const normalizeDecimal = (v: string) => v.replace(',', '.');
+  useEffect(() => {
+    const currentIds = exercise.sets.map((s) => s.id ?? '');
+    const prev = prevSetIds.current;
+    const externallyAdded = currentIds.some((id) => id && !prev.includes(id));
+    if (externallyAdded) {
+      setDrafts(
+        exercise.sets.length > 0
+          ? exercise.sets.map((s) => ({ weight: String(s.weight), reps: String(s.reps), saved: true, id: s.id }))
+          : [{ weight: '', reps: '', saved: false }]
+      );
+    }
+    prevSetIds.current = currentIds;
+  }, [exercise.sets]);
+
+  const normalizeWeight = (v: string) => v.replace(/,/g, '.');
 
   const updateDraft = (idx: number, field: 'weight' | 'reps', value: string) => {
-    const normalized = field === 'weight' ? normalizeDecimal(value) : value;
     setDrafts((prev) =>
-      prev.map((d, i) => (i === idx ? { ...d, [field]: normalized, saved: false } : d))
+      prev.map((d, i) => (i === idx ? { ...d, [field]: value, saved: false } : d))
     );
   };
 
@@ -58,7 +73,11 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
     const unsaved = drafts.filter((d) => !d.saved);
     if (unsaved.length === 0) return;
 
-    const invalid = unsaved.some((d) => !d.weight || !d.reps || isNaN(Number(d.weight)) || Number(d.weight) <= 0 || Number(d.reps) <= 0);
+    const invalid = unsaved.some((d) => {
+      const w = parseFloat(normalizeWeight(d.weight));
+      const r = Number(d.reps);
+      return !d.weight || !d.reps || isNaN(w) || w <= 0 || isNaN(r) || r <= 0;
+    });
     if (invalid) {
       messageApi.warning('Заполни вес и количество повторений для всех подходов');
       return;
@@ -67,7 +86,7 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
     if (isGuest) {
       setDrafts((prev) =>
         prev.map((d) =>
-          d.saved ? d : { ...d, saved: true, id: `guest-${Date.now()}-${Math.random()}` }
+          d.saved ? d : { ...d, saved: true, id: d.id ?? `guest-${Date.now()}-${Math.random()}` }
         )
       );
       messageApi.success('Подходы записаны (гостевой режим)');
@@ -80,31 +99,48 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
       for (let i = 0; i < drafts.length; i++) {
         const d = drafts[i];
         if (d.saved) continue;
-        const setNumber = i + 1;
-        const res = await fetch(`/api/workout/${workoutId}/sets`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+
+        const weight = parseFloat(normalizeWeight(d.weight));
+        const reps = Number(d.reps);
+
+        if (d.id) {
+          const res = await fetch(`/api/workout/${workoutId}/sets/${d.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ weight, reps }),
+          });
+          if (!res.ok) throw new Error();
+          onSetUpdated(d.id, { weight, reps });
+          setDrafts((prev) =>
+            prev.map((x, xi) => (xi === i ? { ...x, weight: String(weight), saved: true } : x))
+          );
+        } else {
+          const setNumber = i + 1;
+          const res = await fetch(`/api/workout/${workoutId}/sets`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              exerciseId: exercise.exerciseId,
+              setNumber,
+              weight,
+              reps,
+            }),
+          });
+          if (!res.ok) throw new Error();
+          const saved = await res.json();
+          const savedSet: ActiveSet = {
             exerciseId: exercise.exerciseId,
             setNumber,
-            weight: Number(d.weight),
-            reps: Number(d.reps),
-          }),
-        });
-        if (!res.ok) throw new Error();
-        const saved = await res.json();
-        const savedSet: ActiveSet = {
-          exerciseId: exercise.exerciseId,
-          setNumber,
-          weight: Number(d.weight),
-          reps: Number(d.reps),
-          id: saved.id,
-          savedAt: new Date(),
-        };
-        onSetAdded(savedSet);
-        setDrafts((prev) =>
-          prev.map((x, xi) => (xi === i ? { ...x, saved: true, id: saved.id } : x))
-        );
+            weight,
+            reps,
+            id: saved.id,
+            savedAt: new Date(),
+          };
+          onSetAdded(savedSet);
+          setDrafts((prev) =>
+            prev.map((x, xi) => (xi === i ? { ...x, weight: String(weight), saved: true, id: saved.id } : x))
+          );
+        }
       }
       messageApi.success('Подходы сохранены');
       setShowTimer(true);

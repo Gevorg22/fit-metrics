@@ -36,6 +36,7 @@ export default function WorkoutPage() {
     removeExercise,
     addSet,
     removeSet,
+    updateSet,
   } = useWorkoutStore();
 
   useEffect(() => {
@@ -103,6 +104,10 @@ export default function WorkoutPage() {
 
   const handleSetRemoved = (exerciseId: string, setId: string) => {
     removeSet(exerciseId, setId);
+  };
+
+  const handleSetUpdated = (exerciseId: string, setId: string, data: { weight: number; reps: number }) => {
+    updateSet(exerciseId, setId, data);
   };
 
   const handleLoadTemplate = (templateExercises: TemplateExercise[]) => {
@@ -300,6 +305,7 @@ export default function WorkoutPage() {
                   isGuest={isGuest}
                   onSetAdded={(set) => handleSetAdded(ex.exerciseId, set)}
                   onSetRemoved={(setId) => handleSetRemoved(ex.exerciseId, setId)}
+                  onSetUpdated={(setId, data) => handleSetUpdated(ex.exerciseId, setId, data)}
                 />
               </div>
             </div>

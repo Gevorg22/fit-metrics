@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from 'antd';
 import { ThunderboltOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -7,8 +8,11 @@ import { useWorkoutStore } from '@/stores/workoutStore';
 import styles from './WorkoutCTA.module.scss';
 
 export function WorkoutCTA() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const workoutId = useWorkoutStore((s) => s.workoutId);
-  const inProgress = Boolean(workoutId);
+  const inProgress = mounted && Boolean(workoutId);
 
   return (
     <div className={`${styles.ctaCard} ${inProgress ? styles.active : ''}`}>

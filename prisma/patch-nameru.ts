@@ -2,72 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const GIF_DB_URL =
-  'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/api/en/exercises.json';
-
-const OLD_DB_URL =
-  'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json';
-
-const OLD_IMG_BASE =
-  'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
-
-interface GifExercise {
-  id: string;
-  slug: string;
-  name: string;
-  muscle: string;
-  bodyPart: string;
-  equipment: string;
-  category: string;
-  secondaryMuscles: string[];
-  instructions: string[];
-  file: string;
-  gifUrl: string;
-}
-
-interface OldExercise {
-  id: string;
-  name: string;
-  primaryMuscles: string[];
-  secondaryMuscles: string[];
-  images: string[];
-  category: string;
-  equipment: string | null;
-}
-
-const MUSCLE_RU: Record<string, string> = {
-  abductors: 'Отводящие',
-  abs: 'Пресс',
-  abdominals: 'Пресс',
-  adductors: 'Приводящие',
-  biceps: 'Бицепс',
-  calves: 'Икры',
-  chest: 'Грудь',
-  pectorals: 'Грудь',
-  forearms: 'Предплечья',
-  glutes: 'Ягодицы',
-  hamstrings: 'Задняя поверхность бедра',
-  lats: 'Широчайшие',
-  'lower back': 'Нижняя спина',
-  lower_back: 'Нижняя спина',
-  'middle back': 'Средняя спина',
-  middle_back: 'Средняя спина',
-  neck: 'Шея',
-  quadriceps: 'Квадрицепс',
-  quads: 'Квадрицепс',
-  shoulders: 'Плечи',
-  traps: 'Трапеции',
-  triceps: 'Трицепс',
-  delts: 'Дельты',
-  'upper-back': 'Верхняя спина',
-  'serratus-anterior': 'Зубчатая мышца',
-  'levator-scapulae': 'Мышца шеи',
-  cardio: 'Кардио',
-  legs: 'Ноги',
-};
-
 const WORD_TR: [RegExp, string][] = [
-  // Equipment (compound first)
   [/Resistance Band/gi, 'Эспандер'],
   [/Stability Ball/gi, 'Фитбол'],
   [/Exercise Ball/gi, 'Фитбол'],
@@ -95,7 +30,6 @@ const WORD_TR: [RegExp, string][] = [
   [/\bBall\b/gi, 'Мяч'],
   [/\bSMR\b/gi, 'Миофасциальный релиз'],
 
-  // Named movements (compound, must come before single words)
   [/Hip Thrust/gi, 'Ягодичный мостик'],
   [/Pull[- ]Up/gi, 'Подтягивание'],
   [/Push[- ]Up/gi, 'Отжимание'],
@@ -199,7 +133,6 @@ const WORD_TR: [RegExp, string][] = [
   [/Deadlift/gi, 'Становая тяга'],
   [/Butterfly/gi, 'Бабочка'],
 
-  // Single movement words (with -ing suffix fixes)
   [/\bFlye?s?\b/gi, 'Разведение'],
   [/\bTwist(ing)?\b/gi, 'Скручивание'],
   [/\bSquats?(ting)?\b/gi, 'Приседание'],
@@ -228,7 +161,6 @@ const WORD_TR: [RegExp, string][] = [
   [/\bExtension\b/gi, 'Разгибание'],
   [/\bFlexion\b/gi, 'Сгибание'],
 
-  // Position & modifier words
   [/Alternating/gi, 'Поочередный'],
   [/Alternate/gi, 'Поочередный'],
   [/Assisted/gi, 'С помощью'],
@@ -282,7 +214,6 @@ const WORD_TR: [RegExp, string][] = [
   [/\bPower\b/gi, 'Силовой'],
   [/\bPotty\b/gi, 'Низкий'],
 
-  // Named exercises / animals / objects
   [/\bArnold\b/gi, 'Арнольда'],
   [/\bPallof\b/gi, 'Паллоф'],
   [/Romanian/gi, 'Румынский'],
@@ -309,7 +240,6 @@ const WORD_TR: [RegExp, string][] = [
   [/\bJanda\b/gi, 'Янда'],
   [/\bJudo\b/gi, 'Дзюдо'],
   [/\bYoga\b/gi, 'Йога'],
-  [/\bGorilla\b/gi, 'Горилла'],
   [/\bKorean\b/gi, 'Корейский'],
   [/\bClock\b/gi, 'Часовые'],
   [/\bDynamic\b/gi, 'Динамический'],
@@ -317,9 +247,7 @@ const WORD_TR: [RegExp, string][] = [
   [/\bThrust\b/gi, 'Толчок вперед'],
   [/\bExtended\b/gi, 'Расширенный'],
   [/\bHyght\b/gi, 'Высокий'],
-  [/\bReverse\b/gi, 'Обратный'],
 
-  // Body parts
   [/Hamstring/gi, 'Задняя поверхность бедра'],
   [/Quadricep/gi, 'Квадрицепс'],
   [/\bGlutes?\b/gi, 'Ягодицы'],
@@ -349,8 +277,6 @@ const WORD_TR: [RegExp, string][] = [
   [/\bCore\b/gi, 'Кор'],
   [/\bSpine\b/gi, 'Позвоночник'],
   [/\bGroin\b/gi, 'Пах'],
-
-  // Body parts (additional)
   [/\bAnkles?\b/gi, 'Лодыжка'],
   [/\bWrists?\b/gi, 'Запястье'],
   [/\bChin\b/gi, 'Подбородок'],
@@ -361,7 +287,6 @@ const WORD_TR: [RegExp, string][] = [
   [/\bPiriformis\b/gi, 'Грушевидная мышца'],
   [/\bFinger\b/gi, 'Пальцы'],
 
-  // Common single words
   [/\bBench\b/gi, 'Скамья'],
   [/\bBags?\b/gi, 'Мешок'],
   [/\bMachine\b/gi, 'Тренажер'],
@@ -458,7 +383,6 @@ const WORD_TR: [RegExp, string][] = [
   [/\bKicks?\b/gi, 'Удар'],
   [/\bJack\b/gi, 'Прыжок'],
   [/\bPose\b/gi, 'Поза'],
-  [/\bSqueeze\b/gi, 'Сжатие'],
   [/\bHyperextensions?\b/gi, 'Гиперэкстензия'],
   [/\bRotates?\b/gi, 'Вращение'],
   [/\bLifting\b/gi, 'Подъем'],
@@ -563,69 +487,29 @@ function translateName(name: string): string {
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
-function normalizeName(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
-}
-
 async function main() {
-  console.log('Fetching exercises from ExerciseGymGifsDB...');
-  const gifRes = await fetch(GIF_DB_URL);
-  if (!gifRes.ok) throw new Error(`GifDB fetch failed: ${gifRes.status}`);
-  const gifData = (await gifRes.json()) as { count: number; exercises: GifExercise[] };
-  console.log(`GifDB: ${gifData.count} exercises`);
+  console.log('Fetching all exercises...');
+  const exercises = await prisma.exercise.findMany({ select: { id: true, name: true, nameRu: true } });
+  console.log(`Found ${exercises.length} exercises. Patching nameRu...`);
 
-  console.log('Fetching exercises from free-exercise-db...');
-  const oldRes = await fetch(OLD_DB_URL);
-  if (!oldRes.ok) throw new Error(`OldDB fetch failed: ${oldRes.status}`);
-  const oldData = (await oldRes.json()) as OldExercise[];
-  console.log(`free-exercise-db: ${oldData.length} exercises`);
+  let updated = 0;
+  const BATCH = 100;
+  for (let i = 0; i < exercises.length; i += BATCH) {
+    const batch = exercises.slice(i, i + BATCH);
+    await Promise.all(
+      batch.map((ex) => {
+        const newNameRu = translateName(ex.name);
+        if (newNameRu === ex.nameRu) return Promise.resolve();
+        updated++;
+        return prisma.exercise.update({ where: { id: ex.id }, data: { nameRu: newNameRu } });
+      })
+    );
+    process.stdout.write(`\r${Math.min(i + BATCH, exercises.length)}/${exercises.length}`);
+  }
 
-  await prisma.exercise.deleteMany();
-  console.log('Cleared existing exercises. Building merged list...');
-
-  const gifRecords = gifData.exercises.map((ex) => ({
-    id: ex.id,
-    name: ex.name,
-    nameRu: translateName(ex.name),
-    category: MUSCLE_RU[ex.muscle] ?? ex.muscle,
-    primaryMuscles: [ex.muscle],
-    secondaryMuscles: ex.secondaryMuscles,
-    equipment: ex.equipment ?? null,
-    images: [ex.gifUrl],
-  }));
-
-  const gifNameSet = new Set(gifRecords.map((r) => normalizeName(r.name)));
-
-  const oldRecords = oldData
-    .filter((ex) => !gifNameSet.has(normalizeName(ex.name)))
-    .map((ex) => ({
-      id: `old-${ex.id}`,
-      name: ex.name,
-      nameRu: translateName(ex.name),
-      category: MUSCLE_RU[ex.primaryMuscles[0]] ?? ex.primaryMuscles[0],
-      primaryMuscles: ex.primaryMuscles,
-      secondaryMuscles: ex.secondaryMuscles,
-      equipment: ex.equipment ?? null,
-      images: ex.images.slice(0, 1).map((img) => `${OLD_IMG_BASE}${img}`),
-    }));
-
-  console.log(`GifDB exercises: ${gifRecords.length}`);
-  console.log(`Old DB unique exercises added: ${oldRecords.length}`);
-  console.log(`Total: ${gifRecords.length + oldRecords.length}`);
-
-  const allRecords = [...gifRecords, ...oldRecords];
-
-  const result = await prisma.exercise.createMany({
-    data: allRecords,
-    skipDuplicates: true,
-  });
-
-  console.log(`Done! Seeded ${result.count} exercises total.`);
+  console.log(`\nDone! Updated ${updated} exercises.`);
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
+  .catch((e) => { console.error(e); process.exit(1); })
   .finally(() => prisma.$disconnect());

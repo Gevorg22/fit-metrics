@@ -77,6 +77,8 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
     const words = normalize(query.trim()).split(/\s+/).filter(Boolean);
     const cat = CATEGORIES.find((c) => c.label === category);
 
+    const hasCyrillic = (s: string) => /[а-яё]/i.test(s.charAt(0));
+
     return exercises
       .filter((ex) => {
         const matchCat =
@@ -90,7 +92,15 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
 
         return matchCat && matchQ;
       })
-      .slice(0, category === 'Все' ? 60 : 200);
+      .sort((a, b) => {
+        const na = a.nameRu ?? a.name;
+        const nb = b.nameRu ?? b.name;
+        const ac = hasCyrillic(na);
+        const bc = hasCyrillic(nb);
+        if (ac !== bc) return ac ? -1 : 1;
+        return na.localeCompare(nb, 'ru');
+      })
+      .slice(0, words.length > 0 ? 500 : category === 'Все' ? 60 : 300);
   }, [exercises, query, category]);
 
   return (

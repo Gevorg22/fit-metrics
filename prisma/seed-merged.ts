@@ -574,14 +574,8 @@ async function main() {
   const gifData = (await gifRes.json()) as { count: number; exercises: GifExercise[] };
   console.log(`GifDB: ${gifData.count} exercises`);
 
-  console.log('Fetching exercises from free-exercise-db...');
-  const oldRes = await fetch(OLD_DB_URL);
-  if (!oldRes.ok) throw new Error(`OldDB fetch failed: ${oldRes.status}`);
-  const oldData = (await oldRes.json()) as OldExercise[];
-  console.log(`free-exercise-db: ${oldData.length} exercises`);
-
   await prisma.exercise.deleteMany();
-  console.log('Cleared existing exercises. Building merged list...');
+  console.log('Cleared existing exercises. Seeding GIF exercises only...');
 
   const gifRecords = gifData.exercises.map((ex) => ({
     id: ex.id,
@@ -594,33 +588,12 @@ async function main() {
     images: [ex.gifUrl],
   }));
 
-  const gifNameSet = new Set(gifRecords.map((r) => normalizeName(r.name)));
-
-  const oldRecords = oldData
-    .filter((ex) => !gifNameSet.has(normalizeName(ex.name)))
-    .map((ex) => ({
-      id: `old-${ex.id}`,
-      name: ex.name,
-      nameRu: translateName(ex.name),
-      category: MUSCLE_RU[ex.primaryMuscles[0]] ?? ex.primaryMuscles[0],
-      primaryMuscles: ex.primaryMuscles,
-      secondaryMuscles: ex.secondaryMuscles,
-      equipment: ex.equipment ?? null,
-      images: ex.images.slice(0, 1).map((img) => `${OLD_IMG_BASE}${img}`),
-    }));
-
-  console.log(`GifDB exercises: ${gifRecords.length}`);
-  console.log(`Old DB unique exercises added: ${oldRecords.length}`);
-  console.log(`Total: ${gifRecords.length + oldRecords.length}`);
-
-  const allRecords = [...gifRecords, ...oldRecords];
-
   const result = await prisma.exercise.createMany({
-    data: allRecords,
+    data: gifRecords,
     skipDuplicates: true,
   });
 
-  console.log(`Done! Seeded ${result.count} exercises total.`);
+  console.log(`Done! Seeded ${result.count} GIF exercises.`);
 }
 
 main()

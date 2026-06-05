@@ -90,7 +90,7 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
 
         return matchCat && matchQ;
       })
-      .slice(0, 40);
+      .slice(0, category === 'Все' ? 60 : 200);
   }, [exercises, query, category]);
 
   return (

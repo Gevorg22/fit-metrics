@@ -3,6 +3,7 @@
 import { useState, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import type { Exercise } from '@/types';
+import { useFavorites } from '@/hooks/useFavorites';
 import styles from './ExerciseSearch.module.scss';
 
 interface Props {
@@ -10,8 +11,11 @@ interface Props {
   onSelect: (exercise: Exercise) => void;
 }
 
+const FAVORITES_LABEL = 'Избранное';
+
 const CATEGORIES: { label: string; muscles: string[] | null }[] = [
   { label: 'Все', muscles: null },
+  { label: FAVORITES_LABEL, muscles: null },
   { label: 'Грудь', muscles: ['chest', 'pectorals'] },
   { label: 'Спина', muscles: ['back', 'lats', 'middle back', 'lower back', 'middle_back', 'lower_back', 'upper-back', 'spine'] },
   { label: 'Плечи', muscles: ['shoulders', 'traps', 'delts', 'levator-scapulae', 'serratus-anterior'] },
@@ -66,6 +70,7 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string>('Все');
   const catRowRef = useRef<HTMLDivElement>(null);
+  const { favorites, toggle, mounted } = useFavorites();
 
   const scrollCats = (dir: 'left' | 'right') => {
     if (catRowRef.current) {
@@ -76,11 +81,14 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
   const filtered = useMemo(() => {
     const words = normalize(query.trim()).split(/\s+/).filter(Boolean);
     const cat = CATEGORIES.find((c) => c.label === category);
+    const isFavCat = category === FAVORITES_LABEL;
 
     const hasCyrillic = (s: string) => /[а-яё]/i.test(s.charAt(0));
 
     return exercises
       .filter((ex) => {
+        if (isFavCat) return favorites.has(ex.id);
+
         const matchCat =
           !cat?.muscles ||
           ex.primaryMuscles.some((m) => cat.muscles!.includes(m));
@@ -101,7 +109,7 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
         return na.localeCompare(nb, 'ru');
       })
       .slice(0, words.length > 0 ? 500 : category === 'Все' ? 60 : 300);
-  }, [exercises, query, category]);
+  }, [exercises, query, category, favorites]);
 
   return (
     <div className={styles.wrap}>
@@ -119,10 +127,10 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
           {CATEGORIES.map((cat) => (
             <button
               key={cat.label}
-              className={`${styles.catBtn} ${category === cat.label ? styles.catActive : ''}`}
+              className={`${styles.catBtn} ${category === cat.label ? styles.catActive : ''} ${cat.label === FAVORITES_LABEL ? styles.catFav : ''}`}
               onClick={() => setCategory(cat.label)}
             >
-              {cat.label}
+              {cat.label === FAVORITES_LABEL ? '♥ ' : ''}{cat.label}
             </button>
           ))}
         </div>
@@ -131,14 +139,28 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
 
       <div className={styles.grid}>
         {filtered.length === 0 && (
-          <p className={styles.empty}>Ничего не найдено</p>
+          <p className={styles.empty}>
+            {category === FAVORITES_LABEL ? 'Нет избранных упражнений' : 'Ничего не найдено'}
+          </p>
         )}
         {filtered.map((ex) => (
-          <button
+          <div
             key={ex.id}
             className={styles.card}
             onClick={() => onSelect(ex)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && onSelect(ex)}
           >
+            {mounted && (
+              <button
+                className={`${styles.favBtn} ${favorites.has(ex.id) ? styles.favBtnActive : ''}`}
+                onClick={(e) => { e.stopPropagation(); toggle(ex.id); }}
+                aria-label={favorites.has(ex.id) ? 'Убрать из избранного' : 'Добавить в избранное'}
+              >
+                {favorites.has(ex.id) ? '♥' : '♡'}
+              </button>
+            )}
             <div className={styles.imgWrap}>
               {ex.images[0] ? (
                 <Image
@@ -159,7 +181,7 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
                 {MUSCLE_RU[ex.primaryMuscles[0]] ?? ex.primaryMuscles[0]}
               </span>
             </div>
-          </button>
+          </div>
         ))}
       </div>
     </div>

@@ -22,6 +22,7 @@ model User {
   workouts          Workout[]
   weightLog         WeightLog[]
   workoutTemplates  WorkoutTemplate[]
+  favoriteExercises FavoriteExercise[]
 }
 
 model Account {
@@ -131,5 +132,17 @@ model WorkoutTemplate {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+}
+
+model FavoriteExercise {
+  id         String   @id @default(cuid())
+  userId     String
+  exerciseId String
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, exerciseId])
   @@index([userId])
 }

@@ -31,7 +31,7 @@ export const useWorkoutStore = create<WorkoutState>()(
       addExercise: (exerciseId, exerciseName) =>
         set((state) => {
           if (state.exercises.find((e) => e.exerciseId === exerciseId)) return state;
-          return { exercises: [...state.exercises, { exerciseId, exerciseName, sets: [] }] };
+          return { exercises: [{ exerciseId, exerciseName, sets: [] }, ...state.exercises] };
         }),
 
       removeExercise: (exerciseId) =>
@@ -62,6 +62,13 @@ export const useWorkoutStore = create<WorkoutState>()(
         startedAt: state.startedAt,
         exercises: state.exercises,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (!state?.startedAt) return;
+        const hours = (Date.now() - new Date(state.startedAt).getTime()) / 3_600_000;
+        if (hours > 6) {
+          state.finishWorkout();
+        }
+      },
     }
   )
 );

@@ -34,7 +34,7 @@ function groupSets(sets: WorkoutSetEntry[]): { exerciseId: string; sets: Workout
     if (!map.has(s.exerciseId)) map.set(s.exerciseId, []);
     map.get(s.exerciseId)!.push(s);
   }
-  return Array.from(map.entries()).map(([exerciseId, sets]) => ({ exerciseId, sets }));
+  return Array.from(map.entries()).map(([exerciseId, sets]) => ({ exerciseId, sets })).reverse();
 }
 
 function formatSets(sets: WorkoutSetEntry[]): string {

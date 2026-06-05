@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
+import { SessionProvider } from 'next-auth/react';
 import { ConfigProvider, theme } from 'antd';
 import ruRU from 'antd/locale/ru_RU';
 
@@ -63,6 +64,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const isDark = appTheme === 'dark';
 
   return (
+    <SessionProvider>
     <ThemeContext.Provider value={{ appTheme, toggleTheme }}>
       <ConfigProvider
         locale={ruRU}
@@ -92,5 +94,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         {children}
       </ConfigProvider>
     </ThemeContext.Provider>
+    </SessionProvider>
   );
 }

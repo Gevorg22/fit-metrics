@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         hostname: 'cdn.jsdelivr.net',
         pathname: '/gh/JahelCuadrado/ExerciseGymGifsDB/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'wger.de',
+        pathname: '/media/**',
+      },
     ],
   },
 };

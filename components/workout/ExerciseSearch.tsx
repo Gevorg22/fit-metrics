@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import type { Exercise } from '@/types';
 import styles from './ExerciseSearch.module.scss';
@@ -65,6 +65,13 @@ function matchWords(text: string, words: string[]): boolean {
 export function ExerciseSearch({ exercises, onSelect }: Props) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string>('Все');
+  const catRowRef = useRef<HTMLDivElement>(null);
+
+  const scrollCats = (dir: 'left' | 'right') => {
+    if (catRowRef.current) {
+      catRowRef.current.scrollBy({ left: dir === 'right' ? 120 : -120, behavior: 'smooth' });
+    }
+  };
 
   const filtered = useMemo(() => {
     const words = normalize(query.trim()).split(/\s+/).filter(Boolean);
@@ -96,16 +103,20 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
         onChange={(e) => setQuery(e.target.value)}
       />
 
-      <div className={styles.catRow}>
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat.label}
-            className={`${styles.catBtn} ${category === cat.label ? styles.catActive : ''}`}
-            onClick={() => setCategory(cat.label)}
-          >
-            {cat.label}
-          </button>
-        ))}
+      <div className={styles.catScrollWrap}>
+        <button className={`${styles.catArrow} ${styles.catArrowLeft}`} onClick={() => scrollCats('left')} aria-label="Влево">‹</button>
+        <div className={styles.catRow} ref={catRowRef}>
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.label}
+              className={`${styles.catBtn} ${category === cat.label ? styles.catActive : ''}`}
+              onClick={() => setCategory(cat.label)}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+        <button className={`${styles.catArrow} ${styles.catArrowRight}`} onClick={() => scrollCats('right')} aria-label="Вправо">›</button>
       </div>
 
       <div className={styles.grid}>

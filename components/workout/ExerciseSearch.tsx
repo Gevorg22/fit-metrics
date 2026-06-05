@@ -155,7 +155,9 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
             {mounted && (
               <button
                 className={`${styles.favBtn} ${favorites.has(ex.id) ? styles.favBtnActive : ''}`}
-                onClick={(e) => { e.stopPropagation(); toggle(ex.id); }}
+                onClick={(e) => { e.stopPropagation(); e.preventDefault(); toggle(ex.id); }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
                 aria-label={favorites.has(ex.id) ? 'Убрать из избранного' : 'Добавить в избранное'}
               >
                 {favorites.has(ex.id) ? '♥' : '♡'}

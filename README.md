@@ -106,6 +106,26 @@ npm run dev
 
 Открой [http://localhost:3000](http://localhost:3000).
 
+## Тесты
+
+Покрытие: **47 тестов** по Zustand-стору, API-роутам и хукам.
+
+```bash
+npm run test          # watch mode
+npm run test:run      # однократный запуск
+npm run test:coverage # с отчётом о покрытии
+```
+
+| Файл | Что тестируется |
+|---|---|
+| `tests/stores/workoutStore.test.ts` | Все действия стора тренировки |
+| `tests/api/workout.test.ts` | GET/POST `/api/workout` |
+| `tests/api/favorites.test.ts` | GET/POST/DELETE `/api/favorites` |
+| `tests/api/weight.test.ts` | GET/POST `/api/weight` + валидация |
+| `tests/api/exercises.test.ts` | GET `/api/exercises` + обработка ошибок |
+| `tests/api/templates.test.ts` | GET/POST `/api/templates` + валидация |
+| `tests/hooks/useFavorites.test.ts` | Гостевой режим (localStorage) и авторизованный (fetch) |
+
 ## Скрипты
 
 | Команда | Описание |
@@ -113,6 +133,8 @@ npm run dev
 | `npm run dev` | Запуск в режиме разработки |
 | `npm run build` | Сборка для продакшена |
 | `npm run start` | Запуск собранного приложения |
+| `npm run test` | Запуск тестов в watch mode |
+| `npm run test:run` | Однократный запуск тестов |
 | `npm run db:push` | Применить схему Prisma к БД |
 | `npm run db:migrate` | Создать и применить миграцию |
 | `npm run db:studio` | Открыть Prisma Studio |

@@ -15,7 +15,7 @@ import { prisma } from '@/lib/prisma';
 describe('GET /api/exercises', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('returns list of exercises with cache headers', async () => {
+  it('возвращает список упражнений с cache-заголовками', async () => {
     const mockExercises = [
       { id: 'ex-1', name: 'Push Up', nameRu: 'Отжимания', primaryMuscles: ['chest'], images: [] },
       { id: 'ex-2', name: 'Squat', nameRu: 'Приседания', primaryMuscles: ['quads'], images: [] },
@@ -28,7 +28,7 @@ describe('GET /api/exercises', () => {
     expect(body).toEqual(mockExercises);
   });
 
-  it('returns 500 when database throws an error', async () => {
+  it('возвращает 500 при ошибке базы данных', async () => {
     vi.mocked(prisma.exercise.findMany).mockRejectedValue(new Error('DB error'));
     const res = await GET();
     expect(res.status).toBe(500);

@@ -26,13 +26,13 @@ const makeRequest = (body: object) =>
 describe('GET /api/favorites', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('returns 401 when not authenticated', async () => {
+  it('возвращает 401 если не авторизован', async () => {
     vi.mocked(auth).mockResolvedValue(null as any);
     const res = await GET();
     expect(res.status).toBe(401);
   });
 
-  it('returns array of exercise IDs for authenticated user', async () => {
+  it('возвращает массив ID упражнений для авторизованного пользователя', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     vi.mocked(prisma.favoriteExercise.findMany).mockResolvedValue([
       { exerciseId: 'ex-1' },
@@ -48,13 +48,13 @@ describe('GET /api/favorites', () => {
 describe('POST /api/favorites', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('returns 401 when not authenticated', async () => {
+  it('возвращает 401 если не авторизован', async () => {
     vi.mocked(auth).mockResolvedValue(null as any);
     const res = await POST(makeRequest({ exerciseId: 'ex-1' }));
     expect(res.status).toBe(401);
   });
 
-  it('returns 400 when exerciseId is missing', async () => {
+  it('возвращает 400 если exerciseId не передан', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const res = await POST(makeRequest({}));
     expect(res.status).toBe(400);
@@ -62,7 +62,7 @@ describe('POST /api/favorites', () => {
     expect(body.error).toBe('exerciseId required');
   });
 
-  it('upserts a favorite and returns ok', async () => {
+  it('сохраняет избранное и возвращает ok', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     vi.mocked(prisma.favoriteExercise.upsert).mockResolvedValue({} as any);
     const res = await POST(makeRequest({ exerciseId: 'ex-1' }));
@@ -80,19 +80,19 @@ describe('POST /api/favorites', () => {
 describe('DELETE /api/favorites', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('returns 401 when not authenticated', async () => {
+  it('возвращает 401 если не авторизован', async () => {
     vi.mocked(auth).mockResolvedValue(null as any);
     const res = await DELETE(makeRequest({ exerciseId: 'ex-1' }));
     expect(res.status).toBe(401);
   });
 
-  it('returns 400 when exerciseId is missing', async () => {
+  it('возвращает 400 если exerciseId не передан', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const res = await DELETE(makeRequest({}));
     expect(res.status).toBe(400);
   });
 
-  it('deletes the favorite and returns ok', async () => {
+  it('удаляет избранное и возвращает ok', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     vi.mocked(prisma.favoriteExercise.deleteMany).mockResolvedValue({ count: 1 });
     const res = await DELETE(makeRequest({ exerciseId: 'ex-1' }));

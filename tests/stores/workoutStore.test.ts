@@ -8,7 +8,7 @@ describe('workoutStore', () => {
   beforeEach(reset);
 
   describe('startWorkout', () => {
-    it('sets workoutId and startedAt', () => {
+    it('устанавливает workoutId и startedAt', () => {
       useWorkoutStore.getState().startWorkout('workout-1');
       const { workoutId, startedAt, exercises } = useWorkoutStore.getState();
       expect(workoutId).toBe('workout-1');
@@ -16,7 +16,7 @@ describe('workoutStore', () => {
       expect(exercises).toEqual([]);
     });
 
-    it('clears exercises when starting a new workout', () => {
+    it('очищает упражнения при старте новой тренировки', () => {
       useWorkoutStore.getState().addExercise('ex-1', 'Push Up');
       useWorkoutStore.getState().startWorkout('workout-2');
       expect(useWorkoutStore.getState().exercises).toEqual([]);
@@ -24,7 +24,7 @@ describe('workoutStore', () => {
   });
 
   describe('finishWorkout', () => {
-    it('resets all state to null/empty', () => {
+    it('сбрасывает всё состояние в null/пустое', () => {
       useWorkoutStore.getState().startWorkout('workout-1');
       useWorkoutStore.getState().finishWorkout();
       const { workoutId, startedAt, exercises } = useWorkoutStore.getState();
@@ -35,20 +35,20 @@ describe('workoutStore', () => {
   });
 
   describe('addExercise', () => {
-    it('adds an exercise to the list', () => {
+    it('добавляет упражнение в список', () => {
       useWorkoutStore.getState().addExercise('ex-1', 'Push Up');
       const { exercises } = useWorkoutStore.getState();
       expect(exercises).toHaveLength(1);
       expect(exercises[0]).toMatchObject({ exerciseId: 'ex-1', exerciseName: 'Push Up', sets: [] });
     });
 
-    it('prepends new exercise to the front', () => {
+    it('добавляет новое упражнение в начало списка', () => {
       useWorkoutStore.getState().addExercise('ex-1', 'Push Up');
       useWorkoutStore.getState().addExercise('ex-2', 'Squat');
       expect(useWorkoutStore.getState().exercises[0].exerciseId).toBe('ex-2');
     });
 
-    it('does not add a duplicate exercise', () => {
+    it('не добавляет дубликат упражнения', () => {
       useWorkoutStore.getState().addExercise('ex-1', 'Push Up');
       useWorkoutStore.getState().addExercise('ex-1', 'Push Up');
       expect(useWorkoutStore.getState().exercises).toHaveLength(1);
@@ -56,7 +56,7 @@ describe('workoutStore', () => {
   });
 
   describe('removeExercise', () => {
-    it('removes the specified exercise', () => {
+    it('удаляет указанное упражнение', () => {
       useWorkoutStore.getState().addExercise('ex-1', 'Push Up');
       useWorkoutStore.getState().addExercise('ex-2', 'Squat');
       useWorkoutStore.getState().removeExercise('ex-1');
@@ -65,7 +65,7 @@ describe('workoutStore', () => {
       expect(exercises[0].exerciseId).toBe('ex-2');
     });
 
-    it('does nothing when exerciseId not found', () => {
+    it('ничего не делает если exerciseId не найден', () => {
       useWorkoutStore.getState().addExercise('ex-1', 'Push Up');
       useWorkoutStore.getState().removeExercise('not-found');
       expect(useWorkoutStore.getState().exercises).toHaveLength(1);
@@ -73,7 +73,7 @@ describe('workoutStore', () => {
   });
 
   describe('addSet', () => {
-    it('adds a set to the correct exercise', () => {
+    it('добавляет подход к нужному упражнению', () => {
       useWorkoutStore.getState().addExercise('ex-1', 'Push Up');
       useWorkoutStore.getState().addSet('ex-1', {
         id: 'set-1',
@@ -87,7 +87,7 @@ describe('workoutStore', () => {
       expect(sets[0]).toMatchObject({ id: 'set-1', weight: 50, reps: 10 });
     });
 
-    it('does not add set to a different exercise', () => {
+    it('не добавляет подход к другому упражнению', () => {
       useWorkoutStore.getState().addExercise('ex-1', 'Push Up');
       useWorkoutStore.getState().addExercise('ex-2', 'Squat');
       useWorkoutStore.getState().addSet('ex-1', {
@@ -103,7 +103,7 @@ describe('workoutStore', () => {
   });
 
   describe('removeSet', () => {
-    it('removes the correct set from an exercise', () => {
+    it('удаляет нужный подход из упражнения', () => {
       useWorkoutStore.getState().addExercise('ex-1', 'Push Up');
       useWorkoutStore.getState().addSet('ex-1', { id: 'set-1', exerciseId: 'ex-1', setNumber: 1, weight: 50, reps: 10 });
       useWorkoutStore.getState().addSet('ex-1', { id: 'set-2', exerciseId: 'ex-1', setNumber: 2, weight: 60, reps: 8 });
@@ -115,7 +115,7 @@ describe('workoutStore', () => {
   });
 
   describe('updateSet', () => {
-    it('updates weight and reps for the specified set', () => {
+    it('обновляет вес и повторения указанного подхода', () => {
       useWorkoutStore.getState().addExercise('ex-1', 'Push Up');
       useWorkoutStore.getState().addSet('ex-1', { id: 'set-1', exerciseId: 'ex-1', setNumber: 1, weight: 50, reps: 10 });
       useWorkoutStore.getState().updateSet('ex-1', 'set-1', { weight: 75, reps: 5 });
@@ -124,7 +124,7 @@ describe('workoutStore', () => {
       expect(set.reps).toBe(5);
     });
 
-    it('does not modify other sets', () => {
+    it('не изменяет другие подходы', () => {
       useWorkoutStore.getState().addExercise('ex-1', 'Push Up');
       useWorkoutStore.getState().addSet('ex-1', { id: 'set-1', exerciseId: 'ex-1', setNumber: 1, weight: 50, reps: 10 });
       useWorkoutStore.getState().addSet('ex-1', { id: 'set-2', exerciseId: 'ex-1', setNumber: 2, weight: 60, reps: 8 });

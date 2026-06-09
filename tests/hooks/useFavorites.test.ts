@@ -10,7 +10,7 @@ import { useSession } from 'next-auth/react';
 
 const LS_KEY = 'fitmetrics-favorites';
 
-describe('useFavorites - guest mode', () => {
+describe('useFavorites — гостевой режим', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.mocked(useSession).mockReturnValue({ data: null, status: 'unauthenticated', update: vi.fn() });
@@ -20,7 +20,7 @@ describe('useFavorites - guest mode', () => {
     localStorage.clear();
   });
 
-  it('loads favorites from localStorage on mount', async () => {
+  it('загружает избранное из localStorage при монтировании', async () => {
     localStorage.setItem(LS_KEY, JSON.stringify(['ex-1', 'ex-2']));
     const { result } = renderHook(() => useFavorites());
     await waitFor(() => expect(result.current.mounted).toBe(true));
@@ -28,13 +28,13 @@ describe('useFavorites - guest mode', () => {
     expect(result.current.favorites.has('ex-2')).toBe(true);
   });
 
-  it('starts with empty favorites when localStorage is empty', async () => {
+  it('начинает с пустым избранным если localStorage пуст', async () => {
     const { result } = renderHook(() => useFavorites());
     await waitFor(() => expect(result.current.mounted).toBe(true));
     expect(result.current.favorites.size).toBe(0);
   });
 
-  it('toggle adds a new favorite to localStorage', async () => {
+  it('toggle добавляет упражнение в localStorage', async () => {
     const { result } = renderHook(() => useFavorites());
     await waitFor(() => expect(result.current.mounted).toBe(true));
     await act(async () => {
@@ -45,7 +45,7 @@ describe('useFavorites - guest mode', () => {
     expect(stored).toContain('ex-1');
   });
 
-  it('toggle removes an existing favorite from localStorage', async () => {
+  it('toggle удаляет существующее упражнение из localStorage', async () => {
     localStorage.setItem(LS_KEY, JSON.stringify(['ex-1']));
     const { result } = renderHook(() => useFavorites());
     await waitFor(() => expect(result.current.mounted).toBe(true));
@@ -58,7 +58,7 @@ describe('useFavorites - guest mode', () => {
   });
 });
 
-describe('useFavorites - authenticated mode', () => {
+describe('useFavorites — авторизованный режим', () => {
   const mockFetch = vi.fn();
 
   beforeEach(() => {
@@ -75,7 +75,7 @@ describe('useFavorites - authenticated mode', () => {
     vi.clearAllMocks();
   });
 
-  it('fetches favorites from API on mount', async () => {
+  it('загружает избранное через API при монтировании', async () => {
     mockFetch.mockResolvedValue({
       json: () => Promise.resolve(['ex-1', 'ex-2']),
     });
@@ -86,7 +86,7 @@ describe('useFavorites - authenticated mode', () => {
     expect(result.current.favorites.has('ex-2')).toBe(true);
   });
 
-  it('toggle calls POST to add a favorite', async () => {
+  it('toggle вызывает POST при добавлении в избранное', async () => {
     mockFetch
       .mockResolvedValueOnce({ json: () => Promise.resolve([]) })
       .mockResolvedValueOnce({});
@@ -101,7 +101,7 @@ describe('useFavorites - authenticated mode', () => {
     );
   });
 
-  it('toggle calls DELETE to remove an existing favorite', async () => {
+  it('toggle вызывает DELETE при удалении из избранного', async () => {
     mockFetch
       .mockResolvedValueOnce({ json: () => Promise.resolve(['ex-1']) })
       .mockResolvedValueOnce({});

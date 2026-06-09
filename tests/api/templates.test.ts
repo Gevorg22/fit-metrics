@@ -25,13 +25,13 @@ const makeRequest = (body: object) =>
 describe('GET /api/templates', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('returns 401 when not authenticated', async () => {
+  it('возвращает 401 если не авторизован', async () => {
     vi.mocked(auth).mockResolvedValue(null as any);
     const res = await GET();
     expect(res.status).toBe(401);
   });
 
-  it('returns templates for authenticated user', async () => {
+  it('возвращает шаблоны для авторизованного пользователя', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const mockTemplates = [
       { id: 't1', name: 'Push Day', exercises: [], createdAt: new Date().toISOString() },
@@ -47,13 +47,13 @@ describe('GET /api/templates', () => {
 describe('POST /api/templates', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('returns 401 when not authenticated', async () => {
+  it('возвращает 401 если не авторизован', async () => {
     vi.mocked(auth).mockResolvedValue(null as any);
     const res = await POST(makeRequest({ name: 'Push Day', exercises: [{ exerciseId: 'ex-1' }] }));
     expect(res.status).toBe(401);
   });
 
-  it('returns 400 when name is empty', async () => {
+  it('возвращает 400 если имя пустое', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const res = await POST(makeRequest({ name: '', exercises: [{ exerciseId: 'ex-1' }] }));
     expect(res.status).toBe(400);
@@ -61,13 +61,13 @@ describe('POST /api/templates', () => {
     expect(body.error).toBe('Invalid data');
   });
 
-  it('returns 400 when exercises array is empty', async () => {
+  it('возвращает 400 если список упражнений пустой', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const res = await POST(makeRequest({ name: 'Push Day', exercises: [] }));
     expect(res.status).toBe(400);
   });
 
-  it('creates a template and returns it with status 201', async () => {
+  it('создаёт шаблон и возвращает его со статусом 201', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const exercises = [{ exerciseId: 'ex-1', exerciseName: 'Push Up' }];
     const mockTemplate = { id: 't1', name: 'Push Day', exercises, createdAt: new Date().toISOString() };

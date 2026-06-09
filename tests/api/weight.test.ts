@@ -25,13 +25,13 @@ const makeRequest = (body: object) =>
 describe('GET /api/weight', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('returns 401 when not authenticated', async () => {
+  it('возвращает 401 если не авторизован', async () => {
     vi.mocked(auth).mockResolvedValue(null as any);
     const res = await GET();
     expect(res.status).toBe(401);
   });
 
-  it('returns weight logs for authenticated user', async () => {
+  it('возвращает записи веса для авторизованного пользователя', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const mockLogs = [
       { id: 'log-1', weight: 75, date: '2024-01-01T00:00:00.000Z' },
@@ -48,19 +48,19 @@ describe('GET /api/weight', () => {
 describe('POST /api/weight', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('returns 401 when not authenticated', async () => {
+  it('возвращает 401 если не авторизован', async () => {
     vi.mocked(auth).mockResolvedValue(null as any);
     const res = await POST(makeRequest({ weight: 75 }));
     expect(res.status).toBe(401);
   });
 
-  it('returns 400 when weight is missing', async () => {
+  it('возвращает 400 если вес не передан', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const res = await POST(makeRequest({}));
     expect(res.status).toBe(400);
   });
 
-  it('returns 400 when weight is not a positive number', async () => {
+  it('возвращает 400 если вес отрицательный', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const res = await POST(makeRequest({ weight: -5 }));
     expect(res.status).toBe(400);
@@ -68,13 +68,13 @@ describe('POST /api/weight', () => {
     expect(body.error).toBe('Некорректное значение веса');
   });
 
-  it('returns 400 when weight is zero', async () => {
+  it('возвращает 400 если вес равен нулю', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const res = await POST(makeRequest({ weight: 0 }));
     expect(res.status).toBe(400);
   });
 
-  it('upserts a weight log and returns it', async () => {
+  it('сохраняет запись веса и возвращает её', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const mockLog = { id: 'log-1', userId: 'user-1', weight: 75, date: new Date().toISOString() };
     vi.mocked(prisma.weightLog.upsert).mockResolvedValue(mockLog as any);

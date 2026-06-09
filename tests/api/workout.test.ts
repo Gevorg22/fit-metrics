@@ -18,7 +18,7 @@ import { prisma } from '@/lib/prisma';
 describe('GET /api/workout', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('returns 401 when not authenticated', async () => {
+  it('возвращает 401 если не авторизован', async () => {
     vi.mocked(auth).mockResolvedValue(null as any);
     const res = await GET();
     expect(res.status).toBe(401);
@@ -26,7 +26,7 @@ describe('GET /api/workout', () => {
     expect(body.error).toBe('Unauthorized');
   });
 
-  it('returns workouts for authenticated user', async () => {
+  it('возвращает список тренировок для авторизованного пользователя', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const mockWorkouts = [{ id: 'w1', userId: 'user-1', sets: [] }];
     vi.mocked(prisma.workout.findMany).mockResolvedValue(mockWorkouts as any);
@@ -43,7 +43,7 @@ describe('GET /api/workout', () => {
 describe('POST /api/workout', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('returns 401 when not authenticated', async () => {
+  it('возвращает 401 если не авторизован', async () => {
     vi.mocked(auth).mockResolvedValue(null as any);
     const res = await POST();
     expect(res.status).toBe(401);
@@ -51,7 +51,7 @@ describe('POST /api/workout', () => {
     expect(body.error).toBe('Unauthorized');
   });
 
-  it('creates and returns a workout with status 201', async () => {
+  it('создаёт тренировку и возвращает её со статусом 201', async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as any);
     const mockWorkout = { id: 'w1', userId: 'user-1', startedAt: new Date().toISOString() };
     vi.mocked(prisma.workout.create).mockResolvedValue(mockWorkout as any);

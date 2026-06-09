@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Button, message } from 'antd';
 import { PlusOutlined, DeleteOutlined, CheckOutlined } from '@ant-design/icons';
 import type { ActiveExercise, ActiveSet } from '@/types';
-import { RestTimer } from './RestTimer';
 import styles from './SetForm.module.scss';
 
 interface DraftSet {
@@ -31,7 +30,6 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
       : [{ weight: '', reps: '', saved: false }]
   );
   const [saving, setSaving] = useState(false);
-  const [showTimer, setShowTimer] = useState(false);
   const prevSetIds = useRef<string[]>(exercise.sets.map((s) => s.id ?? ''));
 
   useEffect(() => {
@@ -90,7 +88,6 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
         )
       );
       messageApi.success('Подходы записаны (гостевой режим)');
-      setShowTimer(true);
       return;
     }
 
@@ -143,7 +140,6 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
         }
       }
       messageApi.success('Подходы сохранены');
-      setShowTimer(true);
     } catch {
       messageApi.error('Ошибка сохранения');
     } finally {
@@ -201,8 +197,6 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
           <PlusOutlined /> Добавить подход
         </button>
       </div>
-
-      {showTimer && <RestTimer onClose={() => setShowTimer(false)} />}
 
       {hasUnsaved && (
         <Button

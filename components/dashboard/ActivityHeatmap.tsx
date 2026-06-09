@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './ActivityHeatmap.module.scss';
 
 const DAYS = 364;
@@ -28,6 +28,7 @@ function level(count: number): number {
 export function ActivityHeatmap() {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch('/api/analytics/activity')
@@ -36,6 +37,12 @@ export function ActivityHeatmap() {
       .catch(() => setCounts({}))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!loading && wrapRef.current) {
+      wrapRef.current.scrollLeft = wrapRef.current.scrollWidth;
+    }
+  }, [loading]);
 
   const grid = buildGrid();
 
@@ -64,7 +71,7 @@ export function ActivityHeatmap() {
   if (loading) return <div className={styles.loading}>Загрузка...</div>;
 
   return (
-    <div className={styles.wrap}>
+    <div className={styles.wrap} ref={wrapRef}>
       <div className={styles.monthRow}>
         {monthLabels.map(({ label, col }) => (
           <span key={`${label}-${col}`} className={styles.monthLabel} style={{ gridColumnStart: col + 1 }}>

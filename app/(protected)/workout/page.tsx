@@ -39,22 +39,42 @@ export default function WorkoutPage() {
     updateSet,
   } = useWorkoutStore();
 
-  useEffect(() => {
-    fetch('/api/exercises')
-      .then((r) => r.json())
-      .then((data) => {
-        if (Array.isArray(data)) setExercises(data);
-      })
-      .catch(() => {});
-  }, []);
-
   const isGuest = typeof document !== 'undefined'
     ? document.cookie.includes('fitmetrics-guest=1')
     : false;
 
+  const applyRepeatExercises = (loadedExercises: Exercise[]) => {
+    try {
+      const raw = sessionStorage.getItem('repeatExercises');
+      if (!raw) return;
+      sessionStorage.removeItem('repeatExercises');
+      const ids: string[] = JSON.parse(raw);
+      for (const id of ids) {
+        const ex = loadedExercises.find((e) => e.id === id);
+        if (ex) addExercise(ex.id, ex.nameRu ?? ex.name);
+      }
+    } catch {}
+  };
+
+  useEffect(() => {
+    fetch('/api/exercises')
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setExercises(data);
+          if (workoutId) {
+            applyRepeatExercises(data);
+          }
+        }
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleStart = async () => {
     if (isGuest) {
       startWorkout(`guest-${Date.now()}`);
+      applyRepeatExercises(exercises);
       return;
     }
     setStarting(true);
@@ -64,6 +84,7 @@ export default function WorkoutPage() {
       const data = await res.json();
       if (!data.id) throw new Error('No workout id');
       startWorkout(data.id);
+      applyRepeatExercises(exercises);
     } catch (e) {
       console.error('Workout start error:', e);
       messageApi.error('Не удалось создать тренировку. Проверь соединение.');
@@ -146,6 +167,7 @@ export default function WorkoutPage() {
 
   const [duration, setDuration] = useState(0);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!startedAt) { setDuration(0); return; }
     const calc = () => Math.floor((Date.now() - new Date(startedAt).getTime()) / 60000);
     setDuration(calc());
@@ -311,6 +333,22 @@ export default function WorkoutPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {!isGuest && (
+        <div className={styles.floatingFinish}>
+          <Popconfirm
+            title="Завершить тренировку?"
+            description="Все записанные подходы уже сохранены."
+            onConfirm={handleFinish}
+            okText="Завершить"
+            cancelText="Отмена"
+          >
+            <Button type="primary" shape="round" size="large" icon={<CheckOutlined />} loading={finishing}>
+              Завершить
+            </Button>
+          </Popconfirm>
         </div>
       )}
     </div>

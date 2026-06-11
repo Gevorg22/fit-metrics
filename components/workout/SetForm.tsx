@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Button, message } from 'antd';
+import { Button, message, Popconfirm } from 'antd';
 import { PlusOutlined, DeleteOutlined, CheckOutlined } from '@ant-design/icons';
 import type { ActiveExercise, ActiveSet } from '@/types';
 import styles from './SetForm.module.scss';
@@ -36,8 +36,11 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
       : [{ weight: '', reps: '', saved: false }]
   );
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [lastResult, setLastResult] = useState<LastResult | null>(null);
   const prevSetIds = useRef<string[]>(exercise.sets.map((s) => s.id ?? ''));
+  const weightRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const repsRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (isGuest) return;
@@ -76,12 +79,54 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
     setDrafts((prev) => [...prev, { weight: last?.weight ?? '', reps: last?.reps ?? '', saved: false }]);
   };
 
+  const removeSaved = async (idx: number) => {
+    const draft = drafts[idx];
+    if (!draft.id) return;
+    setDeleting(draft.id);
+    try {
+      if (!isGuest) {
+        const res = await fetch(`/api/workout/${workoutId}/sets/${draft.id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+      }
+      onSetRemoved(draft.id);
+      setDrafts((prev) => prev.filter((_, i) => i !== idx));
+    } catch {
+      messageApi.error('Не удалось удалить подход');
+    } finally {
+      setDeleting(null);
+    }
+  };
+
   const removeRow = (idx: number) => {
     const draft = drafts[idx];
     if (draft.saved && draft.id) {
       onSetRemoved(draft.id);
     }
     setDrafts((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleWeightKeyDown = (e: React.KeyboardEvent, idx: number) => {
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      repsRefs.current[idx]?.focus();
+    }
+  };
+
+  const handleRepsKeyDown = (e: React.KeyboardEvent, idx: number) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (idx < drafts.length - 1) {
+        weightRefs.current[idx + 1]?.focus();
+      } else {
+        addRow();
+        setTimeout(() => weightRefs.current[idx + 1]?.focus(), 50);
+      }
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      if (idx < drafts.length - 1) {
+        weightRefs.current[idx + 1]?.focus();
+      }
+    }
   };
 
   const saveAll = async () => {
@@ -206,6 +251,8 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
             className={styles.setInput}
             value={draft.weight}
             onChange={(e) => updateDraft(idx, 'weight', e.target.value)}
+            onKeyDown={(e) => handleWeightKeyDown(e, idx)}
+            ref={(el) => { weightRefs.current[idx] = el; }}
             placeholder="0"
           />
           <input
@@ -214,13 +261,27 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
             className={styles.setInput}
             value={draft.reps}
             onChange={(e) => updateDraft(idx, 'reps', e.target.value)}
+            onKeyDown={(e) => handleRepsKeyDown(e, idx)}
+            ref={(el) => { repsRefs.current[idx] = el; }}
             placeholder="0"
             min={isCardio ? undefined : 1}
           />
           {draft.saved ? (
-            <span className={styles.savedBadge}>
-              <CheckOutlined />
-            </span>
+            <Popconfirm
+              title="Удалить подход?"
+              onConfirm={() => removeSaved(idx)}
+              okText="Да"
+              cancelText="Нет"
+              okButtonProps={{ danger: true }}
+            >
+              <button
+                className={styles.savedDeleteBtn}
+                disabled={deleting === draft.id}
+                aria-label="Удалить подход"
+              >
+                {deleting === draft.id ? <CheckOutlined /> : <DeleteOutlined />}
+              </button>
+            </Popconfirm>
           ) : (
             <button className={styles.deleteBtn} onClick={() => removeRow(idx)}>
               <DeleteOutlined />

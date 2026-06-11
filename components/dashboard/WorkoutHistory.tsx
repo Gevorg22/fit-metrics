@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Popconfirm, message } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { Popconfirm, message, Tooltip } from 'antd';
+import { DeleteOutlined, RedoOutlined } from '@ant-design/icons';
 import type { WorkoutHistoryEntry, WorkoutSetEntry } from '@/types';
 import styles from './WorkoutHistory.module.scss';
 
@@ -48,6 +48,12 @@ export function WorkoutHistory({ workouts: initial, exerciseNames, exerciseImage
   const [expanded, setExpanded] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  const handleRepeat = (w: WorkoutHistoryEntry) => {
+    const exerciseIds = [...new Set(w.sets.map((s) => s.exerciseId))];
+    sessionStorage.setItem('repeatExercises', JSON.stringify(exerciseIds));
+    router.push('/workout');
+  };
 
   const handleDelete = async (id: string) => {
     setDeleting(id);
@@ -168,6 +174,18 @@ export function WorkoutHistory({ workouts: initial, exerciseNames, exerciseImage
                         </div>
                       </div>
                     ))
+                  )}
+                  {grouped.length > 0 && (
+                    <div className={styles.itemActions}>
+                      <Tooltip title="Начать тренировку с теми же упражнениями">
+                        <button
+                          className={styles.repeatBtn}
+                          onClick={() => handleRepeat(w)}
+                        >
+                          <RedoOutlined /> Повторить тренировку
+                        </button>
+                      </Tooltip>
+                    </div>
                   )}
                 </div>
               )}

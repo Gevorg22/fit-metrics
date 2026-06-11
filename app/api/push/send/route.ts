@@ -2,22 +2,22 @@ import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 import { prisma } from '@/lib/prisma';
 
-webpush.setVapidDetails(
-  process.env.VAPID_EMAIL!,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
-
 const DAYS_INACTIVE = 5;
-const CRON_SECRET = process.env.CRON_SECRET;
 
 export async function POST(request: Request) {
-  if (CRON_SECRET) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret) {
     const auth = request.headers.get('authorization');
-    if (auth !== `Bearer ${CRON_SECRET}`) {
+    if (auth !== `Bearer ${cronSecret}`) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
   }
+
+  webpush.setVapidDetails(
+    process.env.VAPID_EMAIL!,
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+    process.env.VAPID_PRIVATE_KEY!
+  );
 
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - DAYS_INACTIVE);

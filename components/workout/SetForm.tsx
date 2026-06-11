@@ -17,6 +17,7 @@ interface Props {
   workoutId: string;
   exercise: ActiveExercise;
   isGuest?: boolean;
+  isCardio?: boolean;
   onSetAdded: (set: ActiveSet) => void;
   onSetRemoved: (setId: string) => void;
   onSetUpdated: (setId: string, data: { weight: number; reps: number }) => void;
@@ -27,7 +28,7 @@ interface LastResult {
   sets: { setNumber: number; weight: number; reps: number }[];
 }
 
-export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved, onSetUpdated }: Props) {
+export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, onSetRemoved, onSetUpdated }: Props) {
   const [messageApi, contextHolder] = message.useMessage();
   const [drafts, setDrafts] = useState<DraftSet[]>(() =>
     exercise.sets.length > 0
@@ -89,11 +90,16 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
 
     const invalid = unsaved.some((d) => {
       const w = parseFloat(normalizeWeight(d.weight));
-      const r = Number(d.reps);
+      const r = parseFloat(normalizeWeight(d.reps));
+      if (isCardio) return !d.weight || isNaN(w) || w <= 0;
       return !d.weight || !d.reps || isNaN(w) || w <= 0 || isNaN(r) || r <= 0;
     });
     if (invalid) {
-      messageApi.warning('Заполни вес и количество повторений для всех подходов');
+      messageApi.warning(
+        isCardio
+          ? 'Укажи время тренировки для всех записей'
+          : 'Заполни вес и количество повторений для всех подходов'
+      );
       return;
     }
 
@@ -114,7 +120,9 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
         if (d.saved) continue;
 
         const weight = parseFloat(normalizeWeight(d.weight));
-        const reps = Number(d.reps);
+        const reps = isCardio
+          ? Math.round(parseFloat(normalizeWeight(d.reps)) * 10) || 0
+          : Math.round(Number(d.reps));
 
         if (d.id) {
           const res = await fetch(`/api/workout/${workoutId}/sets/${d.id}`, {
@@ -169,7 +177,7 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
     <div className={styles.wrap}>
       {contextHolder}
 
-      {lastResult && (
+      {lastResult && !isCardio && (
         <div className={styles.lastResult}>
           <span className={styles.lastResultLabel}>В прошлый раз:</span>
           <div className={styles.lastResultSets}>
@@ -184,8 +192,8 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
 
       <div className={styles.header}>
         <span className={styles.headerNum}>#</span>
-        <span className={styles.headerLabel}>Вес (кг)</span>
-        <span className={styles.headerLabel}>Повторения</span>
+        <span className={styles.headerLabel}>{isCardio ? 'Время (мин)' : 'Вес (кг)'}</span>
+        <span className={styles.headerLabel}>{isCardio ? 'Дистанция (км)' : 'Повторения'}</span>
         <span />
       </div>
 
@@ -201,13 +209,13 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
             placeholder="0"
           />
           <input
-            type="number"
-            inputMode="numeric"
+            type={isCardio ? 'text' : 'number'}
+            inputMode="decimal"
             className={styles.setInput}
             value={draft.reps}
             onChange={(e) => updateDraft(idx, 'reps', e.target.value)}
             placeholder="0"
-            min={1}
+            min={isCardio ? undefined : 1}
           />
           {draft.saved ? (
             <span className={styles.savedBadge}>
@@ -223,7 +231,7 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
 
       <div className={styles.addRow}>
         <button className={styles.addBtn} onClick={addRow}>
-          <PlusOutlined /> Добавить подход
+          <PlusOutlined /> {isCardio ? 'Добавить активность' : 'Добавить подход'}
         </button>
       </div>
 
@@ -235,7 +243,7 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
           onClick={saveAll}
           className={styles.saveBtn}
         >
-          Сохранить подходы
+          {isCardio ? 'Сохранить активность' : 'Сохранить подходы'}
         </Button>
       )}
     </div>

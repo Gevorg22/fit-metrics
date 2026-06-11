@@ -22,6 +22,7 @@ export function PushNotificationButton() {
 
   useEffect(() => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setState('unsupported');
       return;
     }

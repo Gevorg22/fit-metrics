@@ -303,6 +303,7 @@ export default function WorkoutPage() {
                   workoutId={workoutId}
                   exercise={ex}
                   isGuest={isGuest}
+                  isCardio={exercises.find((e) => e.id === ex.exerciseId)?.primaryMuscles.includes('cardio')}
                   onSetAdded={(set) => handleSetAdded(ex.exerciseId, set)}
                   onSetRemoved={(setId) => handleSetRemoved(ex.exerciseId, setId)}
                   onSetUpdated={(setId, data) => handleSetUpdated(ex.exerciseId, setId, data)}

@@ -10,11 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install PostgreSQL client
-        run: sudo apt-get install -y postgresql-client
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y postgresql-client
 
       - name: Run pg_dump
         env:
-          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+          PGSSLMODE: require
         run: |
           pg_dump "${{ secrets.DIRECT_URL }}" \
             --format=custom \

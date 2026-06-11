@@ -12,6 +12,8 @@ import { WorkoutHistory } from './WorkoutHistory';
 import { PersonalRecords } from './PersonalRecords';
 import { ActivityHeatmap } from './ActivityHeatmap';
 import { MuscleMap } from './MuscleMap';
+import { StreakCard } from './StreakCard';
+import { Achievements } from './Achievements';
 import { WorkoutCTA } from './WorkoutCTA';
 import styles from './DashboardView.module.scss';
 
@@ -67,13 +69,20 @@ export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, rec
 
       {!isGuest && (
         <>
+          <StreakCard />
+
           <div className={styles.prSection}>
             <span className={styles.sectionTitle}>Активность</span>
             <ActivityHeatmap />
           </div>
 
           <div className={styles.prSection}>
-            <span className={styles.sectionTitle}>Мышечная карта — эта неделя</span>
+            <span className={styles.sectionTitle}>Достижения</span>
+            <Achievements />
+          </div>
+
+          <div className={styles.prSection}>
+            <span className={styles.sectionTitle}>Мышечная карта</span>
             <MuscleMap />
           </div>
 

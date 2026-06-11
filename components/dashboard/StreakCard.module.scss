@@ -1,0 +1,58 @@
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.count {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.1;
+}
+
+.unit {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.last {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.best {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  border-left: 2px solid var(--color-border);
+  padding-left: 12px;
+
+  strong {
+    color: var(--color-primary);
+  }
+}

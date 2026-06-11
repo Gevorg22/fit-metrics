@@ -23,6 +23,7 @@ model User {
   weightLog         WeightLog[]
   workoutTemplates  WorkoutTemplate[]
   favoriteExercises FavoriteExercise[]
+  pushSubscriptions PushSubscription[]
 }
 
 model Account {
@@ -144,5 +145,18 @@ model FavoriteExercise {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, exerciseId])
+  @@index([userId])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
 }

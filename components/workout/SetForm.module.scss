@@ -132,3 +132,37 @@
 .saveBtn {
   margin-top: 4px;
 }
+
+.lastResult {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--color-primary-dim);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--color-text-muted);
+  flex-wrap: wrap;
+}
+
+.lastResultLabel {
+  color: var(--color-primary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lastResultSets {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lastResultSet {
+  background: var(--color-surface);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
+  color: var(--color-text);
+  font-weight: 500;
+  white-space: nowrap;
+}

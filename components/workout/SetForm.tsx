@@ -22,6 +22,11 @@ interface Props {
   onSetUpdated: (setId: string, data: { weight: number; reps: number }) => void;
 }
 
+interface LastResult {
+  date: string;
+  sets: { setNumber: number; weight: number; reps: number }[];
+}
+
 export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved, onSetUpdated }: Props) {
   const [messageApi, contextHolder] = message.useMessage();
   const [drafts, setDrafts] = useState<DraftSet[]>(() =>
@@ -30,7 +35,18 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
       : [{ weight: '', reps: '', saved: false }]
   );
   const [saving, setSaving] = useState(false);
+  const [lastResult, setLastResult] = useState<LastResult | null>(null);
   const prevSetIds = useRef<string[]>(exercise.sets.map((s) => s.id ?? ''));
+
+  useEffect(() => {
+    if (isGuest) return;
+    const params = new URLSearchParams({ exerciseId: exercise.exerciseId });
+    if (workoutId) params.set('currentWorkoutId', workoutId);
+    fetch(`/api/analytics/last-result?${params}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setLastResult(d ?? null))
+      .catch(() => null);
+  }, [exercise.exerciseId, workoutId, isGuest]);
 
   useEffect(() => {
     const currentIds = exercise.sets.map((s) => s.id ?? '');
@@ -152,6 +168,19 @@ export function SetForm({ workoutId, exercise, isGuest, onSetAdded, onSetRemoved
   return (
     <div className={styles.wrap}>
       {contextHolder}
+
+      {lastResult && (
+        <div className={styles.lastResult}>
+          <span className={styles.lastResultLabel}>В прошлый раз:</span>
+          <div className={styles.lastResultSets}>
+            {lastResult.sets.map((s) => (
+              <span key={s.setNumber} className={styles.lastResultSet}>
+                {s.weight}кг × {s.reps}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className={styles.header}>
         <span className={styles.headerNum}>#</span>

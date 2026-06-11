@@ -3,6 +3,7 @@
 import { signOut } from 'next-auth/react';
 import { Button } from 'antd';
 import { LogoutOutlined, UserOutlined, TrophyOutlined, ClockCircleOutlined, FireOutlined } from '@ant-design/icons';
+import { PushNotificationButton } from './PushNotificationButton';
 import styles from './ProfileView.module.scss';
 
 interface TopExercise {
@@ -72,6 +73,7 @@ export function ProfileView({ email, totalWorkouts, totalVolume, avgDurationMin,
       )}
 
       <div className={styles.actions}>
+        <PushNotificationButton />
         <Button
           danger
           icon={<LogoutOutlined />}

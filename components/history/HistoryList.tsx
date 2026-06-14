@@ -4,8 +4,9 @@ import { useState, useTransition } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Popconfirm, message, Button } from 'antd';
-import { DeleteOutlined, ShareAltOutlined, DownOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ShareAltOutlined, DownOutlined, LineChartOutlined } from '@ant-design/icons';
 import type { WorkoutHistoryEntry, WorkoutSetEntry } from '@/types';
+import { ExerciseProgressModal } from '@/components/dashboard/ExerciseProgressModal';
 import styles from './HistoryList.module.scss';
 
 const OLD_IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
@@ -49,6 +50,7 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
   const [expanded, setExpanded] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [progressExercise, setProgressExercise] = useState<{ id: string; name: string } | null>(null);
 
   const handleLoadMore = async () => {
     if (!cursor) return;
@@ -208,7 +210,14 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
                             </div>
                           )}
                           <div className={styles.exInfo}>
-                            <span className={styles.exName}>{exerciseNames[exerciseId] ?? exerciseId}</span>
+                            <button
+                              className={styles.exNameBtn}
+                              onClick={() => setProgressExercise({ id: exerciseId, name: exerciseNames[exerciseId] ?? exerciseId })}
+                              title="Посмотреть прогресс"
+                            >
+                              {exerciseNames[exerciseId] ?? exerciseId}
+                              <LineChartOutlined className={styles.exProgressIcon} />
+                            </button>
                             <span className={styles.exSets}>{formatSets(sets)}</span>
                           </div>
                         </div>
@@ -233,6 +242,12 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
           </Button>
         </div>
       )}
+
+      <ExerciseProgressModal
+        exerciseId={progressExercise?.id ?? null}
+        exerciseName={progressExercise?.name ?? ''}
+        onClose={() => setProgressExercise(null)}
+      />
     </div>
   );
 }

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Button } from 'antd';
-import { BellOutlined, BellFilled } from '@ant-design/icons';
+import { useState } from 'react';
+import { Switch } from 'antd';
+import { BellOutlined } from '@ant-design/icons';
+import styles from './ProfileView.module.scss';
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -14,38 +15,31 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   return arr;
 }
 
-type SubState = 'loading' | 'unsupported' | 'denied' | 'subscribed' | 'unsubscribed';
+interface Props {
+  initialEnabled: boolean;
+}
 
-export function PushNotificationButton() {
-  const [state, setState] = useState<SubState>('loading');
+export function PushNotificationButton({ initialEnabled }: Props) {
+  const [enabled, setEnabled] = useState(initialEnabled);
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setState('unsupported');
-      return;
-    }
-    if (Notification.permission === 'denied') {
-      setState('denied');
-      return;
-    }
-    navigator.serviceWorker.ready.then((reg) =>
-      reg.pushManager.getSubscription().then((sub) => {
-        setState(sub ? 'subscribed' : 'unsubscribed');
-      })
-    );
-  }, []);
+  const savePreference = async (value: boolean) => {
+    await fetch('/api/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ notificationsEnabled: value }),
+    });
+  };
 
-  const subscribe = async () => {
-    setBusy(true);
+  const attemptPushSubscription = async () => {
     try {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+      if (!vapidKey) return;
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
-        ),
+        applicationServerKey: urlBase64ToUint8Array(vapidKey),
       });
       const json = sub.toJSON();
       await fetch('/api/push/subscribe', {
@@ -53,17 +47,13 @@ export function PushNotificationButton() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ endpoint: json.endpoint, keys: json.keys }),
       });
-      setState('subscribed');
     } catch {
-      if (Notification.permission === 'denied') setState('denied');
-    } finally {
-      setBusy(false);
     }
   };
 
-  const unsubscribe = async () => {
-    setBusy(true);
+  const attemptPushUnsubscribe = async () => {
     try {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.getSubscription();
       if (sub) {
@@ -74,33 +64,42 @@ export function PushNotificationButton() {
         });
         await sub.unsubscribe();
       }
-      setState('unsubscribed');
+    } catch {
+    }
+  };
+
+  const handleToggle = async (checked: boolean) => {
+    setBusy(true);
+    try {
+      if (checked) {
+        if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+          await Notification.requestPermission();
+        }
+        await savePreference(true);
+        await attemptPushSubscription();
+        setEnabled(true);
+      } else {
+        await savePreference(false);
+        await attemptPushUnsubscribe();
+        setEnabled(false);
+      }
+    } catch {
+      setEnabled(!checked);
     } finally {
       setBusy(false);
     }
   };
 
-  if (state === 'unsupported') return null;
-
-  if (state === 'denied') {
-    return (
-      <Button disabled icon={<BellOutlined />} size="small">
-        Уведомления заблокированы
-      </Button>
-    );
-  }
-
-  if (state === 'subscribed') {
-    return (
-      <Button icon={<BellFilled />} loading={busy} onClick={unsubscribe} size="small">
-        Уведомления включены
-      </Button>
-    );
-  }
-
   return (
-    <Button icon={<BellOutlined />} loading={busy || state === 'loading'} onClick={subscribe} size="small">
-      Включить уведомления
-    </Button>
+    <div className={styles.notifRow}>
+      <BellOutlined className={styles.notifIcon} />
+      <div className={styles.notifInfo}>
+        <span className={styles.notifLabel}>Уведомления</span>
+        <span className={styles.notifSub}>
+          {enabled ? 'Включены' : 'Выключены'}
+        </span>
+      </div>
+      <Switch checked={enabled} loading={busy} onChange={handleToggle} />
+    </div>
   );
 }

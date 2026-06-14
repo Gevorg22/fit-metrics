@@ -15,6 +15,8 @@ import { MuscleMap } from './MuscleMap';
 import { StreakCard } from './StreakCard';
 import { Achievements } from './Achievements';
 import { WorkoutCTA } from './WorkoutCTA';
+import { BodyStatsCard } from './BodyStatsCard';
+import { MuscleVolumeChart } from './MuscleVolumeChart';
 import styles from './DashboardView.module.scss';
 
 const WeightChart = dynamic(
@@ -31,10 +33,12 @@ interface Props {
   exerciseImages: Record<string, string>;
   weightHistory: WeightLogEntry[];
   personalRecords: PersonalRecord[];
+  goalWeight?: number | null;
+  heightCm?: number | null;
   isGuest?: boolean;
 }
 
-export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, recentWorkouts, exerciseNames, exerciseImages, weightHistory, personalRecords, isGuest }: Props) {
+export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, recentWorkouts, exerciseNames, exerciseImages, weightHistory, personalRecords, goalWeight, heightCm, isGuest }: Props) {
   const router = useRouter();
   const [currentWeight, setCurrentWeight] = useState<number | null>(todayWeight);
   const [chartRefreshKey, setChartRefreshKey] = useState(0);
@@ -71,6 +75,12 @@ export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, rec
         <>
           <StreakCard />
 
+          <BodyStatsCard
+            currentWeight={currentWeight}
+            goalWeight={goalWeight ?? null}
+            heightCm={heightCm ?? null}
+          />
+
           <div className={styles.prSection}>
             <span className={styles.sectionTitle}>Активность</span>
             <ActivityHeatmap />
@@ -84,6 +94,7 @@ export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, rec
           <div className={styles.prSection}>
             <span className={styles.sectionTitle}>Мышечная карта</span>
             <MuscleMap />
+            <MuscleVolumeChart />
           </div>
 
           <div className={styles.prSection}>
@@ -100,7 +111,7 @@ export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, rec
 
           <div className={styles.chartSection}>
             <span className={styles.sectionTitle}>График веса</span>
-            <WeightChart refreshKey={chartRefreshKey} />
+            <WeightChart refreshKey={chartRefreshKey} goalWeight={goalWeight} />
           </div>
 
           <div className={styles.historySection}>

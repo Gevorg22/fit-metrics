@@ -14,10 +14,10 @@
 
 .monthRow {
   display: grid;
-  grid-auto-columns: 14px;
+  grid-auto-columns: 11px;
   grid-auto-flow: column;
   gap: 3px;
-  padding-left: 28px;
+  padding-left: 24px;
   min-width: max-content;
 }
 

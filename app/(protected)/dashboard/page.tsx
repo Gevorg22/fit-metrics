@@ -31,7 +31,11 @@ export default async function DashboardPage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [weightLog, totalWorkouts, lastWorkout, recentWorkouts, weightHistory, prRaw] = await Promise.all([
+  const [userProfile, weightLog, totalWorkouts, lastWorkout, recentWorkouts, weightHistory, prRaw] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { heightCm: true, goalWeight: true },
+    }),
     prisma.weightLog.findUnique({
       where: { userId_date: { userId, date: today } },
     }),
@@ -101,6 +105,8 @@ export default async function DashboardPage() {
       exerciseNames={exerciseNames}
       exerciseImages={exerciseImages}
       personalRecords={personalRecords}
+      goalWeight={userProfile?.goalWeight ?? null}
+      heightCm={userProfile?.heightCm ?? null}
       weightHistory={weightHistory.map((w) => ({
         id: w.id,
         weight: w.weight,

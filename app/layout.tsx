@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { Providers } from './providers';
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
+import { PwaInstallPrompt } from '@/components/PwaInstallPrompt';
 import './globals.css';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Providers>{children}</Providers>
         </AntdRegistry>
         <ServiceWorkerRegistration />
+        <PwaInstallPrompt />
       </body>
     </html>
   );

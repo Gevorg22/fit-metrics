@@ -10,6 +10,7 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
+  ReferenceLine,
 } from 'recharts';
 import type { PeriodFilter } from '@/types';
 import styles from './WeightChart.module.scss';
@@ -33,9 +34,10 @@ function formatDate(dateStr: string, period: PeriodFilter): string {
 
 interface WeightChartProps {
   refreshKey?: number;
+  goalWeight?: number | null;
 }
 
-export function WeightChart({ refreshKey }: WeightChartProps) {
+export function WeightChart({ refreshKey, goalWeight }: WeightChartProps) {
   const [period, setPeriod] = useState<PeriodFilter>('1m');
   const [data, setData] = useState<DataPoint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,8 +72,10 @@ export function WeightChart({ refreshKey }: WeightChartProps) {
     setPeriod(p);
   };
 
-  const min = data.length ? Math.floor(Math.min(...data.map((d) => d.weight)) - 2) : 0;
-  const max = data.length ? Math.ceil(Math.max(...data.map((d) => d.weight)) + 2) : 100;
+  const weights = data.map((d) => d.weight);
+  const allValues = goalWeight ? [...weights, goalWeight] : weights;
+  const min = allValues.length ? Math.floor(Math.min(...allValues) - 2) : 0;
+  const max = allValues.length ? Math.ceil(Math.max(...allValues) + 2) : 100;
 
   return (
     <div className={styles.wrap}>
@@ -139,6 +143,15 @@ export function WeightChart({ refreshKey }: WeightChartProps) {
               dot={{ fill: '#22c55e', r: 3 }}
               activeDot={{ r: 5 }}
             />
+            {goalWeight && (
+              <ReferenceLine
+                y={goalWeight}
+                stroke="#f59e0b"
+                strokeDasharray="6 3"
+                strokeWidth={1.5}
+                label={{ value: `Цель ${goalWeight} кг`, position: 'insideTopRight', fontSize: 10, fill: '#f59e0b' }}
+              />
+            )}
           </AreaChart>
         </ResponsiveContainer>
       )}

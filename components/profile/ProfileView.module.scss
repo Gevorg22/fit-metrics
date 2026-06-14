@@ -173,6 +173,206 @@
   flex-shrink: 0;
 }
 
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.displayName {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.editBtn {
+  color: var(--color-text-muted) !important;
+  padding: 0 4px !important;
+  height: auto !important;
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--color-primary) !important;
+  }
+}
+
+.nameEdit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nameInput {
+  max-width: 180px;
+}
+
+.nameActionBtn {
+  padding: 0 4px !important;
+  height: auto !important;
+  flex-shrink: 0;
+}
+
+.ageBadge {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border-radius: 4px;
+  padding: 2px 8px;
+  align-self: flex-start;
+}
+
+.bodySection {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fieldsList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fieldRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+}
+
+.fieldLabel {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  width: 110px;
+}
+
+.fieldValue {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.fieldText {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.fieldEmpty {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.fieldEdit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.fieldInput {
+  max-width: 140px;
+}
+
+.genderToggle {
+  display: flex;
+  gap: 6px;
+}
+
+.genderBtn {
+  padding: 5px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.genderBtnActive {
+  background: var(--color-primary-dim);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.settingsSection {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.settingsList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notifRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+}
+
+.notifIcon {
+  font-size: 18px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.notifInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.notifLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.notifSub {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
 .actions {
   display: flex;
   flex-direction: column;

@@ -17,7 +17,7 @@ interface Props {
 export function HistoryFilter({ exercises, currentExerciseId }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  useSearchParams();
 
   const handleChange = (value: string | undefined) => {
     const params = new URLSearchParams();

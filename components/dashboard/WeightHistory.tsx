@@ -23,6 +23,7 @@ export function WeightHistory({ entries: initial }: Props) {
   const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setEntries(initial);
   }, [initial]);
 

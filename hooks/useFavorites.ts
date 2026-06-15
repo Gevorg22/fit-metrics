@@ -21,7 +21,7 @@ function lsSet(set: Set<string>) {
 }
 
 export function useFavorites() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const isAuth = status === 'authenticated';
   const isGuest = status !== 'authenticated';
 
@@ -40,6 +40,7 @@ export function useFavorites() {
         .catch(() => {})
         .finally(() => setMounted(true));
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFavorites(lsGet());
       setMounted(true);
     }

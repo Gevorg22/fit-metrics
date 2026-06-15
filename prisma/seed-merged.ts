@@ -5,12 +5,6 @@ const prisma = new PrismaClient();
 const GIF_DB_URL =
   'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/api/en/exercises.json';
 
-const OLD_DB_URL =
-  'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json';
-
-const OLD_IMG_BASE =
-  'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
-
 interface GifExercise {
   id: string;
   slug: string;
@@ -23,16 +17,6 @@ interface GifExercise {
   instructions: string[];
   file: string;
   gifUrl: string;
-}
-
-interface OldExercise {
-  id: string;
-  name: string;
-  primaryMuscles: string[];
-  secondaryMuscles: string[];
-  images: string[];
-  category: string;
-  equipment: string | null;
 }
 
 const MUSCLE_RU: Record<string, string> = {
@@ -561,10 +545,6 @@ function translateName(name: string): string {
   }
   result = result.replace(/\s{2,}/g, ' ').trim();
   return result.charAt(0).toUpperCase() + result.slice(1);
-}
-
-function normalizeName(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
 }
 
 async function main() {

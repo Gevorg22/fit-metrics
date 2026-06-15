@@ -25,6 +25,7 @@ export function Nav({ userEmail, isGuest }: Props) {
   const { appTheme, toggleTheme } = useAppTheme();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMenuOpen(false);
   }, [pathname]);
 

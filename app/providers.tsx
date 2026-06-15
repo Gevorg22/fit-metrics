@@ -48,6 +48,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const saved = localStorage.getItem('fitmetrics-theme') as AppTheme | null;
     const initial = saved === 'light' || saved === 'dark' ? saved : 'dark';
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAppTheme(initial);
     document.documentElement.setAttribute('data-theme', initial);
   }, []);

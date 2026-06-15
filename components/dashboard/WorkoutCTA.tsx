@@ -9,6 +9,7 @@ import styles from './WorkoutCTA.module.scss';
 
 export function WorkoutCTA() {
   const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   const workoutId = useWorkoutStore((s) => s.workoutId);

@@ -44,6 +44,7 @@ export function WeightChart({ refreshKey, goalWeight }: WeightChartProps) {
 
   useEffect(() => {
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     fetch(`/api/analytics/weight?period=${period}`)
       .then((r) => {

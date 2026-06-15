@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, Input, Modal, Popconfirm, Spin, message } from 'antd';
 import { DeleteOutlined, SaveOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import type { WorkoutTemplate, TemplateExercise } from '@/types';
@@ -21,7 +21,7 @@ export function WorkoutTemplates({ activeExercises, onLoad, isGuest }: Props) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
 
-  const fetchTemplates = () => {
+  const fetchTemplates = useCallback(() => {
     if (isGuest) return;
     setLoading(true);
     fetch('/api/templates')
@@ -29,11 +29,12 @@ export function WorkoutTemplates({ activeExercises, onLoad, isGuest }: Props) {
       .then((data) => Array.isArray(data) ? setTemplates(data) : setTemplates([]))
       .catch(() => setTemplates([]))
       .finally(() => setLoading(false));
-  };
+  }, [isGuest]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTemplates();
-  }, [isGuest]);
+  }, [fetchTemplates]);
 
   const handleSave = async () => {
     if (!templateName.trim()) return;

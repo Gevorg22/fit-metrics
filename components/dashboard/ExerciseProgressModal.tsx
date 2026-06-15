@@ -36,6 +36,7 @@ export function ExerciseProgressModal({ exerciseId, exerciseName, onClose }: Pro
 
   useEffect(() => {
     if (!exerciseId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     setData([]);
     fetch(`/api/analytics/exercise?exerciseId=${exerciseId}`)

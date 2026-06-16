@@ -56,25 +56,14 @@ export function FoodScanner({ onAdd }: Props) {
     e.target.value = '';
   };
 
-  const handleAdd = async () => {
+  const handleAdd = () => {
     if (!result) return;
     setAdding(true);
-    try {
-      const res = await fetch('/api/nutrition', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(result),
-      });
-      if (!res.ok) throw new Error();
-      onAdd(result);
-      setResult(null);
-      setPreview(null);
-      messageApi.success('Добавлено в дневник');
-    } catch {
-      messageApi.error('Ошибка добавления');
-    } finally {
-      setAdding(false);
-    }
+    onAdd(result);
+    setResult(null);
+    setPreview(null);
+    messageApi.success('Добавлено в дневник');
+    setAdding(false);
   };
 
   const reset = () => { setResult(null); setPreview(null); };

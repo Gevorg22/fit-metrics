@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { CalorieNormCard } from './CalorieNormCard';
 import { FoodScanner } from './FoodScanner';
 import { FoodLog } from './FoodLog';
+import { ManualFoodEntry } from './ManualFoodEntry';
 import styles from './NutritionView.module.scss';
 
 interface FoodEntry {
@@ -32,6 +33,25 @@ export function NutritionView({ gender, heightCm, weightKg, birthDate, goalWeigh
     setEntries((prev) => prev.filter((e) => e.id !== id));
   };
 
+  const handleScanAdd = (entry: Omit<FoodEntry, 'id'>) => {
+    const tmpId = `tmp-${Date.now()}`;
+    setEntries((prev) => [...prev, { ...entry, id: tmpId }]);
+    fetch('/api/nutrition', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry),
+    })
+      .then((r) => r.json())
+      .then((saved) => setEntries((prev) =>
+        prev.map((e) => e.id === tmpId ? saved : e)
+      ))
+      .catch(() => null);
+  };
+
+  const handleManualAdd = (entry: FoodEntry) => {
+    setEntries((prev) => [...prev, entry]);
+  };
+
   return (
     <div className={styles.page}>
       <h1 className={styles.heading}>Питание</h1>
@@ -57,19 +77,8 @@ export function NutritionView({ gender, heightCm, weightKg, birthDate, goalWeigh
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Добавить приём пищи</h2>
-        <FoodScanner onAdd={(entry) => {
-          setEntries((prev) => [...prev, { ...entry, id: `tmp-${Date.now()}` }]);
-          fetch('/api/nutrition', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(entry),
-          })
-            .then((r) => r.json())
-            .then((saved) => setEntries((prev) =>
-              prev.map((e) => e.id.startsWith('tmp-') && e.name === saved.name ? saved : e)
-            ))
-            .catch(() => null);
-        }} />
+        <FoodScanner onAdd={handleScanAdd} />
+        <ManualFoodEntry onAdd={handleManualAdd} />
       </section>
     </div>
   );

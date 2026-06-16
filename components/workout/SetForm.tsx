@@ -248,40 +248,45 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
           <input
             type="text"
             inputMode="decimal"
-            className={styles.setInput}
+            className={`${styles.setInput} ${draft.saved ? styles.setInputSaved : ''}`}
             value={draft.weight}
-            onChange={(e) => updateDraft(idx, 'weight', e.target.value)}
-            onKeyDown={(e) => handleWeightKeyDown(e, idx)}
+            onChange={(e) => !draft.saved && updateDraft(idx, 'weight', e.target.value)}
+            onKeyDown={(e) => !draft.saved && handleWeightKeyDown(e, idx)}
             ref={(el) => { weightRefs.current[idx] = el; }}
             placeholder="0"
+            readOnly={draft.saved}
           />
           <input
             type={isCardio ? 'text' : 'number'}
             inputMode="decimal"
-            className={styles.setInput}
+            className={`${styles.setInput} ${draft.saved ? styles.setInputSaved : ''}`}
             value={draft.reps}
-            onChange={(e) => updateDraft(idx, 'reps', e.target.value)}
-            onKeyDown={(e) => handleRepsKeyDown(e, idx)}
+            onChange={(e) => !draft.saved && updateDraft(idx, 'reps', e.target.value)}
+            onKeyDown={(e) => !draft.saved && handleRepsKeyDown(e, idx)}
             ref={(el) => { repsRefs.current[idx] = el; }}
             placeholder="0"
             min={isCardio ? undefined : 1}
+            readOnly={draft.saved}
           />
           {draft.saved ? (
-            <Popconfirm
-              title="Удалить подход?"
-              onConfirm={() => removeSaved(idx)}
-              okText="Да"
-              cancelText="Нет"
-              okButtonProps={{ danger: true }}
-            >
-              <button
-                className={styles.savedDeleteBtn}
-                disabled={deleting === draft.id}
-                aria-label="Удалить подход"
+            <div className={styles.savedActions}>
+              <span className={styles.savedCheck}><CheckOutlined /></span>
+              <Popconfirm
+                title="Удалить подход?"
+                onConfirm={() => removeSaved(idx)}
+                okText="Да"
+                cancelText="Нет"
+                okButtonProps={{ danger: true }}
               >
-                {deleting === draft.id ? <CheckOutlined /> : <DeleteOutlined />}
-              </button>
-            </Popconfirm>
+                <button
+                  className={styles.savedDeleteBtn}
+                  disabled={deleting === draft.id}
+                  aria-label="Удалить подход"
+                >
+                  <DeleteOutlined />
+                </button>
+              </Popconfirm>
+            </div>
           ) : (
             <button className={styles.deleteBtn} onClick={() => removeRow(idx)}>
               <DeleteOutlined />

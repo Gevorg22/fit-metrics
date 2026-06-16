@@ -336,21 +336,6 @@ export default function WorkoutPage() {
         </div>
       )}
 
-      {!isGuest && (
-        <div className={styles.floatingFinish}>
-          <Popconfirm
-            title="Завершить тренировку?"
-            description="Все записанные подходы уже сохранены."
-            onConfirm={handleFinish}
-            okText="Завершить"
-            cancelText="Отмена"
-          >
-            <Button type="primary" shape="round" size="large" icon={<CheckOutlined />} loading={finishing}>
-              Завершить
-            </Button>
-          </Popconfirm>
-        </div>
-      )}
     </div>
   );
 }

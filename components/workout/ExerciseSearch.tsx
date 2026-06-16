@@ -68,7 +68,7 @@ function matchWords(text: string, words: string[]): boolean {
 
 export function ExerciseSearch({ exercises, onSelect }: Props) {
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState<string>('Все');
+  const [category, setCategory] = useState<string>(FAVORITES_LABEL);
   const catRowRef = useRef<HTMLDivElement>(null);
   const { favorites, toggle, mounted } = useFavorites();
 

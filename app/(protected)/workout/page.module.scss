@@ -282,18 +282,4 @@
   font-size: 14px;
 }
 
-.floatingFinish {
-  display: none;
 
-  @media (max-width: 640px) {
-    display: flex;
-    position: fixed;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
-    border-radius: 999px;
-    overflow: hidden;
-  }
-}

@@ -11,6 +11,10 @@
   gap: 8px;
 }
 
+.setRowSaved {
+  grid-template-columns: 32px 1fr 1fr 64px;
+}
+
 .setNum {
   font-size: 13px;
   color: var(--color-text-muted);
@@ -127,8 +131,34 @@
   letter-spacing: 0.05em;
 }
 
-.setRowSaved {
-  opacity: 0.75;
+.setInputSaved {
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-text-muted);
+  cursor: default;
+
+  &:focus {
+    border-color: transparent;
+  }
+}
+
+.savedActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.savedCheck {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+  font-size: 11px;
+  flex-shrink: 0;
 }
 
 .addRow {

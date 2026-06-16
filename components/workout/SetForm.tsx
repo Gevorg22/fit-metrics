@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Button, message, Popconfirm } from 'antd';
+import { Button, message, Popconfirm, Spin } from 'antd';
 import { PlusOutlined, DeleteOutlined, CheckOutlined } from '@ant-design/icons';
 import type { ActiveExercise, ActiveSet } from '@/types';
 import styles from './SetForm.module.scss';
@@ -47,6 +47,8 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [lastResult, setLastResult] = useState<LastResult | null>(null);
+  const [aiAdvice, setAiAdvice] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
   const prevSetIds = useRef<string[]>(exercise.sets.map((s) => s.id ?? ''));
   const weightRefs = useRef<(HTMLInputElement | null)[]>([]);
   const repsRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -227,6 +229,16 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
 
   const hasUnsaved = drafts.some((d) => !d.saved);
 
+  const handleAiAdvice = () => {
+    setAiLoading(true);
+    setAiAdvice(null);
+    fetch(`/api/ai/exercise-advice?exerciseId=${exercise.exerciseId}&exerciseName=${encodeURIComponent(exercise.exerciseName)}`)
+      .then((r) => r.json())
+      .then((d) => setAiAdvice(d.advice ?? d.error ?? 'Не удалось получить совет.'))
+      .catch(() => setAiAdvice('Ошибка соединения с AI.'))
+      .finally(() => setAiLoading(false));
+  };
+
   return (
     <div className={styles.wrap}>
       {contextHolder}
@@ -246,6 +258,24 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
           {calcOverloadHint(lastResult.sets) && (
             <div className={styles.overloadHint}>
               💡 {calcOverloadHint(lastResult.sets)}
+            </div>
+          )}
+          {!aiAdvice && !aiLoading && (
+            <button className={styles.aiBtn} onClick={handleAiAdvice}>
+              ✦ Спросить тренера
+            </button>
+          )}
+          {aiLoading && (
+            <div className={styles.aiLoading}>
+              <Spin size="small" />
+              <span>Анализирую...</span>
+            </div>
+          )}
+          {aiAdvice && !aiLoading && (
+            <div className={styles.aiCard}>
+              <span className={styles.aiCardLabel}>✦ Совет тренера</span>
+              <button className={styles.aiRefresh} onClick={handleAiAdvice} title="Обновить">↻</button>
+              <p className={styles.aiCardText}>{aiAdvice}</p>
             </div>
           )}
         </div>

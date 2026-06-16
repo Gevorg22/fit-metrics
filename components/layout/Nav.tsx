@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { href: '/workout', label: 'Тренировка' },
   { href: '/history', label: 'История' },
   { href: '/nutrition', label: 'Питание' },
+  { href: '/leaderboard', label: 'Рейтинг' },
   { href: '/profile', label: 'Профиль' },
 ];
 

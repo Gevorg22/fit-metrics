@@ -1,0 +1,134 @@
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.goalBadge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  &.lose {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+  }
+
+  &.gain {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+  }
+
+  &.maintain {
+    background: rgba(234, 179, 8, 0.15);
+    color: #eab308;
+  }
+}
+
+.mainRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.mainStat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mainVal {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.mainLabel {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.divider {
+  width: 1px;
+  height: 36px;
+  background: var(--color-border);
+}
+
+.tdeeRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tdeeLabel {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.tdeeVal {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.macros {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.macro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+  padding: 8px 4px;
+}
+
+.macroVal {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.macroLabel {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.formula {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin: 0;
+  opacity: 0.7;
+}

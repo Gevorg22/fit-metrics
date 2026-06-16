@@ -29,6 +29,7 @@ model User {
   workoutTemplates  WorkoutTemplate[]
   favoriteExercises FavoriteExercise[]
   pushSubscriptions PushSubscription[]
+  foodEntries       FoodEntry[]
 }
 
 model Account {
@@ -164,4 +165,20 @@ model PushSubscription {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model FoodEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @db.Date
+  name      String
+  calories  Int
+  protein   Float
+  fat       Float
+  carbs     Float
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
 }

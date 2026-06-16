@@ -1,0 +1,133 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hidden {
+  display: none;
+}
+
+.scanBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 24px 16px;
+  background: linear-gradient(135deg, #0f2b1a 0%, #1a1f2e 100%);
+  border: 2px dashed #22c55e55;
+  border-radius: var(--radius-md);
+  color: #22c55e;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+
+  &:hover {
+    border-color: #22c55e99;
+    background: linear-gradient(135deg, #163d25 0%, #1e2538 100%);
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px 12px;
+  }
+}
+
+.scanIcon {
+  font-size: 28px;
+}
+
+.scanSub {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.previewWrap {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  max-height: 240px;
+}
+
+.preview {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.overlayText {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.result {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.resultHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.resultName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.resultMacros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.resultStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+  padding: 8px 4px;
+}
+
+.resultVal {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.resultLabel {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.resultActions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}

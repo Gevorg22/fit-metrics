@@ -23,12 +23,19 @@ export async function GET(request: Request) {
     orderBy: { workout: { startedAt: 'asc' } },
   });
 
-  const byDate = new Map<string, { maxWeight: number; maxReps: number }>();
+  const byDate = new Map<string, { maxWeight: number; maxReps: number; totalVolume: number }>();
   for (const s of sets) {
     const date = s.workout.startedAt.toISOString().slice(0, 10);
     const cur = byDate.get(date);
-    if (!cur || s.weight > cur.maxWeight) {
-      byDate.set(date, { maxWeight: s.weight, maxReps: s.reps });
+    const vol = s.weight * s.reps;
+    if (!cur) {
+      byDate.set(date, { maxWeight: s.weight, maxReps: s.reps, totalVolume: vol });
+    } else {
+      byDate.set(date, {
+        maxWeight: Math.max(cur.maxWeight, s.weight),
+        maxReps: Math.max(cur.maxReps, s.reps),
+        totalVolume: cur.totalVolume + vol,
+      });
     }
   }
 
@@ -36,6 +43,7 @@ export async function GET(request: Request) {
     date,
     maxWeight: v.maxWeight,
     maxReps: v.maxReps,
+    totalVolume: Math.round(v.totalVolume),
   }));
 
   return NextResponse.json(data);

@@ -84,21 +84,25 @@
 
 .lv0 {
   fill: var(--color-border);
+  background-color: var(--color-border);
   opacity: 0.45;
 }
 
 .lv1 {
   fill: #14532d;
+  background-color: #14532d;
   opacity: 0.9;
 }
 
 .lv2 {
   fill: #16a34a;
+  background-color: #16a34a;
   opacity: 0.95;
 }
 
 .lv3 {
   fill: #22c55e;
+  background-color: #22c55e;
   opacity: 1;
 }
 
@@ -169,26 +173,31 @@
 
 .rv0 {
   fill: var(--color-border);
+  background-color: var(--color-border);
   opacity: 0.35;
 }
 
 .rv1 {
   fill: #ef4444;
+  background-color: #ef4444;
   opacity: 0.9;
 }
 
 .rv2 {
   fill: #f97316;
+  background-color: #f97316;
   opacity: 0.9;
 }
 
 .rv3 {
   fill: #eab308;
+  background-color: #eab308;
   opacity: 0.9;
 }
 
 .rv4 {
   fill: #22c55e;
+  background-color: #22c55e;
   opacity: 0.95;
 }
 

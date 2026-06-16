@@ -13,3 +13,34 @@
 .chartWrap {
   width: 100%;
 }
+
+.modeToggle {
+  display: flex;
+  gap: 4px;
+  background: var(--color-surface-2, #1f1f1f);
+  border-radius: 6px;
+  padding: 3px;
+  width: fit-content;
+  margin: 0 auto 14px;
+}
+
+.modeBtn {
+  padding: 4px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-muted, #888);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    color: var(--color-text, #f5f5f5);
+  }
+}
+
+.modeBtnActive {
+  background: var(--color-primary, #22c55e);
+  color: #fff;
+}

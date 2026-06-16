@@ -28,6 +28,15 @@ interface LastResult {
   sets: { setNumber: number; weight: number; reps: number }[];
 }
 
+function calcOverloadHint(sets: LastResult['sets']): string | null {
+  if (sets.length === 0) return null;
+  const maxWeight = Math.max(...sets.map((s) => s.weight));
+  const avgReps = Math.round(sets.reduce((a, s) => a + s.reps, 0) / sets.length);
+  const suggested = Math.round((maxWeight * 1.05) / 0.5) * 0.5;
+  if (suggested > maxWeight) return `Попробуй ${suggested} кг × ${avgReps}`;
+  return `Попробуй ${maxWeight} кг × ${avgReps + 1}`;
+}
+
 export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, onSetRemoved, onSetUpdated }: Props) {
   const [messageApi, contextHolder] = message.useMessage();
   const [drafts, setDrafts] = useState<DraftSet[]>(() =>
@@ -224,14 +233,21 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
 
       {lastResult && !isCardio && (
         <div className={styles.lastResult}>
-          <span className={styles.lastResultLabel}>В прошлый раз:</span>
-          <div className={styles.lastResultSets}>
-            {lastResult.sets.map((s) => (
-              <span key={s.setNumber} className={styles.lastResultSet}>
-                {s.weight}кг × {s.reps}
-              </span>
-            ))}
+          <div className={styles.lastResultRow}>
+            <span className={styles.lastResultLabel}>В прошлый раз:</span>
+            <div className={styles.lastResultSets}>
+              {lastResult.sets.map((s) => (
+                <span key={s.setNumber} className={styles.lastResultSet}>
+                  {s.weight}кг × {s.reps}
+                </span>
+              ))}
+            </div>
           </div>
+          {calcOverloadHint(lastResult.sets) && (
+            <div className={styles.overloadHint}>
+              💡 {calcOverloadHint(lastResult.sets)}
+            </div>
+          )}
         </div>
       )}
 

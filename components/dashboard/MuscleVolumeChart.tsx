@@ -5,9 +5,13 @@ import styles from './MuscleVolumeChart.module.scss';
 
 const MUSCLE_LABELS: Record<string, string> = {
   chest: 'Грудь',
+  pectorals: 'Грудь',
   lats: 'Широчайшие',
+  back: 'Спина',
   shoulders: 'Плечи',
   delts: 'Плечи',
+  'levator-scapulae': 'Плечи',
+  'serratus-anterior': 'Плечи',
   biceps: 'Бицепс',
   triceps: 'Трицепс',
   quadriceps: 'Квадрицепс',
@@ -19,9 +23,17 @@ const MUSCLE_LABELS: Record<string, string> = {
   traps: 'Трапеции',
   forearms: 'Предплечья',
   calves: 'Икры',
+  adductors: 'Приводящие',
+  abductors: 'Отводящие',
   'lower back': 'Нижняя спина',
+  lower_back: 'Нижняя спина',
   'middle back': 'Средняя спина',
+  middle_back: 'Средняя спина',
   'upper-back': 'Верхняя спина',
+  spine: 'Нижняя спина',
+  neck: 'Шея',
+  legs: 'Ноги',
+  cardio: 'Кардио',
 };
 
 function mergeLabel(key: string): string {

@@ -39,7 +39,10 @@ export async function POST(request: Request) {
   );
 
   if (!geminiRes.ok) {
-    return NextResponse.json({ error: 'Ошибка AI сервиса' }, { status: 502 });
+    const errBody = await geminiRes.json().catch(() => ({}));
+    console.error('Gemini API error:', geminiRes.status, JSON.stringify(errBody));
+    const msg = errBody?.error?.message ?? 'Ошибка AI сервиса';
+    return NextResponse.json({ error: msg }, { status: 502 });
   }
 
   const geminiData = await geminiRes.json();

@@ -37,6 +37,8 @@ export function ExerciseProgressModal({ exerciseId, exerciseName, onClose }: Pro
   const [data, setData] = useState<DataPoint[]>([]);
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<ChartMode>('strength');
+  const [advice, setAdvice] = useState<string | null>(null);
+  const [adviceLoading, setAdviceLoading] = useState(false);
 
   useEffect(() => {
     if (!exerciseId) return;
@@ -44,12 +46,24 @@ export function ExerciseProgressModal({ exerciseId, exerciseName, onClose }: Pro
     setLoading(true);
     setData([]);
     setMode('strength');
+    setAdvice(null);
     fetch(`/api/analytics/exercise?exerciseId=${exerciseId}`)
       .then((r) => r.json())
       .then((d) => Array.isArray(d) ? setData(d) : setData([]))
       .catch(() => setData([]))
       .finally(() => setLoading(false));
   }, [exerciseId]);
+
+  function handleGetAdvice() {
+    if (!exerciseId) return;
+    setAdviceLoading(true);
+    setAdvice(null);
+    fetch(`/api/ai/exercise-advice?exerciseId=${exerciseId}&exerciseName=${encodeURIComponent(exerciseName)}`)
+      .then((r) => r.json())
+      .then((d) => setAdvice(d.advice ?? d.error ?? 'Не удалось получить совет.'))
+      .catch(() => setAdvice('Ошибка соединения с AI.'))
+      .finally(() => setAdviceLoading(false));
+  }
 
   const formatted = data.map((d) => ({ ...d, label: formatDate(d.date) }));
 
@@ -123,6 +137,33 @@ export function ExerciseProgressModal({ exerciseId, exerciseName, onClose }: Pro
                 </LineChart>
               )}
             </ResponsiveContainer>
+          </div>
+
+          <div className={styles.aiSection}>
+            {!advice && !adviceLoading && (
+              <button className={styles.aiBtn} onClick={handleGetAdvice}>
+                <span className={styles.aiIcon}>✦</span>
+                Совет ИИ на следующую тренировку
+              </button>
+            )}
+
+            {adviceLoading && (
+              <div className={styles.aiLoading}>
+                <Spin size="small" />
+                <span>Анализирую историю...</span>
+              </div>
+            )}
+
+            {advice && !adviceLoading && (
+              <div className={styles.aiCard}>
+                <div className={styles.aiCardHeader}>
+                  <span className={styles.aiIcon}>✦</span>
+                  <span className={styles.aiCardTitle}>Совет тренера</span>
+                  <button className={styles.aiRefresh} onClick={handleGetAdvice} title="Обновить">↻</button>
+                </div>
+                <p className={styles.aiCardText}>{advice}</p>
+              </div>
+            )}
           </div>
         </>
       )}

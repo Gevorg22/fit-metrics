@@ -122,19 +122,12 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
       {contextHolder}
 
       <div className={styles.list}>
-        {workouts.map((w, wIdx) => {
+        {workouts.map((w) => {
           const isOpen = expanded === w.id;
           const grouped = groupSets(w.sets);
           const date = new Date(w.startedAt);
           const duration = getDuration(w.startedAt, w.finishedAt);
-          const prev = workouts[wIdx + 1];
-          const curVol = w.sets.reduce((s, x) => s + x.weight * x.reps, 0);
-          const prevVol = prev ? prev.sets.reduce((s, x) => s + x.weight * x.reps, 0) : null;
-          const volDelta = prevVol !== null ? Math.round(curVol - prevVol) : null;
-          const setsDelta = prev ? w.sets.length - prev.sets.length : null;
-          const curDurMin = w.finishedAt ? Math.round((new Date(w.finishedAt).getTime() - new Date(w.startedAt).getTime()) / 60000) : null;
-          const prevDurMin = prev?.finishedAt ? Math.round((new Date(prev.finishedAt).getTime() - new Date(prev.startedAt).getTime()) / 60000) : null;
-          const durDelta = curDurMin !== null && prevDurMin !== null ? curDurMin - prevDurMin : null;
+
 
           return (
             <div key={w.id} className={styles.item}>
@@ -199,29 +192,6 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
               {isOpen && (
                 <div className={styles.detail}>
                   {w.notes && <p className={styles.notes}>{w.notes}</p>}
-
-                  {prev && (volDelta !== null || setsDelta !== null || durDelta !== null) && (
-                    <div className={styles.cmpCard}>
-                      <span className={styles.cmpTitle}>vs прошлая тренировка</span>
-                      <div className={styles.cmpRow}>
-                        {volDelta !== null && (
-                          <span className={`${styles.cmpStat} ${volDelta > 0 ? styles.cmpPos : volDelta < 0 ? styles.cmpNeg : ''}`}>
-                            {volDelta > 0 ? '+' : ''}{volDelta} кг объём
-                          </span>
-                        )}
-                        {setsDelta !== null && (
-                          <span className={`${styles.cmpStat} ${setsDelta > 0 ? styles.cmpPos : setsDelta < 0 ? styles.cmpNeg : ''}`}>
-                            {setsDelta > 0 ? '+' : ''}{setsDelta} подх.
-                          </span>
-                        )}
-                        {durDelta !== null && (
-                          <span className={`${styles.cmpStat} ${durDelta > 0 ? styles.cmpPos : durDelta < 0 ? styles.cmpNeg : ''}`}>
-                            {durDelta > 0 ? '+' : ''}{durDelta} мин
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )}
 
                   {grouped.length === 0 ? (
                     <p className={styles.noSets}>Подходы не записаны</p>

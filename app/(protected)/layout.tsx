@@ -14,7 +14,12 @@ export default async function ProtectedLayout({ children }: { children: React.Re
 
   return (
     <div className={styles.root}>
-      <Nav userEmail={session?.user?.email} isGuest={isGuest && !session} />
+      <Nav
+        userEmail={session?.user?.email}
+        userName={session?.user?.name}
+        userImage={session?.user?.image}
+        isGuest={isGuest && !session}
+      />
       <div className={styles.content}>{children}</div>
       <Footer />
     </div>

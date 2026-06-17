@@ -18,10 +18,12 @@ const NAV_LINKS = [
 
 interface Props {
   userEmail?: string | null;
+  userName?: string | null;
+  userImage?: string | null;
   isGuest?: boolean;
 }
 
-export function Nav({ userEmail, isGuest }: Props) {
+export function Nav({ userEmail, userName, userImage, isGuest }: Props) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const { appTheme, toggleTheme } = useAppTheme();
@@ -74,7 +76,19 @@ export function Nav({ userEmail, isGuest }: Props) {
           {isGuest ? (
             <span className={styles.guestBadge}>Гостевой режим</span>
           ) : (
-            userEmail && <span className={styles.email}>{userEmail}</span>
+            userEmail && (
+              <Link href="/profile" className={styles.userLink}>
+                {userImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={userImage} alt={userName ?? userEmail} className={styles.userAvatar} />
+                ) : (
+                  <span className={styles.userAvatarFallback}>
+                    {(userName ?? userEmail).slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+                <span className={styles.email}>{userName ?? userEmail}</span>
+              </Link>
+            )
           )}
 
           <button
@@ -118,7 +132,19 @@ export function Nav({ userEmail, isGuest }: Props) {
           {isGuest ? (
             <span className={styles.mobileGuestBadge}>Гостевой режим</span>
           ) : (
-            userEmail && <span className={styles.mobileEmail}>{userEmail}</span>
+            userEmail && (
+              <Link href="/profile" className={styles.mobileUserLink} onClick={() => setMenuOpen(false)}>
+                {userImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={userImage} alt={userName ?? userEmail} className={styles.mobileUserAvatar} />
+                ) : (
+                  <span className={styles.mobileUserAvatarFallback}>
+                    {(userName ?? userEmail).slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+                <span className={styles.mobileEmail}>{userName ?? userEmail}</span>
+              </Link>
+            )
           )}
           <button
             className={styles.mobileThemeBtn}

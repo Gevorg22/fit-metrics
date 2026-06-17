@@ -1,0 +1,63 @@
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.bone {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-2) 25%,
+    #2a2a2a 50%,
+    var(--color-surface-2) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: var(--radius-sm);
+}
+
+.page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titleBone {
+  composes: bone;
+  height: 28px;
+  width: 120px;
+  border-radius: var(--radius-md);
+}
+
+.dateBone {
+  composes: bone;
+  height: 32px;
+  width: 100px;
+  border-radius: var(--radius-md);
+}
+
+.card {
+  composes: bone;
+  height: 130px;
+  border-radius: var(--radius-md);
+}
+
+.logCard {
+  composes: bone;
+  height: 180px;
+  border-radius: var(--radius-md);
+}
+
+.addCard {
+  composes: bone;
+  height: 56px;
+  border-radius: var(--radius-md);
+}

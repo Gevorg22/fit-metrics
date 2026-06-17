@@ -40,6 +40,7 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
   const [lastResult, setLastResult] = useState<LastResult | null>(null);
   const [aiAdvice, setAiAdvice] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
+  const [aiCollapsed, setAiCollapsed] = useState(false);
   const prevSetIds = useRef<string[]>(exercise.sets.map((s) => s.id ?? ''));
   const weightRefs = useRef<(HTMLInputElement | null)[]>([]);
   const repsRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -259,9 +260,16 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
           )}
           {aiAdvice && !aiLoading && (
             <div className={styles.aiCard}>
-              <span className={styles.aiCardLabel}>✦ Совет AI-тренера</span>
-              <button className={styles.aiRefresh} onClick={handleAiAdvice} title="Обновить">↻</button>
-              <p className={styles.aiCardText}>{aiAdvice}</p>
+              <div className={styles.aiCardHeader}>
+                <span className={styles.aiCardLabel}>✦ Совет AI-тренера</span>
+                <div className={styles.aiCardActions}>
+                  <button className={styles.aiRefresh} onClick={handleAiAdvice} title="Обновить">↻</button>
+                  <button className={styles.aiCollapse} onClick={() => setAiCollapsed((c) => !c)} title={aiCollapsed ? 'Развернуть' : 'Свернуть'}>
+                    {aiCollapsed ? '▾' : '▴'}
+                  </button>
+                </div>
+              </div>
+              {!aiCollapsed && <p className={styles.aiCardText}>{aiAdvice}</p>}
             </div>
           )}
         </div>

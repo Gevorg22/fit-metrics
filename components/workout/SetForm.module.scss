@@ -262,14 +262,19 @@
 
 .aiCard {
   margin-top: 6px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto auto;
-  gap: 2px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   padding: 8px 10px;
   background: rgba(34, 197, 94, 0.06);
   border: 1px solid #22c55e33;
   border-radius: 6px;
+}
+
+.aiCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .aiCardLabel {
@@ -278,13 +283,15 @@
   color: #22c55e;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  grid-column: 1;
-  grid-row: 1;
+}
+
+.aiCardActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .aiRefresh {
-  grid-column: 2;
-  grid-row: 1;
   background: none;
   border: none;
   color: var(--color-text-muted);
@@ -299,9 +306,22 @@
   }
 }
 
+.aiCollapse {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  transition: color 0.15s;
+
+  &:hover {
+    color: #22c55e;
+  }
+}
+
 .aiCardText {
-  grid-column: 1 / -1;
-  grid-row: 2;
   font-size: 12px;
   line-height: 1.55;
   color: var(--color-text);

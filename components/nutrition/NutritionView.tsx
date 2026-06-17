@@ -61,12 +61,9 @@ export function NutritionView({ gender, heightCm, weightKg, birthDate, goalWeigh
     loadEntries(dateStr);
   }, [dateStr, todayStr, loadEntries]);
 
-  const goDay = (delta: number) => {
-    const d = new Date(dateStr);
-    d.setDate(d.getDate() + delta);
-    const next = toLocalDateStr(d);
-    if (next > todayStr) return;
-    setDateStr(next);
+  const handleDateChange = (value: string) => {
+    if (!value || value > todayStr) return;
+    setDateStr(value);
   };
 
   const handleDelete = (id: string) => {
@@ -94,10 +91,15 @@ export function NutritionView({ gender, heightCm, weightKg, birthDate, goalWeigh
     <div className={styles.page}>
       <div className={styles.topRow}>
         <h1 className={styles.heading}>Питание</h1>
-        <div className={styles.dateNav}>
-          <button className={styles.dateBtn} onClick={() => goDay(-1)}>‹</button>
-          <span className={styles.dateLabel}>{formatDateLabel(dateStr)}</span>
-          <button className={styles.dateBtn} onClick={() => goDay(1)} disabled={isToday}>›</button>
+        <div className={styles.datePickerWrap}>
+          <label className={styles.dateLabelText}>{formatDateLabel(dateStr)}</label>
+          <input
+            type="date"
+            className={styles.datePicker}
+            value={dateStr}
+            max={todayStr}
+            onChange={(e) => handleDateChange(e.target.value)}
+          />
         </div>
       </div>
 
@@ -128,6 +130,7 @@ export function NutritionView({ gender, heightCm, weightKg, birthDate, goalWeigh
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Добавить приём пищи</h2>
           <FoodScanner onAdd={handleScanAdd} />
+          <div className={styles.addGap} />
           <ManualFoodEntry onAdd={handleManualAdd} />
         </section>
       )}

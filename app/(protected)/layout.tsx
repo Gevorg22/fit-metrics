@@ -15,6 +15,15 @@ export default async function ProtectedLayout({ children }: { children: React.Re
     <div className={styles.root}>
       <Nav userEmail={session?.user?.email} isGuest={isGuest && !session} />
       <div className={styles.content}>{children}</div>
+      <footer className={styles.footer}>
+        <span>Created by Gevorg Karagozian</span>
+        <span className={styles.footerDot}>·</span>
+        <a href="https://github.com/Gevorg22" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>GitHub</a>
+        <span className={styles.footerDot}>·</span>
+        <a href="https://t.me/Gevorg1989" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>Telegram</a>
+        <span className={styles.footerDot}>·</span>
+        <a href="mailto:gevorg227@gmail.com" className={styles.footerLink}>Email</a>
+      </footer>
     </div>
   );
 }

@@ -12,7 +12,7 @@ export default async function ProfilePage() {
   const [user, workouts, sets, topExercisesRaw] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
-      select: { name: true, notificationsEnabled: true, gender: true, heightCm: true, goalWeight: true, birthDate: true },
+      select: { name: true, notificationsEnabled: true, gender: true, heightCm: true, goalWeight: true, birthDate: true, image: true },
     }),
     prisma.workout.findMany({
       where: { userId },
@@ -65,6 +65,7 @@ export default async function ProfilePage() {
       heightCm={user?.heightCm ?? null}
       goalWeight={user?.goalWeight ?? null}
       birthDate={user?.birthDate ? user.birthDate.toISOString().slice(0, 10) : null}
+      image={user?.image ?? null}
       totalWorkouts={totalWorkouts}
       totalVolume={totalVolume}
       avgDurationMin={avgDurationMin}

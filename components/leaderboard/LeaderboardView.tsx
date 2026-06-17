@@ -8,6 +8,7 @@ import styles from './LeaderboardView.module.scss';
 interface LeaderRow {
   userId: string;
   displayName: string;
+  image: string | null;
   isMe: boolean;
   totalVolume: number;
   maxWeight: number;
@@ -103,7 +104,12 @@ export function LeaderboardView() {
               </div>
 
               <div className={styles.avatar}>
-                {row.displayName.slice(0, 1).toUpperCase()}
+                {row.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={row.image} alt={row.displayName} className={styles.avatarImg} />
+                ) : (
+                  row.displayName.slice(0, 1).toUpperCase()
+                )}
               </div>
 
               <div className={styles.info}>

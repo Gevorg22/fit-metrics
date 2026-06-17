@@ -6,6 +6,7 @@ import styles from './UserStatsModal.module.scss';
 
 interface UserStats {
   displayName: string;
+  image: string | null;
   memberSince: string;
   workoutCount: number;
   totalVolume: number;
@@ -61,7 +62,12 @@ export function UserStatsModal({ userId, onClose }: Props) {
       {!loading && stats && (
         <div className={styles.card}>
           <div className={styles.avatar}>
-            {stats.displayName.slice(0, 1).toUpperCase()}
+            {stats.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={stats.image} alt={stats.displayName} className={styles.avatarImg} />
+            ) : (
+              stats.displayName.slice(0, 1).toUpperCase()
+            )}
           </div>
           <h2 className={styles.name}>{stats.displayName}</h2>
           <p className={styles.since}>В приложении с {stats.memberSince}</p>

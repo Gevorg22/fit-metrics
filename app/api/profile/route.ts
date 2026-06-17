@@ -11,7 +11,7 @@ export async function GET() {
   const [user, workouts, sets, topExercisesRaw] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
-      select: { name: true, notificationsEnabled: true, gender: true, heightCm: true, goalWeight: true, birthDate: true },
+      select: { name: true, notificationsEnabled: true, gender: true, heightCm: true, goalWeight: true, birthDate: true, image: true },
     }),
     prisma.workout.findMany({
       where: { userId },
@@ -67,6 +67,7 @@ export async function GET() {
     heightCm: user?.heightCm ?? null,
     goalWeight: user?.goalWeight ?? null,
     birthDate: user?.birthDate ? user.birthDate.toISOString().slice(0, 10) : null,
+    image: user?.image ?? null,
   });
 }
 
@@ -82,6 +83,7 @@ export async function PATCH(request: Request) {
     heightCm?: number | null;
     goalWeight?: number | null;
     birthDate?: Date | null;
+    image?: string | null;
   } = {};
 
   if (typeof body.name === 'string') data.name = body.name.trim() || null;
@@ -90,6 +92,13 @@ export async function PATCH(request: Request) {
   if (body.heightCm !== undefined) data.heightCm = body.heightCm ? Number(body.heightCm) || null : null;
   if (body.goalWeight !== undefined) data.goalWeight = body.goalWeight ? Number(body.goalWeight) || null : null;
   if (body.birthDate !== undefined) data.birthDate = body.birthDate ? new Date(body.birthDate) : null;
+  if (body.image !== undefined) {
+    if (body.image === null) {
+      data.image = null;
+    } else if (typeof body.image === 'string' && body.image.startsWith('data:image/')) {
+      data.image = body.image;
+    }
+  }
 
   if (Object.keys(data).length === 0) {
     return NextResponse.json({ error: 'Nothing to update' }, { status: 400 });

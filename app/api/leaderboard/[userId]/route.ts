@@ -18,6 +18,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ userId:
     select: {
       name: true,
       email: true,
+      image: true,
       createdAt: true,
       workouts: {
         where: { finishedAt: { not: null } },
@@ -65,6 +66,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ userId:
 
   return NextResponse.json({
     displayName: user.name?.trim() || maskEmail(user.email),
+    image: user.image ?? null,
     memberSince,
     workoutCount,
     totalVolume,

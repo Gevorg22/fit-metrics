@@ -21,6 +21,7 @@ export async function GET() {
       id: true,
       name: true,
       email: true,
+      image: true,
       workouts: {
         where: { finishedAt: { not: null } },
         select: {
@@ -43,6 +44,7 @@ export async function GET() {
     return {
       userId: u.id,
       displayName: displayName(u.name, u.email),
+      image: u.image ?? null,
       isMe: u.id === session.user!.id,
       totalVolume,
       maxWeight,

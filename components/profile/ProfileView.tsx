@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { signOut } from 'next-auth/react';
-import { Button, Input, message } from 'antd';
+import { Button, Input, message, Spin } from 'antd';
 import {
   LogoutOutlined,
   UserOutlined,
@@ -13,6 +13,7 @@ import {
   CheckOutlined,
   CloseOutlined,
   HeartOutlined,
+  CameraOutlined,
 } from '@ant-design/icons';
 import { PushNotificationButton } from './PushNotificationButton';
 import styles from './ProfileView.module.scss';
@@ -31,6 +32,7 @@ interface Props {
   heightCm: number | null;
   goalWeight: number | null;
   birthDate: string | null;
+  image: string | null;
   totalWorkouts: number;
   totalVolume: number;
   avgDurationMin: number;
@@ -114,6 +116,7 @@ export function ProfileView({
   heightCm: initialHeight,
   goalWeight: initialGoalWeight,
   birthDate: initialBirthDate,
+  image: initialImage,
   totalWorkouts,
   totalVolume,
   avgDurationMin,
@@ -129,6 +132,9 @@ export function ProfileView({
   const [heightCm, setHeightCm] = useState<number | null>(initialHeight);
   const [goalWeight, setGoalWeight] = useState<number | null>(initialGoalWeight);
   const [birthDate, setBirthDate] = useState<string | null>(initialBirthDate);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(initialImage);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const patch = async (data: Record<string, unknown>) => {
     const res = await fetch('/api/profile', {
@@ -137,6 +143,37 @@ export function ProfileView({
       body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error();
+  };
+
+  const handleAvatarFile = (file: File) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.onload = async () => {
+        const size = 200;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d')!;
+        const minSide = Math.min(img.width, img.height);
+        const sx = (img.width - minSide) / 2;
+        const sy = (img.height - minSide) / 2;
+        ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+        const base64 = canvas.toDataURL('image/jpeg', 0.85);
+        setUploadingAvatar(true);
+        try {
+          await patch({ image: base64 });
+          setAvatarUrl(base64);
+          message.success('Фото обновлено');
+        } catch {
+          message.error('Не удалось загрузить фото');
+        } finally {
+          setUploadingAvatar(false);
+        }
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
   };
 
   const startEdit = () => { setNameInput(name); setEditingName(true); };
@@ -195,8 +232,31 @@ export function ProfileView({
   return (
     <div className={styles.page}>
       <div className={styles.hero}>
-        <div className={styles.avatar}>
-          <UserOutlined />
+        <div className={styles.avatarWrap} onClick={() => fileInputRef.current?.click()} title="Сменить фото">
+          <div className={styles.avatar}>
+            {uploadingAvatar ? (
+              <Spin size="small" />
+            ) : avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatarUrl} alt="Аватар" className={styles.avatarImg} />
+            ) : (
+              <UserOutlined />
+            )}
+          </div>
+          <div className={styles.avatarOverlay}>
+            <CameraOutlined className={styles.cameraIcon} />
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className={styles.fileInput}
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleAvatarFile(f);
+              e.target.value = '';
+            }}
+          />
         </div>
         <div className={styles.heroInfo}>
           {editingName ? (

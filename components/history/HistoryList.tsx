@@ -6,9 +6,14 @@ import { useRouter } from 'next/navigation';
 import { Popconfirm, message, Button } from 'antd';
 import { DeleteOutlined, ShareAltOutlined, DownOutlined, LineChartOutlined } from '@ant-design/icons';
 import type { WorkoutHistoryEntry, WorkoutSetEntry } from '@/types';
-import { getExerciseImageUrl, getDuration, formatSets } from '@/lib/utils';
-import { ExerciseProgressModal } from '@/components/dashboard/ExerciseProgressModal';
+import dynamic from 'next/dynamic';
+import { getExerciseImageUrl, getDuration, formatSets, groupSetsByExercise } from '@/lib/utils';
 import styles from './HistoryList.module.scss';
+
+const ExerciseProgressModal = dynamic(
+  () => import('@/components/dashboard/ExerciseProgressModal').then((m) => ({ default: m.ExerciseProgressModal })),
+  { ssr: false }
+);
 
 interface Props {
   workouts: WorkoutHistoryEntry[];
@@ -16,17 +21,6 @@ interface Props {
   exerciseImages: Record<string, string>;
   nextCursor: string | null;
   exerciseId?: string | null;
-}
-
-function groupSets(sets: WorkoutSetEntry[]): { exerciseId: string; sets: WorkoutSetEntry[] }[] {
-  const map = new Map<string, WorkoutSetEntry[]>();
-  for (const s of sets) {
-    if (!map.has(s.exerciseId)) map.set(s.exerciseId, []);
-    map.get(s.exerciseId)!.push(s);
-  }
-  return Array.from(map.entries())
-    .map(([exerciseId, sets]) => ({ exerciseId, sets }))
-    .reverse();
 }
 
 export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, nextCursor: initialCursor, exerciseId }: Props) {
@@ -56,7 +50,7 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
   const handleShare = async (w: WorkoutHistoryEntry) => {
     const date = new Date(w.startedAt).toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' });
     const duration = getDuration(w.startedAt, w.finishedAt);
-    const grouped = groupSets(w.sets);
+    const grouped = groupSetsByExercise(w.sets);
     const lines = grouped.map(({ exerciseId, sets }) => {
       const name = exerciseNames[exerciseId] ?? exerciseId;
       const setsStr = sets.map((s) => `${s.weight}кг×${s.reps}`).join(', ');
@@ -111,7 +105,7 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
       <div className={styles.list}>
         {workouts.map((w) => {
           const isOpen = expanded === w.id;
-          const grouped = groupSets(w.sets);
+          const grouped = groupSetsByExercise(w.sets);
           const date = new Date(w.startedAt);
           const duration = getDuration(w.startedAt, w.finishedAt);
 

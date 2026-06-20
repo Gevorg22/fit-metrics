@@ -9,18 +9,42 @@ import type { WeightLogEntry, WorkoutHistoryEntry, PersonalRecord } from '@/type
 import { WeightInput } from './WeightInput';
 import { WeightHistory } from './WeightHistory';
 import { WorkoutHistory } from './WorkoutHistory';
-import { PersonalRecords } from './PersonalRecords';
-import { ActivityHeatmap } from './ActivityHeatmap';
-import { MuscleMap } from './MuscleMap';
-import { StreakCard } from './StreakCard';
-import { Achievements } from './Achievements';
 import { WorkoutCTA } from './WorkoutCTA';
 import { BodyStatsCard } from './BodyStatsCard';
-import { MuscleVolumeChart } from './MuscleVolumeChart';
 import styles from './DashboardView.module.scss';
 
 const WeightChart = dynamic(
   () => import('./WeightChart').then((m) => ({ default: m.WeightChart })),
+  { ssr: false, loading: () => <div className={styles.chartSkeleton}><Spin /></div> }
+);
+
+const StreakCard = dynamic(
+  () => import('./StreakCard').then((m) => ({ default: m.StreakCard })),
+  { ssr: false, loading: () => <div className={styles.chartSkeleton}><Spin /></div> }
+);
+
+const ActivityHeatmap = dynamic(
+  () => import('./ActivityHeatmap').then((m) => ({ default: m.ActivityHeatmap })),
+  { ssr: false, loading: () => <div className={styles.chartSkeleton}><Spin /></div> }
+);
+
+const Achievements = dynamic(
+  () => import('./Achievements').then((m) => ({ default: m.Achievements })),
+  { ssr: false, loading: () => <div className={styles.chartSkeleton}><Spin /></div> }
+);
+
+const MuscleMap = dynamic(
+  () => import('./MuscleMap').then((m) => ({ default: m.MuscleMap })),
+  { ssr: false, loading: () => <div className={styles.chartSkeleton}><Spin /></div> }
+);
+
+const MuscleVolumeChart = dynamic(
+  () => import('./MuscleVolumeChart').then((m) => ({ default: m.MuscleVolumeChart })),
+  { ssr: false, loading: () => <div className={styles.chartSkeleton}><Spin /></div> }
+);
+
+const PersonalRecords = dynamic(
+  () => import('./PersonalRecords').then((m) => ({ default: m.PersonalRecords })),
   { ssr: false, loading: () => <div className={styles.chartSkeleton}><Spin /></div> }
 );
 

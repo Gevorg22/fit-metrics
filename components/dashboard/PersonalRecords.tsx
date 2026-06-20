@@ -1,9 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import type { PersonalRecord } from '@/types';
-import { ExerciseProgressModal } from './ExerciseProgressModal';
 import styles from './PersonalRecords.module.scss';
+
+const ExerciseProgressModal = dynamic(
+  () => import('./ExerciseProgressModal').then((m) => ({ default: m.ExerciseProgressModal })),
+  { ssr: false }
+);
 
 interface Props {
   records: PersonalRecord[];

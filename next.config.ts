@@ -2,6 +2,9 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ['@prisma/client', 'prisma', 'web-push'],
+  experimental: {
+    optimizePackageImports: ['antd', '@ant-design/icons', 'recharts'],
+  },
   images: {
     remotePatterns: [
       {

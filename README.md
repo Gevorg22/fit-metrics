@@ -86,10 +86,11 @@
 | Аутентификация | [NextAuth v5](https://authjs.dev) + кастомный OTP |
 | Email | [Resend](https://resend.com) |
 | Состояние | [Zustand](https://zustand-demo.pmnd.rs) |
+| Серверный кэш | [TanStack React Query v5](https://tanstack.com/query) |
 | Графики | [Recharts](https://recharts.org) |
-| Кэш / запросы | [React Query](https://tanstack.com/query) |
 | AI | [Groq](https://groq.com) (Llama 3.3 70b, Llama 4 Scout) |
-| Деплой | [Vercel](https://vercel.com) |
+| Push-уведомления | Web Push API + VAPID |
+| Деплой | [Railway](https://railway.app) |
 | Бэкап БД | GitHub Actions (еженедельно) |
 
 ## Локальный запуск
@@ -192,19 +193,24 @@ fitMetrics/
 │   ├── (auth)/          # Страницы авторизации (login, verify-otp)
 │   ├── (protected)/     # Защищённые страницы (dashboard, workout, history, profile)
 │   ├── api/             # API routes
-│   ├── providers.tsx    # Тема, Ant Design ConfigProvider
+│   ├── providers.tsx    # SessionProvider, QueryClientProvider, Ant Design ConfigProvider
 │   └── layout.tsx       # Корневой layout
 ├── components/
 │   ├── dashboard/       # Главная: история, вес, рекорды, карта мышц, хитмап, BMI
 │   ├── history/         # Страница истории тренировок
-│   ├── layout/          # Навигация
+│   ├── layout/          # Навигация, футер
 │   ├── leaderboard/     # Рейтинг пользователей, статистика участника
 │   ├── nutrition/       # Дневник питания, сканер еды, норма калорий
 │   ├── profile/         # Профиль: параметры тела, уведомления, пол
 │   └── workout/         # Поиск упражнений, форма подходов, шаблоны
-├── lib/                 # Prisma client, утилиты
+├── hooks/               # React Query хуки (streak, achievements, muscle, leaderboard и др.)
+├── lib/
+│   ├── api/             # Типизированные fetch-функции для всех endpoint-ов
+│   ├── utils.ts         # Общие утилиты (форматирование, изображения, расчёты)
+│   ├── api-response.ts  # Хелперы для унифицированных API-ответов
+│   └── prisma.ts        # Prisma client
 ├── prisma/              # Схема БД, скрипты сидинга
-├── stores/              # Zustand stores (активная тренировка)
+├── stores/              # Zustand store (активная тренировка)
 ├── types/               # TypeScript типы
 └── .github/workflows/   # GitHub Actions (бэкап БД)
 ```

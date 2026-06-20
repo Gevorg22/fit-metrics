@@ -318,6 +318,13 @@ export function ProfileView({
       </div>
 
       <div className={styles.actions}>
+        <Button
+          href="/report"
+          target="_blank"
+          icon={<span style={{ fontSize: 14 }}>📄</span>}
+        >
+          Отчёт за месяц (PDF)
+        </Button>
         <Button danger icon={<LogoutOutlined />} onClick={() => signOut({ callbackUrl: '/login' })}>
           Выйти из аккаунта
         </Button>

@@ -90,6 +90,28 @@ export function ExerciseProgressModal({ exerciseId, exerciseName, onClose }: Pro
 
       {!loading && data.length > 0 && (
         <>
+          {(() => {
+            const latest = data[data.length - 1];
+            const orm = latest.maxReps > 1
+              ? Math.round(latest.maxWeight * (1 + latest.maxReps / 30))
+              : latest.maxWeight;
+            return (
+              <div className={styles.statsRow}>
+                <div className={styles.statChip}>
+                  <span className={styles.statChipLabel}>Макс. вес</span>
+                  <span className={styles.statChipValue}>{latest.maxWeight} кг</span>
+                </div>
+                <div className={styles.statChip}>
+                  <span className={styles.statChipLabel}>1RM (Epley)</span>
+                  <span className={styles.statChipValue}>≈ {orm} кг</span>
+                </div>
+                <div className={styles.statChip}>
+                  <span className={styles.statChipLabel}>Сессий</span>
+                  <span className={styles.statChipValue}>{data.length}</span>
+                </div>
+              </div>
+            );
+          })()}
           <div className={styles.modeToggle}>
             <button
               className={`${styles.modeBtn} ${mode === 'strength' ? styles.modeBtnActive : ''}`}

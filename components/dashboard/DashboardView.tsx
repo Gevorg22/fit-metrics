@@ -11,6 +11,7 @@ import { WeightHistory } from './WeightHistory';
 import { WorkoutHistory } from './WorkoutHistory';
 import { WorkoutCTA } from './WorkoutCTA';
 import { BodyStatsCard } from './BodyStatsCard';
+import { WeeklyReportCard } from './WeeklyReportCard';
 import styles from './DashboardView.module.scss';
 
 const WeightChart = dynamic(
@@ -124,6 +125,11 @@ export function DashboardView({ todayWeight, totalWorkouts, lastWorkoutDate, rec
           <div className={styles.prSection}>
             <span className={styles.sectionTitle}>Личные рекорды</span>
             <PersonalRecords records={personalRecords} />
+          </div>
+
+          <div className={styles.prSection}>
+            <span className={styles.sectionTitle}>AI-отчёт недели</span>
+            <WeeklyReportCard />
           </div>
 
           <div className={styles.weightSection}>

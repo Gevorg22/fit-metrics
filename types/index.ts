@@ -75,3 +75,13 @@ export interface WorkoutTemplate {
   exercises: TemplateExercise[];
   createdAt: string;
 }
+
+export interface ExerciseGoal {
+  id: string;
+  exerciseId: string;
+  exerciseName: string;
+  targetWeight: number;
+  targetDate: string;
+  currentWeight: number;
+  createdAt: string;
+}

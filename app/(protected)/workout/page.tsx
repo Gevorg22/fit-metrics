@@ -302,10 +302,18 @@ export default function WorkoutPage() {
         <p className={styles.empty}>Нажми «Добавить упражнение» и выбери из списка</p>
       ) : (
         <div className={styles.exerciseList}>
-          {activeExercises.map((ex) => (
+          {activeExercises.map((ex) => {
+            const exData = exercises.find((e) => e.id === ex.exerciseId);
+            const img = exData?.images[0];
+            const imgSrc = img ? (img.startsWith('http') ? img : `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${img}`) : null;
+            return (
             <div key={ex.exerciseId} className={styles.exerciseCard}>
               <div className={styles.exerciseHeader}>
                 <div className={styles.exerciseLeft}>
+                  {imgSrc && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={imgSrc} alt={ex.exerciseName} className={styles.exerciseImg} />
+                  )}
                   <span className={styles.exerciseName}>{ex.exerciseName}</span>
                   <span className={styles.setsCount}>{ex.sets.length} подх.</span>
                 </div>
@@ -332,7 +340,8 @@ export default function WorkoutPage() {
                 />
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useMuscleLoad, useMuscleRecovery } from '@/hooks/useMuscleData';
 import styles from './MuscleMap.module.scss';
 
 type Counts = Record<string, number>;
@@ -151,28 +152,14 @@ function BodyView({ regions, counts, recovery, maxSets, mode, onHover, label }: 
 }
 
 export function MuscleMap() {
-  const [counts, setCounts] = useState<Counts>({});
-  const [recovery, setRecovery] = useState<Recovery>({});
-  const [loading, setLoading] = useState(true);
+  const { data: counts, isLoading: loadingCounts } = useMuscleLoad();
+  const { data: recovery, isLoading: loadingRecovery } = useMuscleRecovery();
   const [mode, setMode] = useState<Mode>('load');
   const [tip, setTip] = useState<Tip | null>(null);
 
-  useEffect(() => {
-    Promise.all([
-      fetch('/api/analytics/muscles').then((r) => r.json()),
-      fetch('/api/analytics/muscle-recovery').then((r) => r.json()),
-    ])
-      .then(([c, rv]) => {
-        if (typeof c === 'object' && !c.error) setCounts(c);
-        if (typeof rv === 'object' && !rv.error) setRecovery(rv);
-      })
-      .catch(() => null)
-      .finally(() => setLoading(false));
-  }, []);
-
   const maxSets = Math.max(...Object.values(counts), 1);
 
-  if (loading) return <div className={styles.loading}>Загрузка...</div>;
+  if (loadingCounts || loadingRecovery) return <div className={styles.loading}>Загрузка...</div>;
 
   const hasData = Object.values(counts).some((v) => v > 0) || Object.keys(recovery).length > 0;
 

@@ -4,6 +4,7 @@ import { useState, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import type { Exercise } from '@/types';
 import { useFavorites } from '@/hooks/useFavorites';
+import { getExerciseImageUrl } from '@/lib/utils';
 import styles from './ExerciseSearch.module.scss';
 
 interface Props {
@@ -166,7 +167,7 @@ export function ExerciseSearch({ exercises, onSelect }: Props) {
             <div className={styles.imgWrap}>
               {ex.images[0] ? (
                 <Image
-                  src={ex.images[0].startsWith('http') ? ex.images[0] : `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${ex.images[0]}`}
+                  src={getExerciseImageUrl(ex.images[0])}
                   alt={ex.nameRu ?? ex.name}
                   width={120}
                   height={120}

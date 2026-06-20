@@ -9,6 +9,7 @@ import { useWorkoutStore } from '@/stores/workoutStore';
 import { SetForm } from '@/components/workout/SetForm';
 import { WorkoutTemplates } from '@/components/workout/WorkoutTemplates';
 import type { Exercise, ActiveSet, TemplateExercise } from '@/types';
+import { getExerciseImageUrl } from '@/lib/utils';
 import styles from './page.module.scss';
 
 const ExerciseSearch = dynamic(
@@ -305,7 +306,7 @@ export default function WorkoutPage() {
           {activeExercises.map((ex) => {
             const exData = exercises.find((e) => e.id === ex.exerciseId);
             const img = exData?.images[0];
-            const imgSrc = img ? (img.startsWith('http') ? img : `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${img}`) : null;
+            const imgSrc = img ? getExerciseImageUrl(img) : null;
             return (
             <div key={ex.exerciseId} className={styles.exerciseCard}>
               <div className={styles.exerciseHeader}>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import NextImage from 'next/image';
 import { signOut } from 'next-auth/react';
 import { Button, Input, message, Spin } from 'antd';
 import {
@@ -15,13 +16,12 @@ import {
   HeartOutlined,
   CameraOutlined,
 } from '@ant-design/icons';
+
+import { getExerciseImageUrl, formatVolume, calcAge } from '@/lib/utils';
+import { patchProfile } from '@/lib/api/profile';
+import { EditableField } from './EditableField';
 import { PushNotificationButton } from './PushNotificationButton';
 import styles from './ProfileView.module.scss';
-
-const OLD_IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
-function exImg(path: string): string {
-  return path.startsWith('http') ? path : OLD_IMG_BASE + path;
-}
 
 interface TopExercise {
   exerciseId: string;
@@ -43,75 +43,6 @@ interface Props {
   totalVolume: number;
   avgDurationMin: number;
   topExercises: TopExercise[];
-}
-
-function formatVolume(kg: number): string {
-  if (kg >= 1_000_000) return `${(kg / 1_000_000).toFixed(1)} млн кг`;
-  if (kg >= 1000) return `${(kg / 1000).toFixed(1)} т`;
-  return `${kg} кг`;
-}
-
-function calcAge(birthDate: string): number {
-  const birth = new Date(birthDate);
-  const today = new Date();
-  let age = today.getFullYear() - birth.getFullYear();
-  const m = today.getMonth() - birth.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-  return age;
-}
-
-interface EditableFieldProps {
-  label: string;
-  value: string;
-  onSave: (v: string) => Promise<void>;
-  placeholder?: string;
-  type?: string;
-  suffix?: string;
-  min?: string;
-  max?: string;
-}
-
-function EditableField({ label, value, onSave, placeholder, type = 'text', suffix, min, max }: EditableFieldProps) {
-  const [editing, setEditing] = useState(false);
-  const [input, setInput] = useState(value);
-  const [saving, setSaving] = useState(false);
-
-  const startEdit = () => { setInput(value); setEditing(true); };
-  const cancel = () => setEditing(false);
-  const save = async () => {
-    setSaving(true);
-    try { await onSave(input); setEditing(false); } finally { setSaving(false); }
-  };
-
-  return (
-    <div className={styles.fieldRow}>
-      <span className={styles.fieldLabel}>{label}</span>
-      {editing ? (
-        <div className={styles.fieldEdit}>
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onPressEnter={save}
-            placeholder={placeholder}
-            type={type}
-            size="small"
-            suffix={suffix}
-            min={min}
-            max={max}
-            autoFocus
-            className={styles.fieldInput}
-          />
-          <Button type="text" icon={<CheckOutlined />} size="small" loading={saving} onClick={save} />
-          <Button type="text" icon={<CloseOutlined />} size="small" onClick={cancel} />
-        </div>
-      ) : (
-        <div className={styles.fieldValue}>
-          <span className={styles.fieldText}>{value || <span className={styles.fieldEmpty}>Не указано</span>}</span>
-          <Button type="text" icon={<EditOutlined />} size="small" onClick={startEdit} className={styles.editBtn} />
-        </div>
-      )}
-    </div>
-  );
 }
 
 export function ProfileView({
@@ -142,14 +73,7 @@ export function ProfileView({
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const patch = async (data: Record<string, unknown>) => {
-    const res = await fetch('/api/profile', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error();
-  };
+  const patch = patchProfile;
 
   const handleAvatarFile = (file: File) => {
     const img = new Image();
@@ -317,8 +241,14 @@ export function ProfileView({
               <div key={ex.exerciseId} className={styles.topRow}>
                 <span className={styles.topRank}>#{i + 1}</span>
                 {ex.image && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={exImg(ex.image)} alt={ex.name} className={styles.topImg} />
+                  <NextImage
+                    src={getExerciseImageUrl(ex.image)}
+                    alt={ex.name}
+                    width={36}
+                    height={36}
+                    className={styles.topImg}
+                    unoptimized
+                  />
                 )}
                 <span className={styles.topName}>{ex.name}</span>
                 <span className={styles.topCount}>{ex.count} подх.</span>

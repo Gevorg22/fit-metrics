@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { useActivityData } from '@/hooks/useActivityData';
 import styles from './ActivityHeatmap.module.scss';
 
 const DAYS = 364;
@@ -26,23 +27,14 @@ function level(count: number): number {
 }
 
 export function ActivityHeatmap() {
-  const [counts, setCounts] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
+  const { data: counts, isLoading } = useActivityData();
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch('/api/analytics/activity')
-      .then((r) => r.json())
-      .then((d) => typeof d === 'object' && !d.error ? setCounts(d) : setCounts({}))
-      .catch(() => setCounts({}))
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    if (!loading && wrapRef.current) {
+    if (!isLoading && wrapRef.current) {
       wrapRef.current.scrollLeft = wrapRef.current.scrollWidth;
     }
-  }, [loading]);
+  }, [isLoading]);
 
   const grid = buildGrid();
 
@@ -68,7 +60,7 @@ export function ActivityHeatmap() {
     }
   });
 
-  if (loading) return <div className={styles.loading}>Загрузка...</div>;
+  if (isLoading) return <div className={styles.loading}>Загрузка...</div>;
 
   return (
     <div className={styles.wrap} ref={wrapRef}>

@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Spin } from 'antd';
+import { useWeightChartData } from '@/hooks/useWeightChartData';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -39,39 +40,11 @@ interface WeightChartProps {
 
 export function WeightChart({ refreshKey, goalWeight }: WeightChartProps) {
   const [period, setPeriod] = useState<PeriodFilter>('1m');
-  const [data, setData] = useState<DataPoint[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: raw, isLoading } = useWeightChartData(period, refreshKey);
 
-  useEffect(() => {
-    let cancelled = false;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLoading(true);
-    fetch(`/api/analytics/weight?period=${period}`)
-      .then((r) => {
-        if (!r.ok) return [];
-        return r.json();
-      })
-      .then((raw: { weight: number; date: string }[]) => {
-        if (cancelled) return;
-        if (!Array.isArray(raw)) {
-          setData([]);
-        } else {
-          setData(raw.map((d) => ({ weight: d.weight, date: d.date })));
-        }
-        setLoading(false);
-      })
-      .catch(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [period, refreshKey]);
-
-  const handlePeriodChange = (p: PeriodFilter) => {
-    setLoading(true);
-    setPeriod(p);
-  };
+  const data: DataPoint[] = Array.isArray(raw)
+    ? raw.map((d) => ({ weight: d.weight, date: d.date }))
+    : [];
 
   const weights = data.map((d) => d.weight);
   const allValues = goalWeight ? [...weights, goalWeight] : weights;
@@ -85,14 +58,14 @@ export function WeightChart({ refreshKey, goalWeight }: WeightChartProps) {
           <button
             key={p.value}
             className={`${styles.periodBtn} ${period === p.value ? styles.active : ''}`}
-            onClick={() => handlePeriodChange(p.value)}
+            onClick={() => setPeriod(p.value)}
           >
             {p.label}
           </button>
         ))}
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className={styles.center}>
           <Spin />
         </div>

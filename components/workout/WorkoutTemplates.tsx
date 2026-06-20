@@ -1,15 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Button, Input, Modal, Popconfirm, Spin, message } from 'antd';
 import { DeleteOutlined, SaveOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import type { WorkoutTemplate, TemplateExercise } from '@/types';
+import { getExerciseImageUrl } from '@/lib/utils';
 import styles from './WorkoutTemplates.module.scss';
-
-const OLD_IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
-function exImg(path: string): string {
-  return path.startsWith('http') ? path : OLD_IMG_BASE + path;
-}
 
 interface Props {
   activeExercises: TemplateExercise[];
@@ -110,10 +107,19 @@ export function WorkoutTemplates({ activeExercises, onLoad, isGuest }: Props) {
             <div key={t.id} className={styles.card}>
               {t.exercises.some((e) => e.exerciseImage) && (
                 <div className={styles.cardImgs}>
-                  {t.exercises.slice(0, 3).map((e) => e.exerciseImage ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img key={e.exerciseId} src={exImg(e.exerciseImage)} alt={e.exerciseName} className={styles.cardImg} />
-                  ) : null)}
+                  {t.exercises.slice(0, 3).map((e) =>
+                    e.exerciseImage ? (
+                      <Image
+                        key={e.exerciseId}
+                        src={getExerciseImageUrl(e.exerciseImage)}
+                        alt={e.exerciseName}
+                        width={40}
+                        height={40}
+                        className={styles.cardImg}
+                        unoptimized
+                      />
+                    ) : null
+                  )}
                 </div>
               )}
               <div className={styles.cardLeft}>

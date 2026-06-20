@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { SessionProvider } from 'next-auth/react';
 import { ConfigProvider, theme } from 'antd';
 import ruRU from 'antd/locale/ru_RU';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 type AppTheme = 'dark' | 'light';
 
@@ -42,6 +43,15 @@ const LIGHT_TOKENS = {
   fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
 } as const;
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60_000,
+      retry: 1,
+    },
+  },
+});
+
 export function Providers({ children }: { children: React.ReactNode }) {
   const [appTheme, setAppTheme] = useState<AppTheme>('dark');
 
@@ -65,6 +75,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const isDark = appTheme === 'dark';
 
   return (
+    <QueryClientProvider client={queryClient}>
     <SessionProvider>
     <ThemeContext.Provider value={{ appTheme, toggleTheme }}>
       <ConfigProvider
@@ -96,5 +107,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
       </ConfigProvider>
     </ThemeContext.Provider>
     </SessionProvider>
+    </QueryClientProvider>
   );
 }

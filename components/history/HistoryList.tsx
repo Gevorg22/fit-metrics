@@ -6,13 +6,9 @@ import { useRouter } from 'next/navigation';
 import { Popconfirm, message, Button } from 'antd';
 import { DeleteOutlined, ShareAltOutlined, DownOutlined, LineChartOutlined } from '@ant-design/icons';
 import type { WorkoutHistoryEntry, WorkoutSetEntry } from '@/types';
+import { getExerciseImageUrl, getDuration, formatSets } from '@/lib/utils';
 import { ExerciseProgressModal } from '@/components/dashboard/ExerciseProgressModal';
 import styles from './HistoryList.module.scss';
-
-const OLD_IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
-function exImg(path: string): string {
-  return path.startsWith('http') ? path : OLD_IMG_BASE + path;
-}
 
 interface Props {
   workouts: WorkoutHistoryEntry[];
@@ -22,24 +18,15 @@ interface Props {
   exerciseId?: string | null;
 }
 
-function getDuration(start: string, end: string | null): string {
-  if (!end) return '';
-  const mins = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
-  if (mins < 60) return `${mins} мин`;
-  return `${Math.floor(mins / 60)}ч ${mins % 60}м`;
-}
-
 function groupSets(sets: WorkoutSetEntry[]): { exerciseId: string; sets: WorkoutSetEntry[] }[] {
   const map = new Map<string, WorkoutSetEntry[]>();
   for (const s of sets) {
     if (!map.has(s.exerciseId)) map.set(s.exerciseId, []);
     map.get(s.exerciseId)!.push(s);
   }
-  return Array.from(map.entries()).map(([exerciseId, sets]) => ({ exerciseId, sets })).reverse();
-}
-
-function formatSets(sets: WorkoutSetEntry[]): string {
-  return sets.map((s) => `${s.weight}кг×${s.reps}`).join(', ');
+  return Array.from(map.entries())
+    .map(([exerciseId, sets]) => ({ exerciseId, sets }))
+    .reverse();
 }
 
 export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, nextCursor: initialCursor, exerciseId }: Props) {
@@ -80,7 +67,7 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
       '',
       ...lines,
       '',
-      '📲 fitMetrics — https://fit-metrics-xi.vercel.app',
+      '📲 fitMetrics — https://fit-metrics-production.up.railway.app',
     ].join('\n');
 
     try {
@@ -202,7 +189,7 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
                           {exerciseImages[exerciseId] && (
                             <div className={styles.exImg}>
                               <Image
-                                src={exImg(exerciseImages[exerciseId])}
+                                src={getExerciseImageUrl(exerciseImages[exerciseId])}
                                 alt={exerciseNames[exerciseId] ?? exerciseId}
                                 width={40}
                                 height={40}

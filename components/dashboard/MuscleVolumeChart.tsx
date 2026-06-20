@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMuscleVolumeData } from '@/hooks/useMuscleVolumeData';
 import styles from './MuscleVolumeChart.module.scss';
 
 const MUSCLE_LABELS: Record<string, string> = {
@@ -47,29 +47,23 @@ interface BarEntry {
 }
 
 export function MuscleVolumeChart() {
-  const [data, setData] = useState<BarEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: raw, isLoading } = useMuscleVolumeData();
 
-  useEffect(() => {
-    fetch('/api/analytics/muscles')
-      .then((r) => r.json())
-      .then((raw: Record<string, number>) => {
-        const merged: Record<string, number> = {};
-        for (const [key, val] of Object.entries(raw)) {
-          const label = mergeLabel(key);
-          merged[label] = (merged[label] ?? 0) + val;
-        }
-        const entries = Object.entries(merged)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 8);
-        const max = entries[0]?.[1] ?? 1;
-        setData(entries.map(([label, sets]) => ({ label, sets, pct: Math.round((sets / max) * 100) })));
-      })
-      .catch(() => setData([]))
-      .finally(() => setLoading(false));
-  }, []);
+  if (isLoading) return <div className={styles.empty}>Загрузка...</div>;
 
-  if (loading) return <div className={styles.empty}>Загрузка...</div>;
+  const merged: Record<string, number> = {};
+  for (const [key, val] of Object.entries(raw)) {
+    const label = mergeLabel(key);
+    merged[label] = (merged[label] ?? 0) + val;
+  }
+  const entries = Object.entries(merged).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const max = entries[0]?.[1] ?? 1;
+  const data: BarEntry[] = entries.map(([label, sets]) => ({
+    label,
+    sets,
+    pct: Math.round((sets / max) * 100),
+  }));
+
   if (data.length === 0) return <div className={styles.empty}>Нет данных за последние 7 дней</div>;
 
   return (

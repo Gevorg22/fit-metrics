@@ -6,12 +6,8 @@ import { useRouter } from 'next/navigation';
 import { Popconfirm, message, Tooltip } from 'antd';
 import { DeleteOutlined, RedoOutlined } from '@ant-design/icons';
 import type { WorkoutHistoryEntry, WorkoutSetEntry } from '@/types';
+import { getExerciseImageUrl, getDuration, formatSets, groupSetsByExercise } from '@/lib/utils';
 import styles from './WorkoutHistory.module.scss';
-
-const OLD_IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
-function exImg(path: string): string {
-  return path.startsWith('http') ? path : OLD_IMG_BASE + path;
-}
 
 interface Props {
   workouts: WorkoutHistoryEntry[];
@@ -20,26 +16,6 @@ interface Props {
 }
 
 const PAGE_SIZE = 5;
-
-function getDuration(start: string, end: string | null): string {
-  if (!end) return '';
-  const mins = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
-  if (mins < 60) return `${mins} мин`;
-  return `${Math.floor(mins / 60)}ч ${mins % 60}м`;
-}
-
-function groupSetsByExercise(sets: WorkoutSetEntry[]): { exerciseId: string; sets: WorkoutSetEntry[] }[] {
-  const map = new Map<string, WorkoutSetEntry[]>();
-  for (const s of sets) {
-    if (!map.has(s.exerciseId)) map.set(s.exerciseId, []);
-    map.get(s.exerciseId)!.push(s);
-  }
-  return Array.from(map.entries()).map(([exerciseId, sets]) => ({ exerciseId, sets }));
-}
-
-function formatSets(sets: WorkoutSetEntry[]): string {
-  return sets.map((s) => `${s.weight}кг×${s.reps}`).join(', ');
-}
 
 export function WorkoutHistory({ workouts: initial, exerciseNames, exerciseImages }: Props) {
   const router = useRouter();
@@ -159,7 +135,7 @@ export function WorkoutHistory({ workouts: initial, exerciseNames, exerciseImage
                         {exerciseImages[exerciseId] && (
                           <div className={styles.exImg}>
                             <Image
-                              src={exImg(exerciseImages[exerciseId])}
+                              src={getExerciseImageUrl(exerciseImages[exerciseId])}
                               alt={exerciseNames[exerciseId] ?? exerciseId}
                               width={36}
                               height={36}

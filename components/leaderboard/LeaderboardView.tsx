@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Spin } from 'antd';
+import Image from 'next/image';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { UserStatsModal } from './UserStatsModal';
 import styles from './LeaderboardView.module.scss';
 
@@ -41,21 +43,12 @@ const TABS: { key: Tab; label: string; unit: (r: LeaderRow) => string }[] = [
 const MEDALS = ['🥇', '🥈', '🥉'];
 
 export function LeaderboardView() {
-  const [data, setData] = useState<LeaderboardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading: loading } = useLeaderboard();
   const [tab, setTab] = useState<Tab>('byVolume');
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch('/api/leaderboard')
-      .then((r) => r.json())
-      .then((d) => setData(d))
-      .catch(() => null)
-      .finally(() => setLoading(false));
-  }, []);
-
   const currentTab = TABS.find((t) => t.key === tab)!;
-  const rows = data?.[tab] ?? [];
+  const rows = (data as LeaderboardData | undefined)?.[tab] ?? [];
 
   return (
     <div className={styles.page}>
@@ -105,8 +98,14 @@ export function LeaderboardView() {
 
               <div className={styles.avatar}>
                 {row.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={row.image} alt={row.displayName} className={styles.avatarImg} />
+                  <Image
+                    src={row.image}
+                    alt={row.displayName}
+                    width={36}
+                    height={36}
+                    className={styles.avatarImg}
+                    unoptimized
+                  />
                 ) : (
                   row.displayName.slice(0, 1).toUpperCase()
                 )}

@@ -44,15 +44,17 @@ export async function GET() {
   const exercises = topIds.length
     ? await prisma.exercise.findMany({
         where: { id: { in: topIds } },
-        select: { id: true, name: true, nameRu: true },
+        select: { id: true, name: true, nameRu: true, images: true },
       })
     : [];
   const nameMap = Object.fromEntries(exercises.map((e) => [e.id, e.nameRu ?? e.name]));
+  const imageMap = Object.fromEntries(exercises.map((e) => [e.id, (e.images as string[])[0] ?? null]));
 
   const topExercises = topExercisesRaw.map((r) => ({
     exerciseId: r.exerciseId,
     name: nameMap[r.exerciseId] ?? r.exerciseId,
     count: r._count._all,
+    image: imageMap[r.exerciseId] ?? null,
   }));
 
   return NextResponse.json({

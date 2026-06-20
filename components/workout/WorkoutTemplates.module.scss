@@ -76,11 +76,26 @@
   }
 }
 
+.cardImgs {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.cardImg {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--color-surface);
+}
+
 .cardLeft {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  flex: 1;
 }
 
 .cardName {

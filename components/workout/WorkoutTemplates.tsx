@@ -6,6 +6,11 @@ import { DeleteOutlined, SaveOutlined, ThunderboltOutlined } from '@ant-design/i
 import type { WorkoutTemplate, TemplateExercise } from '@/types';
 import styles from './WorkoutTemplates.module.scss';
 
+const OLD_IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+function exImg(path: string): string {
+  return path.startsWith('http') ? path : OLD_IMG_BASE + path;
+}
+
 interface Props {
   activeExercises: TemplateExercise[];
   onLoad: (exercises: TemplateExercise[]) => void;
@@ -103,6 +108,14 @@ export function WorkoutTemplates({ activeExercises, onLoad, isGuest }: Props) {
         <div className={styles.list}>
           {templates.map((t) => (
             <div key={t.id} className={styles.card}>
+              {t.exercises.some((e) => e.exerciseImage) && (
+                <div className={styles.cardImgs}>
+                  {t.exercises.slice(0, 3).map((e) => e.exerciseImage ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img key={e.exerciseId} src={exImg(e.exerciseImage)} alt={e.exerciseName} className={styles.cardImg} />
+                  ) : null)}
+                </div>
+              )}
               <div className={styles.cardLeft}>
                 <span className={styles.cardName}>{t.name}</span>
                 <span className={styles.cardMeta}>

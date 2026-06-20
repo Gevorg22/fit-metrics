@@ -12,7 +12,23 @@ export async function GET() {
     select: { id: true, name: true, exercises: true, createdAt: true },
   });
 
-  return NextResponse.json(templates);
+  const allIds = [...new Set(
+    templates.flatMap((t) => (t.exercises as { exerciseId: string }[]).map((e) => e.exerciseId))
+  )];
+  const exerciseRows = allIds.length
+    ? await prisma.exercise.findMany({ where: { id: { in: allIds } }, select: { id: true, images: true } })
+    : [];
+  const imgMap = Object.fromEntries(exerciseRows.map((e) => [e.id, (e.images as string[])[0] ?? null]));
+
+  const enriched = templates.map((t) => ({
+    ...t,
+    exercises: (t.exercises as { exerciseId: string; exerciseName: string }[]).map((e) => ({
+      ...e,
+      exerciseImage: imgMap[e.exerciseId] ?? null,
+    })),
+  }));
+
+  return NextResponse.json(enriched);
 }
 
 export async function POST(request: Request) {

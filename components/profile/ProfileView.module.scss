@@ -196,6 +196,15 @@
   flex-shrink: 0;
 }
 
+.topImg {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--color-surface);
+}
+
 .topName {
   font-size: 13px;
   font-weight: 500;

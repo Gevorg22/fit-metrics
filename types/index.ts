@@ -66,6 +66,7 @@ export type PeriodFilter = '1m' | '3m' | '1y';
 export interface TemplateExercise {
   exerciseId: string;
   exerciseName: string;
+  exerciseImage?: string | null;
 }
 
 export interface WorkoutTemplate {

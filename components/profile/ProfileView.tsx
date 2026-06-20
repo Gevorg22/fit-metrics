@@ -18,10 +18,16 @@ import {
 import { PushNotificationButton } from './PushNotificationButton';
 import styles from './ProfileView.module.scss';
 
+const OLD_IMG_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+function exImg(path: string): string {
+  return path.startsWith('http') ? path : OLD_IMG_BASE + path;
+}
+
 interface TopExercise {
   exerciseId: string;
   name: string;
   count: number;
+  image?: string | null;
 }
 
 interface Props {
@@ -310,6 +316,10 @@ export function ProfileView({
             {topExercises.map((ex, i) => (
               <div key={ex.exerciseId} className={styles.topRow}>
                 <span className={styles.topRank}>#{i + 1}</span>
+                {ex.image && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={exImg(ex.image)} alt={ex.name} className={styles.topImg} />
+                )}
                 <span className={styles.topName}>{ex.name}</span>
                 <span className={styles.topCount}>{ex.count} подх.</span>
               </div>

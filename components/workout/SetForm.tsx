@@ -235,21 +235,23 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
     <div className={styles.wrap}>
       {contextHolder}
 
-      {lastResult && !isCardio && (
+      {!isCardio && (
         <div className={styles.lastResult}>
-          <div className={styles.lastResultRow}>
-            <span className={styles.lastResultLabel}>В прошлый раз:</span>
-            <div className={styles.lastResultSets}>
-              {lastResult.sets.map((s) => (
-                <span key={s.setNumber} className={styles.lastResultSet}>
-                  {s.weight}кг × {s.reps}
-                </span>
-              ))}
+          {lastResult && (
+            <div className={styles.lastResultRow}>
+              <span className={styles.lastResultLabel}>В прошлый раз:</span>
+              <div className={styles.lastResultSets}>
+                {lastResult.sets.map((s) => (
+                  <span key={s.setNumber} className={styles.lastResultSet}>
+                    {s.weight}кг × {s.reps}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
           {!aiAdvice && !aiLoading && (
             <button className={styles.aiBtn} onClick={handleAiAdvice}>
-              ✦ Спросить тренера
+              ✦ {lastResult ? 'Спросить тренера' : 'Совет для новичка'}
             </button>
           )}
           {aiLoading && (

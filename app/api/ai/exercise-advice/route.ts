@@ -32,26 +32,61 @@ export async function GET(request: Request) {
     },
   });
 
+  let prompt: string;
+
   if (workouts.length === 0) {
-    return NextResponse.json({ advice: 'Пока нет истории по этому упражнению. Запиши хотя бы одну тренировку — тогда смогу дать совет.' });
-  }
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { gender: true, heightCm: true, goalWeight: true, birthDate: true },
+    });
 
-  const historyLines = workouts
-    .slice()
-    .reverse()
-    .map((w, i) => {
-      const date = new Date(w.startedAt).toLocaleDateString('ru', { day: 'numeric', month: 'short' });
-      const setsStr = w.sets.map((s) => `${s.weight}кг×${s.reps}`).join(', ');
-      return `Тренировка ${i + 1} (${date}): ${setsStr}`;
-    })
-    .join('\n');
+    const latestWeight = await prisma.weightLog.findFirst({
+      where: { userId: session.user.id },
+      orderBy: { date: 'desc' },
+      select: { weight: true },
+    });
 
-  const prompt = `Ты персональный тренер. Проанализируй историю упражнения "${exerciseName}" за последние тренировки и дай конкретный совет на следующую тренировку.
+    const age = user?.birthDate
+      ? (() => {
+          const birth = new Date(user.birthDate);
+          const today = new Date();
+          let a = today.getFullYear() - birth.getFullYear();
+          const m = today.getMonth() - birth.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) a--;
+          return a;
+        })()
+      : null;
+
+    const profileParts: string[] = [];
+    if (user?.gender) profileParts.push(user.gender === 'male' ? 'мужчина' : 'женщина');
+    if (age) profileParts.push(`${age} лет`);
+    if (user?.heightCm) profileParts.push(`рост ${user.heightCm} см`);
+    if (latestWeight?.weight) profileParts.push(`вес ${latestWeight.weight} кг`);
+    const profileStr = profileParts.length > 0 ? profileParts.join(', ') : 'данные профиля не указаны';
+
+    prompt = `Ты персональный тренер. Пользователь впервые выполняет упражнение "${exerciseName}" и никогда раньше его не делал.
+
+Данные пользователя: ${profileStr}.
+
+Дай конкретный совет с чего начать (2-4 предложения) на русском языке: какой стартовый вес и сколько повторений попробовать, сколько подходов рекомендуешь, почему именно такие цифры. Если данных профиля мало — используй типичные рекомендации для новичка. Не используй markdown-форматирование.`;
+  } else {
+    const historyLines = workouts
+      .slice()
+      .reverse()
+      .map((w, i) => {
+        const date = new Date(w.startedAt).toLocaleDateString('ru', { day: 'numeric', month: 'short' });
+        const setsStr = w.sets.map((s) => `${s.weight}кг×${s.reps}`).join(', ');
+        return `Тренировка ${i + 1} (${date}): ${setsStr}`;
+      })
+      .join('\n');
+
+    prompt = `Ты персональный тренер. Проанализируй историю упражнения "${exerciseName}" за последние тренировки и дай конкретный совет на следующую тренировку.
 
 История (от старых к новым):
 ${historyLines}
 
 Дай короткий совет (2-4 предложения) на русском языке: какой вес и сколько повторений попробовать в следующий раз, и почему. Будь конкретным — называй точные цифры. Не используй markdown-форматирование.`;
+  }
 
   const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',

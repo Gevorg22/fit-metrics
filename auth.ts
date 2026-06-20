@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [],
+  trustHost: true,
   pages: {
     signIn: '/login',
     verifyRequest: '/verify-otp',

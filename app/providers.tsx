@@ -28,7 +28,7 @@ const DARK_TOKENS = {
   colorText: '#f5f5f5',
   colorTextSecondary: '#a3a3a3',
   borderRadius: 8,
-  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
 } as const;
 
 const LIGHT_TOKENS = {
@@ -40,7 +40,7 @@ const LIGHT_TOKENS = {
   colorText: '#0f172a',
   colorTextSecondary: '#475569',
   borderRadius: 8,
-  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
 } as const;
 
 const queryClient = new QueryClient({

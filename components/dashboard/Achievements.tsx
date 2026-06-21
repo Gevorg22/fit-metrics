@@ -5,10 +5,10 @@ import { useAchievements } from '@/hooks/useAchievements';
 import styles from './Achievements.module.scss';
 
 export function Achievements() {
-  const { data: items, isLoading } = useAchievements();
+  const { data: items, isLoading, isPlaceholderData } = useAchievements();
   const [showAll, setShowAll] = useState(false);
 
-  if (isLoading) return null;
+  if (isLoading || isPlaceholderData || !items) return null;
 
   const unlocked = items.filter((a) => a.unlocked);
   const locked = items.filter((a) => !a.unlocked);

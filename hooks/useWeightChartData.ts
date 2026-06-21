@@ -8,6 +8,6 @@ export function useWeightChartData(period: PeriodFilter, refreshKey?: number) {
   return useQuery({
     queryKey: ['weight-chart', period, refreshKey],
     queryFn: () => fetchWeightChart(period),
-    initialData: [],
+    placeholderData: () => [],
   });
 }

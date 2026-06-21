@@ -251,7 +251,7 @@ export function SetForm({ workoutId, exercise, isGuest, isCardio, onSetAdded, on
           )}
           {!aiAdvice && !aiLoading && (
             <button className={styles.aiBtn} onClick={handleAiAdvice}>
-              ✦ {lastResult ? 'Спросить тренера' : 'Совет для новичка'}
+              ✦ Спросить AI тренера
             </button>
           )}
           {aiLoading && (

@@ -27,6 +27,13 @@
   flex: 1;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
 .refresh {
   background: none;
   border: none;
@@ -44,6 +51,21 @@
   &:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+  }
+}
+
+.collapse {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+
+  &:hover {
+    color: var(--color-primary);
   }
 }
 

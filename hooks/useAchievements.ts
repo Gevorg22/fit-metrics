@@ -7,6 +7,6 @@ export function useAchievements() {
   return useQuery({
     queryKey: ['achievements'],
     queryFn: fetchAchievements,
-    initialData: [],
+    placeholderData: () => [],
   });
 }

@@ -14,6 +14,7 @@ export function WeeklyReportCard() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<ReportData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
 
   async function generate() {
     setLoading(true);
@@ -38,11 +39,18 @@ export function WeeklyReportCard() {
       <div className={styles.header}>
         <span className={styles.icon}>✦</span>
         <span className={styles.title}>Еженедельный AI-отчёт</span>
-        {data && (
-          <button className={styles.refresh} onClick={generate} title="Обновить" disabled={loading}>
-            ↻
-          </button>
-        )}
+        <div className={styles.headerActions}>
+          {data && (
+            <button className={styles.refresh} onClick={generate} title="Обновить" disabled={loading}>
+              ↻
+            </button>
+          )}
+          {data && (
+            <button className={styles.collapse} onClick={() => setCollapsed((c) => !c)} title={collapsed ? 'Развернуть' : 'Свернуть'}>
+              {collapsed ? '▾' : '▴'}
+            </button>
+          )}
+        </div>
       </div>
 
       {!data && !loading && !error && (
@@ -70,7 +78,7 @@ export function WeeklyReportCard() {
         </div>
       )}
 
-      {data && !loading && (
+      {data && !loading && !collapsed && (
         <div className={styles.result}>
           <div className={styles.stats}>
             <div className={styles.stat}>

@@ -288,7 +288,7 @@
 .aiCardActions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
 }
 
 .aiRefresh {
@@ -297,9 +297,14 @@
   color: var(--color-text-muted);
   font-size: 14px;
   cursor: pointer;
-  padding: 0;
+  padding: 6px 8px;
   line-height: 1;
   transition: color 0.15s;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     color: #22c55e;
@@ -312,9 +317,14 @@
   color: var(--color-text-muted);
   font-size: 13px;
   cursor: pointer;
-  padding: 0 2px;
+  padding: 6px 8px;
   line-height: 1;
   transition: color 0.15s;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     color: #22c55e;

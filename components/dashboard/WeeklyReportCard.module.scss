@@ -30,7 +30,7 @@
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
   margin-left: auto;
 }
 
@@ -40,9 +40,14 @@
   color: var(--color-text-muted);
   font-size: 17px;
   cursor: pointer;
-  padding: 0 2px;
+  padding: 6px 8px;
   line-height: 1;
   transition: color 0.15s;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover:not(:disabled) {
     color: var(--color-primary);
@@ -60,9 +65,14 @@
   color: var(--color-text-muted);
   font-size: 14px;
   cursor: pointer;
-  padding: 0 4px;
+  padding: 6px 8px;
   line-height: 1;
   transition: color 0.15s;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     color: var(--color-primary);

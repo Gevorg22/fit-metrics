@@ -11,7 +11,7 @@ export async function GET() {
   since.setHours(0, 0, 0, 0);
 
   const workouts = await prisma.workout.findMany({
-    where: { userId: session.user.id, startedAt: { gte: since } },
+    where: { userId: session.user.id, startedAt: { gte: since }, finishedAt: { not: null } },
     select: { startedAt: true },
   });
 

@@ -430,3 +430,191 @@
   gap: 10px;
   padding-top: 4px;
 }
+
+.collapsibleSection {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.collapsibleHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text);
+
+  &:hover {
+    background: var(--color-surface-2);
+  }
+}
+
+.collapsibleTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.collapsibleIcon {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.collapsibleBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 20px 20px;
+}
+
+.levelToggle {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.levelBtn {
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.levelBtnActive {
+  background: var(--color-primary-dim);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.measureGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.measureField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.measureLabel {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.measureInput {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  font-size: 13px;
+  outline: none;
+
+  &:focus {
+    border-color: var(--color-primary);
+  }
+
+  &[type="date"] {
+    color-scheme: dark;
+  }
+}
+
+.measureDateRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .measureInput {
+    width: auto;
+    flex: 1;
+    max-width: 180px;
+  }
+}
+
+.measureSaveBtn {
+  align-self: flex-start;
+}
+
+.measureHistory {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.measureHistoryTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.measureRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+}
+
+.measureRowDate {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  min-width: 80px;
+}
+
+.measureRowData {
+  color: var(--color-text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.measureDelete {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+
+  &:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+  }
+}

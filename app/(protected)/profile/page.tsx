@@ -12,7 +12,7 @@ export default async function ProfilePage() {
   const [user, workouts, sets, topExercisesRaw] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
-      select: { name: true, notificationsEnabled: true, gender: true, heightCm: true, goalWeight: true, birthDate: true, image: true },
+      select: { name: true, notificationsEnabled: true, gender: true, heightCm: true, goalWeight: true, birthDate: true, image: true, fitnessLevel: true, weeklyGoal: true },
     }),
     prisma.workout.findMany({
       where: { userId },
@@ -45,15 +45,17 @@ export default async function ProfilePage() {
   const exercises = topIds.length
     ? await prisma.exercise.findMany({
         where: { id: { in: topIds } },
-        select: { id: true, name: true, nameRu: true },
+        select: { id: true, name: true, nameRu: true, images: true },
       })
     : [];
   const nameMap = Object.fromEntries(exercises.map((e) => [e.id, e.nameRu ?? e.name]));
+  const imageMap = Object.fromEntries(exercises.map((e) => [e.id, (e.images as string[])[0] ?? null]));
 
   const topExercises = topExercisesRaw.map((r) => ({
     exerciseId: r.exerciseId,
     name: nameMap[r.exerciseId] ?? r.exerciseId,
     count: r._count._all,
+    image: imageMap[r.exerciseId] ?? null,
   }));
 
   return (
@@ -66,6 +68,8 @@ export default async function ProfilePage() {
       goalWeight={user?.goalWeight ?? null}
       birthDate={user?.birthDate ? user.birthDate.toISOString().slice(0, 10) : null}
       image={user?.image ?? null}
+      fitnessLevel={user?.fitnessLevel ?? null}
+      weeklyGoal={user?.weeklyGoal ?? null}
       totalWorkouts={totalWorkouts}
       totalVolume={totalVolume}
       avgDurationMin={avgDurationMin}

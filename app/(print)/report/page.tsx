@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { PrintActions } from './PrintActions';
 import styles from './page.module.scss';
 
 export const metadata = { title: 'Отчёт — fitMetrics' };
@@ -93,12 +94,7 @@ export default async function ReportPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.printBtn} onClick={() => {}} id="printBtnWrap">
-        <button className={styles.btn} onClick={() => window.print()}>
-          Печать / Сохранить PDF
-        </button>
-        <a href="/dashboard" className={styles.backLink}>← Назад</a>
-      </div>
+      <PrintActions />
 
       <header className={styles.header}>
         <div className={styles.logo}>fitMetrics</div>

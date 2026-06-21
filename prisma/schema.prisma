@@ -19,18 +19,21 @@ model User {
   heightCm             Int?
   goalWeight           Float?
   birthDate            DateTime? @db.Date
+  fitnessLevel         String?
+  weeklyGoal           Int?
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
-  accounts          Account[]
-  sessions          Session[]
-  workouts          Workout[]
-  weightLog         WeightLog[]
-  workoutTemplates  WorkoutTemplate[]
-  favoriteExercises FavoriteExercise[]
-  pushSubscriptions PushSubscription[]
-  foodEntries       FoodEntry[]
-  exerciseGoals     ExerciseGoal[]
+  accounts            Account[]
+  sessions            Session[]
+  workouts            Workout[]
+  weightLog           WeightLog[]
+  workoutTemplates    WorkoutTemplate[]
+  favoriteExercises   FavoriteExercise[]
+  pushSubscriptions   PushSubscription[]
+  foodEntries         FoodEntry[]
+  exerciseGoals       ExerciseGoal[]
+  bodyMeasurements    BodyMeasurement[]
 }
 
 model Account {
@@ -198,4 +201,25 @@ model ExerciseGoal {
 
   @@unique([userId, exerciseId])
   @@index([userId])
+}
+
+model BodyMeasurement {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @db.Date
+  neck      Float?
+  chest     Float?
+  waist     Float?
+  hips      Float?
+  bicepL    Float?
+  bicepR    Float?
+  thighL    Float?
+  thighR    Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
 }

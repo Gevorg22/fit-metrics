@@ -14,8 +14,8 @@ export async function GET(req: NextRequest) {
   const userId = session.user.id;
 
   const where = exerciseId
-    ? { userId, sets: { some: { exerciseId } } }
-    : { userId };
+    ? { userId, finishedAt: { not: null }, sets: { some: { exerciseId } } }
+    : { userId, finishedAt: { not: null }, sets: { some: {} } };
 
   const workouts = await prisma.workout.findMany({
     where,

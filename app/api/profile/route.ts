@@ -11,7 +11,7 @@ export async function GET() {
   const [user, workouts, sets, topExercisesRaw] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
-      select: { name: true, notificationsEnabled: true, gender: true, heightCm: true, goalWeight: true, birthDate: true, image: true },
+      select: { name: true, notificationsEnabled: true, gender: true, heightCm: true, goalWeight: true, birthDate: true, image: true, fitnessLevel: true, weeklyGoal: true },
     }),
     prisma.workout.findMany({
       where: { userId },
@@ -70,6 +70,8 @@ export async function GET() {
     goalWeight: user?.goalWeight ?? null,
     birthDate: user?.birthDate ? user.birthDate.toISOString().slice(0, 10) : null,
     image: user?.image ?? null,
+    fitnessLevel: user?.fitnessLevel ?? null,
+    weeklyGoal: user?.weeklyGoal ?? null,
   });
 }
 
@@ -86,6 +88,8 @@ export async function PATCH(request: Request) {
     goalWeight?: number | null;
     birthDate?: Date | null;
     image?: string | null;
+    fitnessLevel?: string | null;
+    weeklyGoal?: number | null;
   } = {};
 
   if (typeof body.name === 'string') data.name = body.name.trim() || null;
@@ -94,6 +98,11 @@ export async function PATCH(request: Request) {
   if (body.heightCm !== undefined) data.heightCm = body.heightCm ? Number(body.heightCm) || null : null;
   if (body.goalWeight !== undefined) data.goalWeight = body.goalWeight ? Number(body.goalWeight) || null : null;
   if (body.birthDate !== undefined) data.birthDate = body.birthDate ? new Date(body.birthDate) : null;
+  if (body.fitnessLevel !== undefined) {
+    const valid = ['beginner', 'intermediate', 'advanced'];
+    data.fitnessLevel = valid.includes(body.fitnessLevel) ? body.fitnessLevel : null;
+  }
+  if (body.weeklyGoal !== undefined) data.weeklyGoal = body.weeklyGoal ? Math.min(7, Math.max(1, Number(body.weeklyGoal))) : null;
   if (body.image !== undefined) {
     if (body.image === null) {
       data.image = null;
@@ -109,7 +118,7 @@ export async function PATCH(request: Request) {
   const updated = await prisma.user.update({
     where: { id: session.user.id },
     data,
-    select: { name: true, notificationsEnabled: true, gender: true, heightCm: true, goalWeight: true, birthDate: true },
+    select: { name: true, notificationsEnabled: true, gender: true, heightCm: true, goalWeight: true, birthDate: true, fitnessLevel: true, weeklyGoal: true },
   });
 
   return NextResponse.json(updated);

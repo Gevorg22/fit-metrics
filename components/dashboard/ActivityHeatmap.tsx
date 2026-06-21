@@ -84,7 +84,7 @@ export function ActivityHeatmap() {
             <div key={wi} className={styles.week}>
               {week.map((date, di) => {
                 if (!date) return <div key={di} className={styles.cell} />;
-                const count = counts[date] ?? 0;
+                const count = (counts ?? {})[date] ?? 0;
                 const lv = level(count);
                 return (
                   <div

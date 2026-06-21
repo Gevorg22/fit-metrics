@@ -37,7 +37,7 @@ export async function GET(request: Request) {
   if (workouts.length === 0) {
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { gender: true, heightCm: true, goalWeight: true, birthDate: true },
+      select: { gender: true, heightCm: true, goalWeight: true, birthDate: true, fitnessLevel: true },
     });
 
     const latestWeight = await prisma.weightLog.findFirst({
@@ -57,18 +57,20 @@ export async function GET(request: Request) {
         })()
       : null;
 
+    const levelLabels: Record<string, string> = { beginner: 'новичок', intermediate: 'средний уровень', advanced: 'продвинутый' };
     const profileParts: string[] = [];
     if (user?.gender) profileParts.push(user.gender === 'male' ? 'мужчина' : 'женщина');
     if (age) profileParts.push(`${age} лет`);
     if (user?.heightCm) profileParts.push(`рост ${user.heightCm} см`);
     if (latestWeight?.weight) profileParts.push(`вес ${latestWeight.weight} кг`);
+    if (user?.fitnessLevel) profileParts.push(`уровень: ${levelLabels[user.fitnessLevel] ?? user.fitnessLevel}`);
     const profileStr = profileParts.length > 0 ? profileParts.join(', ') : 'данные профиля не указаны';
 
     prompt = `Ты персональный тренер. Пользователь впервые выполняет упражнение "${exerciseName}" и никогда раньше его не делал.
 
 Данные пользователя: ${profileStr}.
 
-Дай конкретный совет с чего начать (2-4 предложения) на русском языке: какой стартовый вес и сколько повторений попробовать, сколько подходов рекомендуешь, почему именно такие цифры. Если данных профиля мало — используй типичные рекомендации для новичка. Не используй markdown-форматирование.`;
+Дай конкретный совет с чего начать (2-4 предложения) на русском языке: какой стартовый вес и сколько повторений попробовать, сколько подходов рекомендуешь, почему именно такие цифры. Учитывай уровень подготовки пользователя. Если данных профиля мало — используй типичные рекомендации для новичка. Не используй markdown-форматирование.`;
   } else {
     const historyLines = workouts
       .slice()
@@ -80,7 +82,15 @@ export async function GET(request: Request) {
       })
       .join('\n');
 
-    prompt = `Ты персональный тренер. Проанализируй историю упражнения "${exerciseName}" за последние тренировки и дай конкретный совет на следующую тренировку.
+    const userProfile = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { fitnessLevel: true },
+    });
+    const levelNote = userProfile?.fitnessLevel
+      ? ({ beginner: ' Пользователь — новичок.', intermediate: ' Пользователь — средний уровень.', advanced: ' Пользователь — продвинутый спортсмен.' }[userProfile.fitnessLevel] ?? '')
+      : '';
+
+    prompt = `Ты персональный тренер. Проанализируй историю упражнения "${exerciseName}" за последние тренировки и дай конкретный совет на следующую тренировку.${levelNote}
 
 История (от старых к новым):
 ${historyLines}

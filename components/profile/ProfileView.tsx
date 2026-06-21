@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import NextImage from 'next/image';
 import { signOut } from 'next-auth/react';
 import { Button, Input, message, Spin } from 'antd';
@@ -15,6 +15,9 @@ import {
   CloseOutlined,
   HeartOutlined,
   CameraOutlined,
+  DownOutlined,
+  UpOutlined,
+  ColumnWidthOutlined,
 } from '@ant-design/icons';
 
 import { getExerciseImageUrl, formatVolume, calcAge } from '@/lib/utils';
@@ -22,6 +25,19 @@ import { patchProfile } from '@/lib/api/profile';
 import { EditableField } from './EditableField';
 import { PushNotificationButton } from './PushNotificationButton';
 import styles from './ProfileView.module.scss';
+
+interface BodyMeasurement {
+  id: string;
+  date: string;
+  neck: number | null;
+  chest: number | null;
+  waist: number | null;
+  hips: number | null;
+  bicepL: number | null;
+  bicepR: number | null;
+  thighL: number | null;
+  thighR: number | null;
+}
 
 interface TopExercise {
   exerciseId: string;
@@ -39,6 +55,8 @@ interface Props {
   goalWeight: number | null;
   birthDate: string | null;
   image: string | null;
+  fitnessLevel: string | null;
+  weeklyGoal: number | null;
   totalWorkouts: number;
   totalVolume: number;
   avgDurationMin: number;
@@ -54,6 +72,8 @@ export function ProfileView({
   goalWeight: initialGoalWeight,
   birthDate: initialBirthDate,
   image: initialImage,
+  fitnessLevel: initialFitnessLevel,
+  weeklyGoal: initialWeeklyGoal,
   totalWorkouts,
   totalVolume,
   avgDurationMin,
@@ -72,6 +92,27 @@ export function ProfileView({
   const [avatarUrl, setAvatarUrl] = useState<string | null>(initialImage);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [fitnessLevel, setFitnessLevel] = useState<string | null>(initialFitnessLevel);
+  const [weeklyGoal, setWeeklyGoal] = useState<number | null>(initialWeeklyGoal);
+  const [savingFitness, setSavingFitness] = useState(false);
+
+  const [measurements, setMeasurements] = useState<BodyMeasurement[]>([]);
+  const [measureOpen, setMeasureOpen] = useState(false);
+  const [trainingOpen, setTrainingOpen] = useState(false);
+  const [measureForm, setMeasureForm] = useState<Record<string, string>>({
+    date: new Date().toISOString().slice(0, 10),
+    neck: '', chest: '', waist: '', hips: '', bicepL: '', bicepR: '', thighL: '', thighR: '',
+  });
+  const [savingMeasure, setSavingMeasure] = useState(false);
+
+  useEffect(() => {
+    if (!measureOpen) return;
+    fetch('/api/measurements')
+      .then((r) => r.json())
+      .then((d) => Array.isArray(d) ? setMeasurements(d) : null)
+      .catch(() => null);
+  }, [measureOpen]);
 
   const patch = patchProfile;
 
@@ -154,6 +195,50 @@ export function ProfileView({
     await patch({ birthDate: v || null });
     setBirthDate(v || null);
     message.success('Дата рождения сохранена');
+  };
+
+  const saveFitnessLevel = async (level: string) => {
+    setSavingFitness(true);
+    try {
+      await patch({ fitnessLevel: level });
+      setFitnessLevel(level);
+      message.success('Уровень сохранён');
+    } catch {
+      message.error('Не удалось сохранить');
+    } finally {
+      setSavingFitness(false);
+    }
+  };
+
+  const saveWeeklyGoal = async (v: string) => {
+    const val = v ? parseInt(v) : null;
+    await patch({ weeklyGoal: val });
+    setWeeklyGoal(val);
+    message.success('Цель сохранена');
+  };
+
+  const saveMeasurement = async () => {
+    setSavingMeasure(true);
+    try {
+      await fetch('/api/measurements', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(measureForm),
+      });
+      message.success('Замеры сохранены');
+      const updated = await fetch('/api/measurements').then((r) => r.json());
+      if (Array.isArray(updated)) setMeasurements(updated);
+      setMeasureForm((f) => ({ ...f, neck: '', chest: '', waist: '', hips: '', bicepL: '', bicepR: '', thighL: '', thighR: '' }));
+    } catch {
+      message.error('Не удалось сохранить');
+    } finally {
+      setSavingMeasure(false);
+    }
+  };
+
+  const deleteMeasurement = async (id: string) => {
+    await fetch(`/api/measurements?id=${id}`, { method: 'DELETE' });
+    setMeasurements((prev) => prev.filter((m) => m.id !== id));
   };
 
   const displayName = name || email;
@@ -308,6 +393,118 @@ export function ProfileView({
             type="date"
           />
         </div>
+      </div>
+
+      <div className={styles.collapsibleSection}>
+        <button className={styles.collapsibleHeader} onClick={() => setTrainingOpen((o) => !o)}>
+          <span className={styles.collapsibleTitle}>🎯 Цели тренировок</span>
+          {trainingOpen ? <UpOutlined className={styles.collapsibleIcon} /> : <DownOutlined className={styles.collapsibleIcon} />}
+        </button>
+        {trainingOpen && (
+          <div className={styles.collapsibleBody}>
+            <div className={styles.fieldRow}>
+              <span className={styles.fieldLabel}>Уровень подготовки</span>
+              <div className={styles.levelToggle}>
+                {(['beginner', 'intermediate', 'advanced'] as const).map((lvl) => {
+                  const labels: Record<string, string> = { beginner: 'Новичок', intermediate: 'Средний', advanced: 'Продвинутый' };
+                  return (
+                    <button
+                      key={lvl}
+                      className={`${styles.levelBtn} ${fitnessLevel === lvl ? styles.levelBtnActive : ''}`}
+                      onClick={() => fitnessLevel !== lvl && saveFitnessLevel(lvl)}
+                      disabled={savingFitness}
+                    >
+                      {labels[lvl]}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <EditableField
+              label="Тренировок в неделю"
+              value={weeklyGoal ? `${weeklyGoal}` : ''}
+              onSave={saveWeeklyGoal}
+              placeholder="3"
+              type="number"
+              suffix="дней"
+              min="1"
+              max="7"
+            />
+          </div>
+        )}
+      </div>
+
+      <div className={styles.collapsibleSection}>
+        <button className={styles.collapsibleHeader} onClick={() => setMeasureOpen((o) => !o)}>
+          <span className={styles.collapsibleTitle}><ColumnWidthOutlined style={{ marginRight: 6 }} />Замеры тела</span>
+          {measureOpen ? <UpOutlined className={styles.collapsibleIcon} /> : <DownOutlined className={styles.collapsibleIcon} />}
+        </button>
+        {measureOpen && (
+          <div className={styles.collapsibleBody}>
+            <div className={styles.measureGrid}>
+              {[
+                { key: 'neck', label: 'Шея' },
+                { key: 'chest', label: 'Грудь' },
+                { key: 'waist', label: 'Талия' },
+                { key: 'hips', label: 'Бёдра' },
+                { key: 'bicepL', label: 'Бицепс Л' },
+                { key: 'bicepR', label: 'Бицепс П' },
+                { key: 'thighL', label: 'Бедро Л' },
+                { key: 'thighR', label: 'Бедро П' },
+              ].map(({ key, label }) => (
+                <div key={key} className={styles.measureField}>
+                  <label className={styles.measureLabel}>{label}</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    className={styles.measureInput}
+                    placeholder="см"
+                    value={measureForm[key]}
+                    onChange={(e) => setMeasureForm((f) => ({ ...f, [key]: e.target.value }))}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className={styles.measureDateRow}>
+              <label className={styles.measureLabel}>Дата</label>
+              <input
+                type="date"
+                className={styles.measureInput}
+                value={measureForm.date}
+                onChange={(e) => setMeasureForm((f) => ({ ...f, date: e.target.value }))}
+              />
+            </div>
+            <Button
+              type="primary"
+              size="small"
+              loading={savingMeasure}
+              onClick={saveMeasurement}
+              className={styles.measureSaveBtn}
+            >
+              Сохранить замеры
+            </Button>
+            {measurements.length > 0 && (
+              <div className={styles.measureHistory}>
+                <span className={styles.measureHistoryTitle}>История замеров</span>
+                {measurements.map((m) => {
+                  const parts = [
+                    m.chest && `Грудь: ${m.chest}`,
+                    m.waist && `Талия: ${m.waist}`,
+                    m.hips && `Бёдра: ${m.hips}`,
+                    m.bicepL && `Бицепс: ${m.bicepL}`,
+                  ].filter(Boolean).join(' · ');
+                  return (
+                    <div key={m.id} className={styles.measureRow}>
+                      <span className={styles.measureRowDate}>{new Date(m.date).toLocaleDateString('ru', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      <span className={styles.measureRowData}>{parts || 'нет данных'} см</span>
+                      <button className={styles.measureDelete} onClick={() => deleteMeasurement(m.id)} title="Удалить">✕</button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className={styles.settingsSection}>

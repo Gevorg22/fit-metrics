@@ -7,6 +7,7 @@ export function useActivityData() {
   return useQuery({
     queryKey: ['activity'],
     queryFn: fetchActivityData,
-    initialData: {} as Record<string, number>,
+    placeholderData: (() => ({} as Record<string, number>)),
+    staleTime: 0,
   });
 }

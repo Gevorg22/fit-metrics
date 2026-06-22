@@ -157,11 +157,13 @@ export function MuscleMap() {
   const [mode, setMode] = useState<Mode>('load');
   const [tip, setTip] = useState<Tip | null>(null);
 
-  const maxSets = Math.max(...Object.values(counts), 1);
-
   if (loadingCounts || loadingRecovery || countsPlaceholder || recoveryPlaceholder) return <div className={styles.loading}>Загрузка...</div>;
 
-  const hasData = Object.values(counts).some((v) => v > 0) || Object.keys(recovery).length > 0;
+  const safeCounts = counts ?? {};
+  const safeRecovery = recovery ?? {};
+  const maxSets = Math.max(...Object.values(safeCounts), 1);
+
+  const hasData = Object.values(safeCounts).some((v) => v > 0) || Object.keys(safeRecovery).length > 0;
 
   return (
     <div className={styles.wrap}>
@@ -185,8 +187,8 @@ export function MuscleMap() {
       )}
 
       <div className={styles.maps}>
-        <BodyView regions={FRONT} counts={counts} recovery={recovery} maxSets={maxSets} mode={mode} onHover={setTip} label="Перед" />
-        <BodyView regions={BACK}  counts={counts} recovery={recovery} maxSets={maxSets} mode={mode} onHover={setTip} label="Спина" />
+        <BodyView regions={FRONT} counts={safeCounts} recovery={safeRecovery} maxSets={maxSets} mode={mode} onHover={setTip} label="Перед" />
+        <BodyView regions={BACK}  counts={safeCounts} recovery={safeRecovery} maxSets={maxSets} mode={mode} onHover={setTip} label="Спина" />
       </div>
 
       <div className={styles.legend}>

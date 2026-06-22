@@ -152,14 +152,14 @@ function BodyView({ regions, counts, recovery, maxSets, mode, onHover, label }: 
 }
 
 export function MuscleMap() {
-  const { data: counts, isLoading: loadingCounts } = useMuscleLoad();
-  const { data: recovery, isLoading: loadingRecovery } = useMuscleRecovery();
+  const { data: counts, isLoading: loadingCounts, isPlaceholderData: countsPlaceholder } = useMuscleLoad();
+  const { data: recovery, isLoading: loadingRecovery, isPlaceholderData: recoveryPlaceholder } = useMuscleRecovery();
   const [mode, setMode] = useState<Mode>('load');
   const [tip, setTip] = useState<Tip | null>(null);
 
   const maxSets = Math.max(...Object.values(counts), 1);
 
-  if (loadingCounts || loadingRecovery) return <div className={styles.loading}>Загрузка...</div>;
+  if (loadingCounts || loadingRecovery || countsPlaceholder || recoveryPlaceholder) return <div className={styles.loading}>Загрузка...</div>;
 
   const hasData = Object.values(counts).some((v) => v > 0) || Object.keys(recovery).length > 0;
 

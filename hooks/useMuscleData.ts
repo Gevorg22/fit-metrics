@@ -7,7 +7,8 @@ export function useMuscleLoad() {
   return useQuery({
     queryKey: ['muscle-load'],
     queryFn: fetchMuscleLoad,
-    initialData: {} as Record<string, number>,
+    placeholderData: () => ({} as Record<string, number>),
+    staleTime: 0,
   });
 }
 
@@ -15,6 +16,7 @@ export function useMuscleRecovery() {
   return useQuery({
     queryKey: ['muscle-recovery'],
     queryFn: fetchMuscleRecovery,
-    initialData: {} as Record<string, number>,
+    placeholderData: () => ({} as Record<string, number>),
+    staleTime: 0,
   });
 }

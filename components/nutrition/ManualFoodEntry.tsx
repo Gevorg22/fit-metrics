@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button, message, Spin } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import styles from './ManualFoodEntry.module.scss';
 
 interface FoodEntry {
@@ -18,17 +18,46 @@ interface Props {
   onAdd: (entry: FoodEntry) => void;
 }
 
+const EMPTY_FORM = { name: '', grams: '', calories: '', protein: '', fat: '', carbs: '' };
+
 export function ManualFoodEntry({ onAdd }: Props) {
   const [messageApi, contextHolder] = message.useMessage();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [estimating, setEstimating] = useState(false);
-  const [form, setForm] = useState({ name: '', grams: '', calories: '', protein: '', fat: '', carbs: '' });
+  const [manualMode, setManualMode] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
 
   const set = (field: keyof typeof form, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
-  const handleEstimate = async () => {
+  const handleClose = () => {
+    setOpen(false);
+    setManualMode(false);
+    setForm(EMPTY_FORM);
+  };
+
+  const doSave = async (entry: { name: string; calories: number; protein: number; fat: number; carbs: number }) => {
+    setSaving(true);
+    try {
+      const res = await fetch('/api/nutrition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry),
+      });
+      if (!res.ok) throw new Error();
+      const saved = await res.json();
+      onAdd(saved);
+      handleClose();
+      messageApi.success('Добавлено');
+    } catch {
+      messageApi.error('Ошибка сохранения');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAiAdd = async () => {
     if (!form.name.trim()) { messageApi.warning('Введи название продукта'); return; }
     setEstimating(true);
     try {
@@ -39,14 +68,7 @@ export function ManualFoodEntry({ onAdd }: Props) {
       });
       const data = await res.json();
       if (!res.ok) { messageApi.error(data.error ?? 'Ошибка AI'); return; }
-      setForm((prev) => ({
-        ...prev,
-        calories: String(data.calories),
-        protein: String(data.protein),
-        fat: String(data.fat),
-        carbs: String(data.carbs),
-      }));
-      messageApi.success('AI заполнил КБЖУ');
+      await doSave({ name: form.name.trim(), calories: data.calories, protein: data.protein, fat: data.fat, carbs: data.carbs });
     } catch {
       messageApi.error('Ошибка соединения');
     } finally {
@@ -54,38 +76,18 @@ export function ManualFoodEntry({ onAdd }: Props) {
     }
   };
 
-  const handleSave = async () => {
+  const handleManualSave = async () => {
     if (!form.name.trim()) { messageApi.warning('Введи название'); return; }
     const cal = parseInt(form.calories);
-    if (!form.calories || isNaN(cal) || cal <= 0) { messageApi.warning('Введи калории (или нажми ✦ AI заполнит)'); return; }
-
-    setSaving(true);
-    try {
-      const res = await fetch('/api/nutrition', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: form.name.trim(),
-          calories: cal,
-          protein: parseFloat(form.protein) || 0,
-          fat: parseFloat(form.fat) || 0,
-          carbs: parseFloat(form.carbs) || 0,
-        }),
-      });
-      if (!res.ok) throw new Error();
-      const saved = await res.json();
-      onAdd(saved);
-      setForm({ name: '', grams: '', calories: '', protein: '', fat: '', carbs: '' });
-      setOpen(false);
-      messageApi.success('Добавлено');
-    } catch {
-      messageApi.error('Ошибка сохранения');
-    } finally {
-      setSaving(false);
-    }
+    if (!form.calories || isNaN(cal) || cal <= 0) { messageApi.warning('Введи калории'); return; }
+    await doSave({
+      name: form.name.trim(),
+      calories: cal,
+      protein: parseFloat(form.protein) || 0,
+      fat: parseFloat(form.fat) || 0,
+      carbs: parseFloat(form.carbs) || 0,
+    });
   };
-
-  const hasMacros = form.calories !== '';
 
   return (
     <div className={styles.wrap}>
@@ -126,15 +128,24 @@ export function ManualFoodEntry({ onAdd }: Props) {
 
           <button
             className={styles.aiEstimateBtn}
-            onClick={handleEstimate}
-            disabled={estimating || !form.name.trim()}
+            onClick={handleAiAdd}
+            disabled={estimating || saving || !form.name.trim()}
             type="button"
           >
             {estimating ? <Spin size="small" /> : '✦'}
-            {estimating ? 'Считаю...' : 'AI заполнит КБЖУ'}
+            {estimating ? 'Считаю...' : 'AI рассчитает КБЖУ и добавит'}
           </button>
 
-          {hasMacros && (
+          <button
+            className={styles.manualToggleLink}
+            type="button"
+            onClick={() => setManualMode((v) => !v)}
+          >
+            {manualMode ? <UpOutlined /> : <DownOutlined />}
+            {manualMode ? 'Скрыть ручной ввод' : 'Ввести КБЖУ вручную'}
+          </button>
+
+          {manualMode && (
             <>
               <div className={styles.fieldRow}>
                 <label className={styles.label}>Калории (ккал)</label>
@@ -183,17 +194,16 @@ export function ManualFoodEntry({ onAdd }: Props) {
                   />
                 </div>
               </div>
+
+              <Button type="primary" loading={saving} onClick={handleManualSave} block>
+                Добавить
+              </Button>
             </>
           )}
 
-          <div className={styles.actions}>
-            <Button type="primary" loading={saving} onClick={handleSave} block>
-              Добавить
-            </Button>
-            <Button onClick={() => setOpen(false)} block>
-              Отмена
-            </Button>
-          </div>
+          <Button onClick={handleClose} block>
+            Отмена
+          </Button>
         </div>
       )}
     </div>

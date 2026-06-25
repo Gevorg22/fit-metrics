@@ -18,16 +18,35 @@ export async function POST(req: NextRequest) {
 
     const params = verifyTelegramInitData(initData);
     if (!params) {
-      // Compute and log expected hash for comparison
       const crypto2 = await import('crypto');
-      raw.delete('hash');
-      raw.delete('signature');
-      const dcs = Array.from(raw.entries()).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>`${k}=${v}`).join('\n');
-      const sk = crypto2.createHmac('sha256','WebAppData').update(process.env.TELEGRAM_BOT_TOKEN!).digest();
-      const expected = crypto2.createHmac('sha256',sk).update(dcs).digest('hex');
-      console.log('[tg-auth] expected hash:', expected);
-      console.log('[tg-auth] client hash:  ', hash);
-      console.log('[tg-auth] match:', expected === hash);
+      const BOT = process.env.TELEGRAM_BOT_TOKEN!;
+
+      // Try 1: exclude hash + signature (current approach)
+      const r1 = new URLSearchParams(initData);
+      r1.delete('hash'); r1.delete('signature');
+      const dcs1 = Array.from(r1.entries()).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>`${k}=${v}`).join('\n');
+      const sk1 = crypto2.createHmac('sha256','WebAppData').update(BOT).digest();
+      const h1 = crypto2.createHmac('sha256',sk1).update(dcs1).digest('hex');
+      console.log('[tg-auth] try1 (no sig):', h1, '| match:', h1 === hash);
+
+      // Try 2: exclude only hash (include signature)
+      const r2 = new URLSearchParams(initData);
+      r2.delete('hash');
+      const dcs2 = Array.from(r2.entries()).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>`${k}=${v}`).join('\n');
+      const h2 = crypto2.createHmac('sha256',sk1).update(dcs2).digest('hex');
+      console.log('[tg-auth] try2 (w/ sig):', h2, '| match:', h2 === hash);
+
+      // Try 3: raw string split (no URLSearchParams decode), no signature
+      const dcs3 = initData.split('&').filter((s: string) => !s.startsWith('hash=') && !s.startsWith('signature=')).sort().join('\n');
+      const h3 = crypto2.createHmac('sha256',sk1).update(dcs3).digest('hex');
+      console.log('[tg-auth] try3 (raw,no sig):', h3, '| match:', h3 === hash);
+
+      // Try 4: raw string split, include signature
+      const dcs4 = initData.split('&').filter((s: string) => !s.startsWith('hash=')).sort().join('\n');
+      const h4 = crypto2.createHmac('sha256',sk1).update(dcs4).digest('hex');
+      console.log('[tg-auth] try4 (raw,w/ sig):', h4, '| match:', h4 === hash);
+
+      console.log('[tg-auth] dcs1:', JSON.stringify(dcs1));
       return NextResponse.json({ error: 'Invalid initData' }, { status: 401 });
     }
 

@@ -8,8 +8,8 @@ function maskEmail(email: string): string {
   return `${visible}***@${domain}`;
 }
 
-function displayName(name: string | null, email: string): string {
-  return name?.trim() || maskEmail(email);
+function displayName(name: string | null, email: string | null): string {
+  return name?.trim() || (email ? maskEmail(email) : 'Пользователь');
 }
 
 export async function GET() {

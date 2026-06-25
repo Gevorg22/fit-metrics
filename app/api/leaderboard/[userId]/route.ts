@@ -65,7 +65,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ userId:
   const memberSince = new Date(user.createdAt).toLocaleDateString('ru', { month: 'long', year: 'numeric' });
 
   return NextResponse.json({
-    displayName: user.name?.trim() || maskEmail(user.email),
+    displayName: user.name?.trim() || (user.email ? maskEmail(user.email) : 'Пользователь'),
     image: user.image ?? null,
     memberSince,
     workoutCount,

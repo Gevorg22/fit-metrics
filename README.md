@@ -8,6 +8,8 @@
 
 ### Авторизация и доступ
 * **OTP по почте** - вводишь почту, получаешь 6-значный код, вводишь его. Без паролей. Email регистронезависим.
+* **Telegram Mini App** - открывается прямо внутри Telegram по ссылке [t.me/fitmetrics_app_bot/fitmetrics](https://t.me/fitmetrics_app_bot/fitmetrics). Авторизация происходит мгновенно — Telegram автоматически передаёт данные пользователя, вводить ничего не нужно.
+* **Вход через Telegram** - на странице входа кнопка «Войти через Telegram» открывает официальный виджет авторизации Telegram.
 * **Сессия 90 дней** - не нужно входить заново каждый раз.
 * **Гостевой режим** - можно попробовать приложение без регистрации, тренировки не сохраняются.
 * **PWA** - устанавливается на домашний экран телефона как нативное приложение. Баннер установки появляется автоматически.
@@ -83,7 +85,8 @@
 | Стили | SCSS Modules |
 | ORM | [Prisma 6](https://www.prisma.io) |
 | БД | PostgreSQL (Neon) |
-| Аутентификация | [NextAuth v5](https://authjs.dev) + кастомный OTP |
+| Аутентификация | [NextAuth v5](https://authjs.dev) + кастомный OTP + Telegram |
+| Telegram | Bot API, Mini App, Login Widget |
 | Email | [Resend](https://resend.com) |
 | Состояние | [Zustand](https://zustand-demo.pmnd.rs) |
 | Серверный кэш | [TanStack React Query v5](https://tanstack.com/query) |
@@ -125,6 +128,12 @@ EMAIL_FROM="fitMetrics <noreply@yourdomain.com>"
 
 ```env
 GROQ_API_KEY="gsk_xxxxxxxxxx"
+```
+
+Для Telegram Mini App и Login Widget:
+
+```env
+TELEGRAM_BOT_TOKEN="your-bot-token"
 ```
 
 Для push-уведомлений (опционально):

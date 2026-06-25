@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Form, Input, Button, Typography, Alert, Divider } from 'antd';
 import { MailOutlined, EyeOutlined } from '@ant-design/icons';
+import { TelegramLoginButton } from '@/components/TelegramLoginButton';
+import { TelegramAutoLogin } from '@/components/TelegramAutoLogin';
 import styles from './page.module.scss';
 
 const { Title, Text, Paragraph } = Typography;
@@ -48,8 +50,18 @@ export default function LoginPage() {
           </Text>
         </div>
 
+        <TelegramAutoLogin />
+
+        <div className={styles.telegramWrap}>
+          <TelegramLoginButton />
+        </div>
+
+        <Divider plain>
+          <Text type="secondary" className={styles.dividerText}>или войди через email</Text>
+        </Divider>
+
         <Title level={4} className={styles.heading}>
-          Войти в аккаунт
+          Войти через email
         </Title>
         <Paragraph type="secondary" className={styles.desc}>
           Введи email — пришлём одноразовый код для входа.

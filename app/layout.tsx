@@ -26,6 +26,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `try{var t=localStorage.getItem('fitmetrics-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}catch(e){}`,
           }}
         />
+        {/* Telegram Mini App SDK — must load before page scripts */}
+        <script src="https://telegram.org/js/telegram-web-app.js" />
       </head>
       <body>
         <AntdRegistry>

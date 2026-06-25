@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 interface TelegramUser {
   id: number;
@@ -13,14 +12,21 @@ interface TelegramUser {
   hash: string;
 }
 
+// Only shown on regular web — hidden inside Telegram Mini App (initData handles auth there)
 export function TelegramLoginButton() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [isMiniApp, setIsMiniApp] = useState(false);
 
   useEffect(() => {
-    (window as any).onTelegramAuth = async (user: TelegramUser) => {
+    // If running inside Telegram Mini App, don't show the widget — TelegramAutoLogin handles it
+    if ((globalThis as any).Telegram?.WebApp?.initData) {
+      setIsMiniApp(true);
+      return;
+    }
+
+    (globalThis as any).onTelegramAuth = async (user: TelegramUser) => {
       setLoading(true);
       setError(false);
       try {
@@ -30,8 +36,7 @@ export function TelegramLoginButton() {
           body: JSON.stringify(user),
         });
         if (res.ok) {
-          router.push('/dashboard');
-          router.refresh();
+          globalThis.location.href = '/dashboard';
         } else {
           setError(true);
           setLoading(false);
@@ -55,9 +60,11 @@ export function TelegramLoginButton() {
     }
 
     return () => {
-      delete (window as any).onTelegramAuth;
+      delete (globalThis as any).onTelegramAuth;
     };
-  }, [router]);
+  }, []);
+
+  if (isMiniApp) return null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>

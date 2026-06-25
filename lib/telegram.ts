@@ -31,8 +31,7 @@ export function verifyTelegramInitData(initData: string): URLSearchParams | null
   if (!hash) return null;
 
   params.delete('hash');
-  // 'signature' is an Ed25519 field added in TG v9.6+ — excluded from HMAC check
-  params.delete('signature');
+  // signature is included in the data_check_string (only hash is excluded)
 
   const dataCheckString = Array.from(params.entries())
     .sort(([a], [b]) => a.localeCompare(b))

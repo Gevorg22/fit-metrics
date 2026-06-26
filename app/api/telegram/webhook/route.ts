@@ -75,8 +75,8 @@ export async function POST(req: NextRequest) {
       chatId,
       `👨‍💻 <b>Об авторе</b>\n\n` +
       `Привет! Меня зовут <b>Геворг Карагозян</b>.\n\n` +
-      `fitMetrics — мой личный pet-проект, созданный с нуля в свободное время. ` +
-      `Идея, дизайн и полная разработка — всё моё.\n\n` +
+      `fitMetrics - мой личный pet-проект, созданный с нуля в свободное время. ` +
+      `Идея, дизайн и полная разработка - всё моё.\n\n` +
       `<b>Стек:</b> Next.js · TypeScript · PostgreSQL · Prisma · Ant Design · AI (Groq)\n\n` +
       `<b>Связаться:</b>\n` +
       `💬 Telegram: @Gevorg1989\n` +

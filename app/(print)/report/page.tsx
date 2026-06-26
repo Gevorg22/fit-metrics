@@ -263,7 +263,7 @@ export default async function ReportPage() {
 
       <footer className={styles.footer}>
         <span>fitMetrics — личный дневник тренировок</span>
-        <span>fit-metrics-production.up.railway.app</span>
+        <span>fit-metrics-xi.vercel.app</span>
         <span>Created by Gevorg K</span>
       </footer>
     </div>

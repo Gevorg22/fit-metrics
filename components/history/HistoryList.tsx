@@ -61,7 +61,7 @@ export function HistoryList({ workouts: initial, exerciseNames, exerciseImages, 
       '',
       ...lines,
       '',
-      '📲 fitMetrics — https://fit-metrics-production.up.railway.app',
+      '📲 fitMetrics — https://fit-metrics-xi.vercel.app',
     ].join('\n');
 
     try {

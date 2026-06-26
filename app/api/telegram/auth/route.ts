@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { prisma } from '@/lib/prisma';
 import { verifyTelegramLogin, getSessionCookieName } from '@/lib/telegram';
 
@@ -7,12 +7,12 @@ export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
 
-    if (!verifyTelegramLogin(data)) {
+    if (verifyTelegramLogin(data) === false) {
       return NextResponse.json({ error: 'Invalid Telegram data' }, { status: 401 });
     }
 
-    const authDate = parseInt(data.auth_date ?? '0');
-    if (Date.now() / 1000 - authDate > 300) {
+    const authDate = Number.parseInt(data.auth_date ?? '0');
+    if (Date.now() / 1000 - authDate > 3600) {
       return NextResponse.json({ error: 'Auth data expired' }, { status: 401 });
     }
 

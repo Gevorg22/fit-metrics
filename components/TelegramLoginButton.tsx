@@ -2,71 +2,42 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-interface TelegramUser {
-  id: number;
-  first_name: string;
-  last_name?: string;
-  username?: string;
-  photo_url?: string;
-  auth_date: number;
-  hash: string;
-}
-
 // Only shown on regular web — hidden inside Telegram Mini App (initData handles auth there)
 export function TelegramLoginButton() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
   const [isMiniApp, setIsMiniApp] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
-  const handleTelegramAuth = async (user: TelegramUser) => {
-    setLoading(true);
-    setError(false);
-    try {
-      const res = await fetch('/api/telegram/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user),
-      });
-      if (res.ok) {
-        globalThis.location.href = '/dashboard';
-      } else {
-        setError(true);
-        setLoading(false);
-      }
-    } catch {
-      setError(true);
-      setLoading(false);
-    }
-  };
+  const [loading, setLoading] = useState(false);
+  const [waitingConfirm, setWaitingConfirm] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if ((globalThis as any).Telegram?.WebApp?.initData) {
       setIsMiniApp(true);
       return;
     }
-
-    const mobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-    setIsMobile(mobile);
-
-    // Handle OAuth redirect callback — Telegram returns #tgAuthResult=BASE64_JSON
-    if (globalThis.location.hash.startsWith('#tgAuthResult=')) {
-      const encoded = globalThis.location.hash.slice('#tgAuthResult='.length);
-      try {
-        const userData = JSON.parse(atob(encoded));
-        history.replaceState(null, '', globalThis.location.pathname);
-        handleTelegramAuth(userData);
-      } catch {
-        setError(true);
-      }
-      return;
-    }
-
-    if (mobile) return;
+    setIsMobile(/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent));
 
     // Desktop: load Telegram Login Widget
-    (globalThis as any).onTelegramAuth = (user: TelegramUser) => handleTelegramAuth(user);
+    (globalThis as any).onTelegramAuth = async (user: object) => {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/telegram/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(user),
+        });
+        if (res.ok) {
+          globalThis.location.href = '/dashboard';
+        } else {
+          setError(true);
+          setLoading(false);
+        }
+      } catch {
+        setError(true);
+        setLoading(false);
+      }
+    };
 
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
@@ -85,35 +56,71 @@ export function TelegramLoginButton() {
     };
   }, []);
 
-  if (isMiniApp) return null;
+  const handleMobileLogin = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const res = await fetch('/api/telegram/login-token', { method: 'POST' });
+      const { token } = await res.json();
 
-  if (loading) {
-    return <p style={{ margin: 0, fontSize: 13, opacity: 0.6 }}>Входим через Telegram...</p>;
-  }
+      // Open Telegram bot with login token
+      globalThis.open(`https://t.me/fitmetrics_app_bot?start=login_${token}`, '_blank');
+
+      setWaitingConfirm(true);
+      setLoading(false);
+
+      // Poll every 2 seconds for confirmation
+      const interval = setInterval(async () => {
+        const check = await fetch(`/api/telegram/check-token?token=${token}`);
+        const data = await check.json();
+        if (data.status === 'ok') {
+          clearInterval(interval);
+          globalThis.location.href = '/dashboard';
+        } else if (data.status === 'expired' || data.status === 'not_found') {
+          clearInterval(interval);
+          setWaitingConfirm(false);
+          setError(true);
+        }
+      }, 2000);
+
+      // Stop polling after 10 minutes
+      setTimeout(() => {
+        clearInterval(interval);
+        setWaitingConfirm(false);
+      }, 10 * 60 * 1000);
+    } catch {
+      setError(true);
+      setLoading(false);
+    }
+  };
+
+  if (isMiniApp) return null;
 
   if (error) {
     return (
-      <p style={{ margin: 0, fontSize: 13, color: 'var(--ant-color-error)' }}>
+      <p style={{ margin: 0, fontSize: 13, color: 'var(--ant-color-error)', textAlign: 'center' }}>
         Ошибка входа. Попробуй снова.
       </p>
     );
   }
 
-  // Mobile: redirect to Telegram OAuth
-  if (isMobile) {
-    const handleMobileLogin = () => {
-      const botId = process.env.NEXT_PUBLIC_TELEGRAM_BOT_ID;
-      const origin = globalThis.location.origin;
-      const returnTo = `${origin}/login`;
-      globalThis.location.href = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${encodeURIComponent(origin)}&return_to=${encodeURIComponent(returnTo)}&request_access=write`;
-    };
+  if (waitingConfirm) {
+    return (
+      <p style={{ margin: 0, fontSize: 13, opacity: 0.7, textAlign: 'center' }}>
+        Подтверди вход в Telegram...
+      </p>
+    );
+  }
 
+  if (isMobile) {
     return (
       <button
         onClick={handleMobileLogin}
+        disabled={loading}
         style={{
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'center',
           gap: 8,
           background: '#2AABEE',
           color: '#fff',
@@ -122,15 +129,15 @@ export function TelegramLoginButton() {
           padding: '10px 20px',
           fontWeight: 600,
           fontSize: 15,
-          cursor: 'pointer',
+          cursor: loading ? 'not-allowed' : 'pointer',
           width: '100%',
-          justifyContent: 'center',
+          opacity: loading ? 0.7 : 1,
         }}
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/>
         </svg>
-        Войти через Telegram
+        {loading ? 'Открываем Telegram...' : 'Войти через Telegram'}
       </button>
     );
   }

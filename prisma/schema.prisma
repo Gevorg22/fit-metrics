@@ -8,6 +8,17 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model TelegramLoginToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  confirmed Boolean  @default(false)
+  userData  Json?
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([token])
+}
+
 model User {
   id                   String    @id @default(cuid())
   name                 String?

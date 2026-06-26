@@ -69,6 +69,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
+  // ── /author ──────────────────────────────────────────────────────────────
+  if (text === '/author') {
+    await sendMessage(
+      chatId,
+      `👨‍💻 <b>Об авторе</b>\n\n` +
+      `Привет! Меня зовут <b>Геворг Карагозян</b>.\n\n` +
+      `fitMetrics — мой личный pet-проект, созданный с нуля в свободное время. ` +
+      `Идея, дизайн и полная разработка — всё моё.\n\n` +
+      `<b>Стек:</b> Next.js · TypeScript · PostgreSQL · Prisma · Ant Design · AI (Groq)\n\n` +
+      `<b>Связаться:</b>\n` +
+      `💬 Telegram: @Gevorg1989\n` +
+      `📧 Email: gevorg227@gmail.com\n` +
+      `💻 GitHub: github.com/Gevorg22\n\n` +
+      `⭐ Если нравится проект — поставь звезду на GitHub!`,
+      {
+        inline_keyboard: [
+          [{ text: '💬 Написать автору', url: 'https://t.me/Gevorg1989' }],
+          [{ text: '💻 GitHub проекта', url: 'https://github.com/Gevorg22/fit-metrics' }],
+          [{ text: '💪 Открыть fitMetrics', web_app: { url: APP_URL } }],
+        ],
+      }
+    );
+    return NextResponse.json({ ok: true });
+  }
+
   // ── /stats ───────────────────────────────────────────────────────────────
   if (text === '/stats') {
     const telegramId = String(from?.id);

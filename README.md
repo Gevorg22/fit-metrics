@@ -1,6 +1,6 @@
 # fitMetrics
 
-**[Открыть приложение](https://fit-metrics-production.up.railway.app)**
+**[Открыть приложение](https://fit-metrics-xi.vercel.app)**
 
 Дневник тренировок и питания. Логинишься по одноразовому коду на почту, выбираешь упражнение из базы 1323 упражнений с GIF-анимациями, записываешь подходы с весом и повторениями. История, прогресс, личные рекорды, дневник питания с AI, рейтинг пользователей - всё в одном месте.
 
@@ -93,7 +93,7 @@
 | Графики | [Recharts](https://recharts.org) |
 | AI | [Groq](https://groq.com) (Llama 3.3 70b, Llama 4 Scout) |
 | Push-уведомления | Web Push API + VAPID |
-| Деплой | [Railway](https://railway.app) |
+| Деплой | [Vercel](https://vercel.com) |
 | Бэкап БД | GitHub Actions (еженедельно) |
 
 ## Локальный запуск

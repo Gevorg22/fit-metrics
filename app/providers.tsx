@@ -20,26 +20,26 @@ export function useAppTheme() {
 }
 
 const DARK_TOKENS = {
-  colorPrimary: '#22c55e',
-  colorBgBase: '#0d0d0d',
-  colorBgContainer: '#161616',
-  colorBgElevated: '#1f1f1f',
-  colorBorder: '#2a2a2a',
-  colorText: '#f5f5f5',
-  colorTextSecondary: '#a3a3a3',
-  borderRadius: 8,
+  colorPrimary: '#ffa751',
+  colorBgBase: '#171310',
+  colorBgContainer: '#221b16',
+  colorBgElevated: '#2b2119',
+  colorBorder: '#3d2e24',
+  colorText: '#fbf1e4',
+  colorTextSecondary: '#c2a184',
+  borderRadius: 14,
   fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
 } as const;
 
 const LIGHT_TOKENS = {
-  colorPrimary: '#16a34a',
-  colorBgBase: '#f4f6f8',
+  colorPrimary: '#e8791f',
+  colorBgBase: '#fdf6ec',
   colorBgContainer: '#ffffff',
-  colorBgElevated: '#f0f2f5',
-  colorBorder: '#e2e8f0',
-  colorText: '#0f172a',
-  colorTextSecondary: '#475569',
-  borderRadius: 8,
+  colorBgElevated: '#f7ede0',
+  colorBorder: '#ecdcc4',
+  colorText: '#2b1c10',
+  colorTextSecondary: '#7a5c42',
+  borderRadius: 14,
   fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
 } as const;
 
@@ -86,18 +86,18 @@ export function Providers({ children }: { children: React.ReactNode }) {
           components: isDark
             ? {
                 Menu: {
-                  darkItemBg: '#161616',
-                  darkSubMenuItemBg: '#0d0d0d',
-                  darkItemSelectedBg: 'rgba(34,197,94,0.12)',
-                  darkItemSelectedColor: '#22c55e',
+                  darkItemBg: '#221b16',
+                  darkSubMenuItemBg: '#171310',
+                  darkItemSelectedBg: 'rgba(255,167,81,0.14)',
+                  darkItemSelectedColor: '#ffa751',
                 },
                 Layout: {
-                  siderBg: '#161616',
-                  bodyBg: '#0d0d0d',
-                  headerBg: '#161616',
+                  siderBg: '#221b16',
+                  bodyBg: '#171310',
+                  headerBg: '#221b16',
                 },
                 Card: {
-                  colorBgContainer: '#161616',
+                  colorBgContainer: '#221b16',
                 },
               }
             : {},

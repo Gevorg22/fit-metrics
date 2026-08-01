@@ -15,18 +15,18 @@
   gap: 6px;
   width: 100%;
   padding: 24px 16px;
-  background: linear-gradient(135deg, #0f2b1a 0%, #1a1f2e 100%);
-  border: 2px dashed #22c55e55;
+  background: linear-gradient(135deg, #2e1c0a 0%, #241811 100%);
+  border: 2px dashed #ffa75155;
   border-radius: var(--radius-md);
-  color: #22c55e;
+  color: #ffa751;
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
 
   &:hover {
-    border-color: #22c55e99;
-    background: linear-gradient(135deg, #163d25 0%, #1e2538 100%);
+    border-color: #ffa75199;
+    background: linear-gradient(135deg, #3d2712 0%, #2c2016 100%);
   }
 
   @media (max-width: 480px) {

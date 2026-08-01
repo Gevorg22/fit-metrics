@@ -37,7 +37,7 @@
   transition: background 0.15s;
 
   &:hover {
-    background: rgba(34, 197, 94, 0.2);
+    background: var(--color-primary-dim);
   }
 }
 
@@ -135,7 +135,7 @@
   transition: background 0.15s;
 
   &:hover {
-    background: rgba(34, 197, 94, 0.2);
+    background: var(--color-primary-dim);
   }
 }
 

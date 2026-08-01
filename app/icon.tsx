@@ -8,21 +8,21 @@ export default function Icon() {
     (
       <div
         style={{
-          background: '#0d0d0d',
+          background: '#171310',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: '6px',
-          border: '1px solid #2a2a2a',
+          border: '1px solid #3d2e24',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'baseline' }}>
-          <span style={{ color: '#22c55e', fontSize: 17, fontWeight: 800, lineHeight: 1, fontFamily: 'sans-serif' }}>
+          <span style={{ color: '#ffa751', fontSize: 17, fontWeight: 800, lineHeight: 1, fontFamily: 'sans-serif' }}>
             f
           </span>
-          <span style={{ color: '#f5f5f5', fontSize: 17, fontWeight: 800, lineHeight: 1, fontFamily: 'sans-serif' }}>
+          <span style={{ color: '#fbf1e4', fontSize: 17, fontWeight: 800, lineHeight: 1, fontFamily: 'sans-serif' }}>
             M
           </span>
         </div>

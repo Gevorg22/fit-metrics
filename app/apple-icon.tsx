@@ -8,7 +8,7 @@ export default function AppleIcon() {
     (
       <div
         style={{
-          background: '#0d0d0d',
+          background: '#171310',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -18,10 +18,10 @@ export default function AppleIcon() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'baseline' }}>
-          <span style={{ color: '#22c55e', fontSize: 90, fontWeight: 800, lineHeight: 1, fontFamily: 'sans-serif' }}>
+          <span style={{ color: '#ffa751', fontSize: 90, fontWeight: 800, lineHeight: 1, fontFamily: 'sans-serif' }}>
             f
           </span>
-          <span style={{ color: '#f5f5f5', fontSize: 90, fontWeight: 800, lineHeight: 1, fontFamily: 'sans-serif' }}>
+          <span style={{ color: '#fbf1e4', fontSize: 90, fontWeight: 800, lineHeight: 1, fontFamily: 'sans-serif' }}>
             M
           </span>
         </div>

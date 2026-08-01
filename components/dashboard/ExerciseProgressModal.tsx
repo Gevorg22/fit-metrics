@@ -131,31 +131,31 @@ export function ExerciseProgressModal({ exerciseId, exerciseName, onClose }: Pro
             <ResponsiveContainer width="100%" height={260}>
               {mode === 'strength' ? (
                 <LineChart data={formatted} margin={{ top: 4, right: 16, left: -8, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#999' }} />
-                  <YAxis yAxisId="w" tick={{ fontSize: 11, fill: '#999' }} unit=" кг" />
-                  <YAxis yAxisId="r" orientation="right" tick={{ fontSize: 11, fill: '#999' }} unit=" пов" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'var(--color-text-secondary)' }} />
+                  <YAxis yAxisId="w" tick={{ fontSize: 11, fill: 'var(--color-text-secondary)' }} unit=" кг" />
+                  <YAxis yAxisId="r" orientation="right" tick={{ fontSize: 11, fill: 'var(--color-text-secondary)' }} unit=" пов" />
                   <Tooltip
-                    contentStyle={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: 8 }}
-                    labelStyle={{ color: '#fff', marginBottom: 4 }}
-                    itemStyle={{ color: '#ccc' }}
+                    contentStyle={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', borderRadius: 8 }}
+                    labelStyle={{ color: 'var(--color-text)', marginBottom: 4 }}
+                    itemStyle={{ color: 'var(--color-text-secondary)' }}
                   />
                   <Legend wrapperStyle={{ fontSize: 12 }} />
-                  <Line yAxisId="w" type="monotone" dataKey="maxWeight" name="Макс. вес (кг)" stroke="#22c55e" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                  <Line yAxisId="w" type="monotone" dataKey="maxWeight" name="Макс. вес (кг)" stroke="var(--color-primary)" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
                   <Line yAxisId="r" type="monotone" dataKey="maxReps" name="Макс. повторения" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
                 </LineChart>
               ) : (
                 <LineChart data={formatted} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#999' }} />
-                  <YAxis tick={{ fontSize: 11, fill: '#999' }} unit=" кг" width={64} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'var(--color-text-secondary)' }} />
+                  <YAxis tick={{ fontSize: 11, fill: 'var(--color-text-secondary)' }} unit=" кг" width={64} />
                   <Tooltip
-                    contentStyle={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: 8 }}
-                    labelStyle={{ color: '#fff', marginBottom: 4 }}
-                    itemStyle={{ color: '#ccc' }}
+                    contentStyle={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', borderRadius: 8 }}
+                    labelStyle={{ color: 'var(--color-text)', marginBottom: 4 }}
+                    itemStyle={{ color: 'var(--color-text-secondary)' }}
                     formatter={(v) => [`${v} кг`, 'Объём']}
                   />
-                  <Line type="monotone" dataKey="totalVolume" name="Объём (кг)" stroke="#f59e0b" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="totalVolume" name="Объём (кг)" stroke="var(--color-primary)" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
                 </LineChart>
               )}
             </ResponsiveContainer>

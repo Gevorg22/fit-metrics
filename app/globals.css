@@ -1,28 +1,32 @@
 :root {
-  --color-bg: #0d0d0d;
-  --color-surface: #161616;
-  --color-surface-2: #1f1f1f;
-  --color-border: #2a2a2a;
-  --color-border-hover: #3d3d3d;
+  --color-bg: #171310;
+  --color-surface: #221b16;
+  --color-surface-2: #2b2119;
+  --color-border: #3d2e24;
+  --color-border-hover: #4d3a2c;
 
-  --color-primary: #22c55e;
-  --color-primary-hover: #16a34a;
-  --color-primary-dim: rgba(34, 197, 94, 0.12);
+  --color-primary: #ffa751;
+  --color-primary-rgb: 255, 167, 81;
+  --color-primary-hover: #ff8a3d;
+  --color-primary-dim: rgba(255, 167, 81, 0.14);
 
-  --color-text: #f5f5f5;
-  --color-text-secondary: #a3a3a3;
-  --color-text-muted: #525252;
+  --color-text: #fbf1e4;
+  --color-text-secondary: #c2a184;
+  --color-text-muted: #8a6f57;
 
   --color-danger: #ef4444;
-  --color-warning: #f59e0b;
-  --color-info: #3b82f6;
+  --color-warning: #ffd93d;
+  --color-info: #5b9bf2;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  --gradient-primary: linear-gradient(120deg, #ff6b6b, #ffa751 60%, #ffd93d);
+  --color-on-gradient: #241206;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+
+  --shadow-sm: 0 2px 8px rgba(10, 6, 3, 0.35);
+  --shadow-md: 0 10px 26px rgba(10, 6, 3, 0.42);
 
   --sidebar-width: 220px;
   --header-height: 56px;
@@ -32,26 +36,27 @@
 }
 
 [data-theme="light"] {
-  --color-bg: #f4f6f8;
+  --color-bg: #fdf6ec;
   --color-surface: #ffffff;
-  --color-surface-2: #f0f2f5;
-  --color-border: #e2e8f0;
-  --color-border-hover: #cbd5e1;
+  --color-surface-2: #f7ede0;
+  --color-border: #ecdcc4;
+  --color-border-hover: #ddc7a3;
 
-  --color-primary: #16a34a;
-  --color-primary-hover: #15803d;
-  --color-primary-dim: rgba(22, 163, 74, 0.10);
+  --color-primary: #e8791f;
+  --color-primary-rgb: 232, 121, 31;
+  --color-primary-hover: #d5690f;
+  --color-primary-dim: rgba(232, 121, 31, 0.10);
 
-  --color-text: #0f172a;
-  --color-text-secondary: #475569;
-  --color-text-muted: #94a3b8;
+  --color-text: #2b1c10;
+  --color-text-secondary: #7a5c42;
+  --color-text-muted: #b8a48c;
 
   --color-danger: #dc2626;
   --color-warning: #d97706;
   --color-info: #2563eb;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 1px 3px rgba(60, 40, 20, 0.10);
+  --shadow-md: 0 4px 14px rgba(60, 40, 20, 0.14);
 
   color-scheme: light;
 }

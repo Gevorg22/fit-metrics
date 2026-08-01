@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Отслеживай тренировки, вес и прогресс в упражнениях',
     start_url: '/dashboard',
     display: 'standalone',
-    background_color: '#0d0d0d',
-    theme_color: '#22c55e',
+    background_color: '#171310',
+    theme_color: '#ffa751',
     orientation: 'portrait-primary',
     icons: [
       { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },

@@ -76,30 +76,30 @@ export function WeightChart({ refreshKey, goalWeight }: WeightChartProps) {
           <AreaChart data={data} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
             <defs>
               <linearGradient id="weightGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
             <XAxis
               dataKey="date"
               tickFormatter={(v) => formatDate(v, period)}
-              tick={{ fontSize: 11, fill: '#a3a3a3' }}
-              axisLine={{ stroke: '#2a2a2a' }}
+              tick={{ fontSize: 11, fill: 'var(--color-text-secondary)' }}
+              axisLine={{ stroke: 'var(--color-border)' }}
               tickLine={false}
             />
             <YAxis
               domain={[min, max]}
               tickFormatter={(v) => `${v} кг`}
-              tick={{ fontSize: 11, fill: '#a3a3a3' }}
+              tick={{ fontSize: 11, fill: 'var(--color-text-secondary)' }}
               axisLine={false}
               tickLine={false}
               width={60}
             />
             <Tooltip
               contentStyle={{
-                background: '#1f1f1f',
-                border: '1px solid #2a2a2a',
+                background: 'var(--color-surface-2)',
+                border: '1px solid var(--color-border)',
                 borderRadius: 8,
                 fontSize: 13,
               }}
@@ -111,19 +111,19 @@ export function WeightChart({ refreshKey, goalWeight }: WeightChartProps) {
             <Area
               type="monotone"
               dataKey="weight"
-              stroke="#22c55e"
+              stroke="var(--color-primary)"
               strokeWidth={2}
               fill="url(#weightGrad)"
-              dot={{ fill: '#22c55e', r: 3 }}
+              dot={{ fill: 'var(--color-primary)', r: 3 }}
               activeDot={{ r: 5 }}
             />
             {goalWeight && (
               <ReferenceLine
                 y={goalWeight}
-                stroke="#f59e0b"
+                stroke="#ff6b6b"
                 strokeDasharray="6 3"
                 strokeWidth={1.5}
-                label={{ value: `Цель ${goalWeight} кг`, position: 'insideTopRight', fontSize: 10, fill: '#f59e0b' }}
+                label={{ value: `Цель ${goalWeight} кг`, position: 'insideTopRight', fontSize: 10, fill: '#ff6b6b' }}
               />
             )}
           </AreaChart>

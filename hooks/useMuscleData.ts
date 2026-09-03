@@ -8,7 +8,7 @@ export function useMuscleLoad() {
     queryKey: ['muscle-load'],
     queryFn: fetchMuscleLoad,
     placeholderData: () => ({} as Record<string, number>),
-    staleTime: 0,
+    staleTime: 5 * 60_000,
   });
 }
 
@@ -17,6 +17,6 @@ export function useMuscleRecovery() {
     queryKey: ['muscle-recovery'],
     queryFn: fetchMuscleRecovery,
     placeholderData: () => ({} as Record<string, number>),
-    staleTime: 0,
+    staleTime: 5 * 60_000,
   });
 }

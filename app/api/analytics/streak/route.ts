@@ -21,7 +21,10 @@ export async function GET() {
   });
 
   if (!workouts.length) {
-    return NextResponse.json({ current: 0, longest: 0, lastWorkoutDate: null });
+    return NextResponse.json(
+      { current: 0, longest: 0, lastWorkoutDate: null },
+      { headers: { 'Cache-Control': 'private, max-age=300' } }
+    );
   }
 
   const dates = [...new Set(workouts.map((w) => toDateStr(w.startedAt)))];
@@ -46,5 +49,8 @@ export async function GET() {
   }
   longest = Math.max(longest, run);
 
-  return NextResponse.json({ current, longest, lastWorkoutDate: dates[0] });
+  return NextResponse.json(
+    { current, longest, lastWorkoutDate: dates[0] },
+    { headers: { 'Cache-Control': 'private, max-age=300' } }
+  );
 }

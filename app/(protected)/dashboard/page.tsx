@@ -1,13 +1,11 @@
 import { redirect } from 'next/navigation';
-import { auth } from '@/auth';
-import { cookies } from 'next/headers';
+import { getSession, getIsGuest } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
 import { DashboardView } from '@/components/dashboard/DashboardView';
 
 export default async function DashboardPage() {
-  const session = await auth();
-  const cookieStore = await cookies();
-  const isGuest = cookieStore.get('fitmetrics-guest')?.value === '1';
+  const session = await getSession();
+  const isGuest = await getIsGuest();
 
   if (!session?.user?.id && !isGuest) redirect('/login');
 

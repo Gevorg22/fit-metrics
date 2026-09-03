@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { auth } from '@/auth';
+import { getSession } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
 import { PrintActions } from './PrintActions';
 import styles from './page.module.scss';
@@ -11,7 +11,7 @@ function calcOrm(weight: number, reps: number): number {
 }
 
 export default async function ReportPage() {
-  const session = await auth();
+  const session = await getSession();
   if (!session?.user?.id) redirect('/login');
 
   const userId = session.user.id;

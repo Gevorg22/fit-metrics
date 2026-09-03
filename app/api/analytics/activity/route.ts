@@ -21,5 +21,7 @@ export async function GET() {
     counts[date] = (counts[date] ?? 0) + 1;
   }
 
-  return NextResponse.json(counts);
+  return NextResponse.json(counts, {
+    headers: { 'Cache-Control': 'private, max-age=300' },
+  });
 }

@@ -8,6 +8,6 @@ export function useActivityData() {
     queryKey: ['activity'],
     queryFn: fetchActivityData,
     placeholderData: (() => ({} as Record<string, number>)),
-    staleTime: 0,
+    staleTime: 5 * 60_000,
   });
 }

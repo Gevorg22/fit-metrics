@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import { auth } from '@/auth';
+import { getSession } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
 import { HistoryList } from '@/components/history/HistoryList';
 import { HistoryFilter } from '@/components/history/HistoryFilter';
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default async function HistoryPage({ searchParams }: Props) {
-  const session = await auth();
+  const session = await getSession();
   if (!session?.user?.id) redirect('/login');
 
   const userId = session.user.id;

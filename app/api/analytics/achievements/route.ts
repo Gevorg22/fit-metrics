@@ -21,6 +21,11 @@ function calcLongestStreak(dates: string[]): number {
   return Math.max(longest, run);
 }
 
+interface ExerciseStats {
+  uniqueTotal: number;
+  maxPerWorkout: number;
+}
+
 export interface Achievement {
   id: string;
   title: string;
@@ -34,18 +39,40 @@ export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const [workouts, sets, goalsCount] = await Promise.all([
+  const userId = session.user.id;
+
+  /**
+   * Раньше сюда тянулись все подходы всех тренировок пользователя, хотя из них
+   * нужны были ровно две цифры — сколько разных упражнений всего и максимум
+   * за одну тренировку. Считаем их в Postgres, а тренировки грузим без вложенных
+   * подходов: объём и так приходит отдельным groupBy.
+   */
+  const [workouts, sets, goalsCount, exerciseStats] = await Promise.all([
     prisma.workout.findMany({
-      where: { userId: session.user.id, finishedAt: { not: null } },
-      select: { id: true, startedAt: true, finishedAt: true, sets: { select: { weight: true, reps: true, exerciseId: true } } },
+      where: { userId, finishedAt: { not: null } },
+      select: { startedAt: true, finishedAt: true },
       orderBy: { startedAt: 'asc' },
     }),
     prisma.workoutSet.groupBy({
       by: ['workoutId'],
-      where: { workout: { userId: session.user.id } },
+      where: { workout: { userId } },
       _sum: { weight: true },
     }),
-    prisma.exerciseGoal.count({ where: { userId: session.user.id } }),
+    prisma.exerciseGoal.count({ where: { userId } }),
+    prisma.$queryRaw<ExerciseStats[]>`
+      SELECT
+        (SELECT COUNT(DISTINCT s."exerciseId")::int
+           FROM "WorkoutSet" s
+           JOIN "Workout" w ON w.id = s."workoutId"
+          WHERE w."userId" = ${userId} AND w."finishedAt" IS NOT NULL) AS "uniqueTotal",
+        (SELECT COALESCE(MAX(cnt), 0)::int FROM (
+           SELECT COUNT(DISTINCT s."exerciseId") AS cnt
+             FROM "WorkoutSet" s
+             JOIN "Workout" w ON w.id = s."workoutId"
+            WHERE w."userId" = ${userId} AND w."finishedAt" IS NOT NULL
+            GROUP BY w.id
+         ) per) AS "maxPerWorkout"
+    `,
   ]);
 
   const total = workouts.length;
@@ -70,10 +97,7 @@ export async function GET() {
   }).length;
   const mondayCount = workouts.filter((w) => w.startedAt.getUTCDay() === 1).length;
 
-  const maxExercisesInOne = Math.max(
-    0,
-    ...workouts.map((w) => new Set(w.sets.map((s) => s.exerciseId)).size)
-  );
+  const maxExercisesInOne = exerciseStats[0]?.maxPerWorkout ?? 0;
 
   const maxDurationMin = Math.max(
     0,
@@ -82,7 +106,7 @@ export async function GET() {
       .map((w) => (new Date(w.finishedAt!).getTime() - new Date(w.startedAt).getTime()) / 60000)
   );
 
-  const uniqueExercisesTotal = new Set(workouts.flatMap((w) => w.sets.map((s) => s.exerciseId))).size;
+  const uniqueExercisesTotal = exerciseStats[0]?.uniqueTotal ?? 0;
 
   const achievements: Achievement[] = [
     {

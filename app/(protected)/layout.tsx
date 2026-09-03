@@ -1,14 +1,12 @@
 import { redirect } from 'next/navigation';
-import { auth } from '@/auth';
-import { cookies } from 'next/headers';
+import { getSession, getIsGuest } from '@/lib/session';
 import { Nav } from '@/components/layout/Nav';
 import { Footer } from '@/components/layout/Footer';
 import styles from './layout.module.scss';
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth();
-  const cookieStore = await cookies();
-  const isGuest = cookieStore.get('fitmetrics-guest')?.value === '1';
+  const session = await getSession();
+  const isGuest = await getIsGuest();
 
   if (!session && !isGuest) redirect('/login');
 

@@ -1,4 +1,4 @@
-import { auth } from '@/auth';
+import { getSession } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
 import { NutritionView } from '@/components/nutrition/NutritionView';
 
@@ -28,7 +28,7 @@ function calcTargetCalories(
 }
 
 export default async function NutritionPage() {
-  const session = await auth();
+  const session = await getSession();
   if (!session?.user?.id) return null;
 
   const today = new Date().toISOString().slice(0, 10);

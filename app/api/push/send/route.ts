@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 import { prisma } from '@/lib/prisma';
+import { sendPushToAll } from '@/lib/push';
 
 const DAYS_INACTIVE = 5;
 
@@ -38,22 +39,13 @@ export async function POST(request: Request) {
     url: '/',
   });
 
-  let sent = 0;
-  let failed = 0;
+  const { sent, failed, expiredEndpoints } = await sendPushToAll(
+    inactiveUsers.flatMap((u) => u.pushSubscriptions),
+    payload
+  );
 
-  for (const user of inactiveUsers) {
-    for (const sub of user.pushSubscriptions) {
-      try {
-        await webpush.sendNotification(
-          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
-          payload
-        );
-        sent++;
-      } catch {
-        failed++;
-        await prisma.pushSubscription.deleteMany({ where: { endpoint: sub.endpoint } });
-      }
-    }
+  if (expiredEndpoints.length) {
+    await prisma.pushSubscription.deleteMany({ where: { endpoint: { in: expiredEndpoints } } });
   }
 
   return NextResponse.json({ sent, failed });

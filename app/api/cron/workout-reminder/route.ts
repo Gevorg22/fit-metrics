@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 import { prisma } from '@/lib/prisma';
+import { sendPushToAll } from '@/lib/push';
 
 export async function POST(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
@@ -42,22 +43,13 @@ export async function POST(request: Request) {
     url: '/workout',
   });
 
-  let sent = 0;
-  let failed = 0;
+  const { sent, failed, expiredEndpoints } = await sendPushToAll(
+    staleWorkouts.flatMap((w) => w.user.pushSubscriptions),
+    payload
+  );
 
-  for (const workout of staleWorkouts) {
-    for (const sub of workout.user.pushSubscriptions) {
-      try {
-        await webpush.sendNotification(
-          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
-          payload
-        );
-        sent++;
-      } catch {
-        failed++;
-        await prisma.pushSubscription.deleteMany({ where: { endpoint: sub.endpoint } });
-      }
-    }
+  if (expiredEndpoints.length) {
+    await prisma.pushSubscription.deleteMany({ where: { endpoint: { in: expiredEndpoints } } });
   }
 
   return NextResponse.json({ sent, failed, stale: staleWorkouts.length });

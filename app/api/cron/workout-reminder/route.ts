@@ -4,11 +4,9 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const auth = request.headers.get('authorization');
-    if (auth !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+  const auth = request.headers.get('authorization');
+  if (!cronSecret || auth !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   webpush.setVapidDetails(

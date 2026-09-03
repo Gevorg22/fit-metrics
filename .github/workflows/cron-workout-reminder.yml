@@ -1,0 +1,23 @@
+name: Cron / Незавершённые тренировки
+
+on:
+  schedule:
+    # 09:00 UTC каждый день
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Напомнить о незавершённых тренировках
+        run: |
+          curl --fail-with-body --show-error --silent \
+            --max-time 120 \
+            --retry 3 --retry-delay 20 --retry-all-errors \
+            -X POST "${APP_URL%/}/api/cron/workout-reminder" \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            -H "Content-Type: application/json"
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
